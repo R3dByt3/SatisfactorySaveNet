@@ -7,7 +7,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SatisfactorySaveNet", "Sati
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SatisfactorySaveNet.Abstracts", "SatisfactorySaveNet.Abstracts\SatisfactorySaveNet.Abstracts.csproj", "{27E9F269-A915-4DC1-A9C3-4D5A68F57BC2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SatisfactorySaveNet.Tests", "SatisfactorySaveNet.Tests\SatisfactorySaveNet.Tests.csproj", "{16BF72D5-D0DD-40B0-9063-E3783BD3D9FC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SatisfactorySaveNet.Tests", "SatisfactorySaveNet.Tests\SatisfactorySaveNet.Tests.csproj", "{16BF72D5-D0DD-40B0-9063-E3783BD3D9FC}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{B8E9B394-E011-440D-9601-BD743730D6DD}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

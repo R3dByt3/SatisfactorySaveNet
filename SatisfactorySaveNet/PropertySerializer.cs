@@ -3,29 +3,35 @@ using SatisfactorySaveNet.Abstracts.Model.Properties;
 using SatisfactorySaveNet.Abstracts.Model;
 using SatisfactorySaveNet.Abstracts.Model.TypedData;
 using System.Diagnostics.CodeAnalysis;
+using SatisfactorySaveNet.Abstracts.Model.Union;
+using System.Numerics;
+using System.Runtime.Intrinsics;
 
 namespace SatisfactorySaveNet;
 
 public class PropertySerializer : IPropertySerializer
 {
-    public static readonly IPropertySerializer Instance = new PropertySerializer(StringSerializer.Instance, ObjectReferenceSerializer.Instance, VectorSerializer.Instance);
+    public static readonly IPropertySerializer Instance = new PropertySerializer(StringSerializer.Instance, ObjectReferenceSerializer.Instance, VectorSerializer.Instance, HexSerializer.Instance);
 
     private readonly IStringSerializer _stringSerializer;
     private readonly IObjectReferenceSerializer _objectReferenceSerializer;
     private readonly ITypedDataSerializer _typedDataSerializer;
+    private readonly IHexSerializer _hexSerializer;
 
-    internal PropertySerializer(IStringSerializer stringSerializer, IObjectReferenceSerializer objectReferenceSerializer, ITypedDataSerializer typedDataSerializer)
+    internal PropertySerializer(IStringSerializer stringSerializer, IObjectReferenceSerializer objectReferenceSerializer, ITypedDataSerializer typedDataSerializer, IHexSerializer hexSerializer)
     {
         _stringSerializer = stringSerializer;
         _objectReferenceSerializer = objectReferenceSerializer;
         _typedDataSerializer = typedDataSerializer;
+        _hexSerializer = hexSerializer;
     }
 
-    public PropertySerializer(IStringSerializer stringSerializer, IObjectReferenceSerializer objectReferenceSerializer, IVectorSerializer vectorSerializer)
+    public PropertySerializer(IStringSerializer stringSerializer, IObjectReferenceSerializer objectReferenceSerializer, IVectorSerializer vectorSerializer, IHexSerializer hexSerializer)
     {
         _stringSerializer = stringSerializer;
         _objectReferenceSerializer = objectReferenceSerializer;
         _typedDataSerializer = new TypedDataSerializer(vectorSerializer, stringSerializer, this);
+        _hexSerializer = hexSerializer;
     }
 
     public IEnumerable<Property> DeserializeProperties(BinaryReader reader)
@@ -38,9 +44,11 @@ public class PropertySerializer : IPropertySerializer
     [return: NotNullIfNotNull(nameof(type))]
     public Property? DeserializeProperty(BinaryReader reader, string? type = null)
     {
+        var propertyName = string.Empty;
+
         if (type == null)
         {
-            var propertyName = _stringSerializer.Deserialize(reader);
+            propertyName = _stringSerializer.Deserialize(reader);
 
             if (string.Equals(propertyName, "None", StringComparison.Ordinal))
                 return null;
@@ -59,7 +67,7 @@ public class PropertySerializer : IPropertySerializer
             nameof(FloatProperty) => DeserializeFloatProperty(reader),
             nameof(IntProperty) => DeserializeIntProperty(reader),
             nameof(Int64Property) => DeserializeInt64Property(reader),
-            nameof(MapProperty) => DeserializeMapProperty(reader),
+            nameof(MapProperty) => DeserializeMapProperty(reader, propertyName, type),
             nameof(NameProperty) => DeserializeNameProperty(reader),
             nameof(ObjectProperty) => DeserializeObjectProperty(reader),
             nameof(SetProperty) => DeserializeSetProperty(reader),
@@ -448,7 +456,7 @@ public class PropertySerializer : IPropertySerializer
         return property;
     }
 
-    private MapProperty DeserializeMapProperty(BinaryReader reader)
+    private MapProperty DeserializeMapProperty(BinaryReader reader, string? propertyName = null, string? type = null)
     {
         var binarySize = reader.ReadInt32();
         var index = reader.ReadInt32();
@@ -456,6 +464,19 @@ public class PropertySerializer : IPropertySerializer
         var valueType = _stringSerializer.Deserialize(reader);
         var padding = reader.ReadSByte();
         var modeType = reader.ReadInt32();
+
+        if (modeType == 2)
+        {
+            var disc1 = _stringSerializer.Deserialize(reader);
+            var disc2 = _stringSerializer.Deserialize(reader);
+        }
+        else if (modeType == 3)
+        {
+            var disc1 = _hexSerializer.Deserialize(reader, 9);
+            var disc2 = _stringSerializer.Deserialize(reader);
+            var disc3 = _stringSerializer.Deserialize(reader);
+        }
+
         var count = reader.ReadInt32();
 
         var property = new MapProperty(new Dictionary<Property, Property>(count))
@@ -466,15 +487,34 @@ public class PropertySerializer : IPropertySerializer
             ModeType = modeType
         };
 
+        var dict = new Dictionary<UnionBase, UnionBase>(count);
+
         for (var i = 0; i < count; i++)
         {
-            var key = DeserializeProperty(reader, keyType);
-            var value = DeserializeProperty(reader, valueType);
+            switch (property.KeyType)
+            {
+                case nameof(StructProperty):
+                    if (string.Equals(propertyName, "Destroyed_Foliage_Transform", StringComparison.Ordinal))
+                    {
+                        //Vector64<double> 
+                    }
+                    else if (string.Equals(type, "/BuildGunUtilities/BGU_Subsystem.BGU_Subsystem_C", StringComparison.Ordinal))
+                    {
 
-            if (value == null)
-                continue;
+                    }
+                    else if (string.Equals(propertyName, "mSaveData", StringComparison.Ordinal) || string.Equals(propertyName, "mUnresolvedSaveData", StringComparison.Ordinal))
+                    {
 
-            property.Elements.Add(key, value);
+                    }
+                    break;
+            }
+            //var key = DeserializeProperty(reader, keyType);
+            //var value = DeserializeProperty(reader, valueType);
+
+            //if (value == null)
+            //    continue;
+            //
+            //property.Elements.Add(key, value);
         }
 
         return property;

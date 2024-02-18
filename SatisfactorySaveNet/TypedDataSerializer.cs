@@ -6,7 +6,7 @@ namespace SatisfactorySaveNet;
 
 public class TypedDataSerializer : ITypedDataSerializer
 {
-    public static readonly ITypedDataSerializer Instance = new TypedDataSerializer(VectorSerializer.Instance, StringSerializer.Instance, ObjectReferenceSerializer.Instance);
+    public static readonly ITypedDataSerializer Instance = new TypedDataSerializer(VectorSerializer.Instance, StringSerializer.Instance, ObjectReferenceSerializer.Instance, HexSerializer.Instance);
 
     private readonly IVectorSerializer _vectorSerializer;
     private readonly IStringSerializer _stringSerializer;
@@ -19,11 +19,11 @@ public class TypedDataSerializer : ITypedDataSerializer
         _propertySerializer = propertySerializer;
     }
 
-    public TypedDataSerializer(IVectorSerializer vectorSerializer, IStringSerializer stringSerializer, IObjectReferenceSerializer objectReferenceSerializer)
+    public TypedDataSerializer(IVectorSerializer vectorSerializer, IStringSerializer stringSerializer, IObjectReferenceSerializer objectReferenceSerializer, IHexSerializer hexSerializer)
     {
         _vectorSerializer = vectorSerializer;
         _stringSerializer = stringSerializer;
-        _propertySerializer = new PropertySerializer(stringSerializer, objectReferenceSerializer, this);
+        _propertySerializer = new PropertySerializer(stringSerializer, objectReferenceSerializer, this, hexSerializer);
     }
 
     public ITypedData Deserialize(BinaryReader reader, string type, long endPosition)
@@ -40,9 +40,21 @@ public class TypedDataSerializer : ITypedDataSerializer
             nameof(RailroadTrackPosition) => DeserializeRailroadTrackPosition(reader),
             nameof(SpawnData) => DeserializeSpawnData(reader),
             nameof(Vector) => DeserializeVector(reader),
+            //"" => DeserializeProperty(reader),
             _ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
         };
     }
+
+    //private ITypedData DeserializeProperty(BinaryReader reader)
+    //{
+    //    //ToDo: Das hier ist evtl. BS
+    //    var value = _propertySerializer.DeserializeProperty(reader);
+    //
+    //    return new PropertyData
+    //    {
+    //        Value = value
+    //    };
+    //}
 
     private ITypedData DeserializeVector(BinaryReader reader)
     {

@@ -28,7 +28,7 @@ public class Header
     /// Contains the startLocation, sessionName and visibility
     /// </summary>
     public string MapOptions { get; set; } = string.Empty;
-        
+
     /// <summary>
     /// Name of the saved game as entered when creating a new game
     /// </summary>

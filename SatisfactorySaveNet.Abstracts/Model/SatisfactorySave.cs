@@ -15,7 +15,7 @@ public class SatisfactorySave
     /// </summary>
     public Body Body { get; set; }
 
-    public SatisfactorySave(Header header, Body body) 
+    public SatisfactorySave(Header header, Body body)
     {
         Header = header;
         Body = body;
