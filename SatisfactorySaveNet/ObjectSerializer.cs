@@ -62,7 +62,7 @@ public class ObjectSerializer : IObjectSerializer
         if (expectedPosition == reader.BaseStream.Position)
             return actorObject;
 
-        var properties = _propertySerializer.DeserializeProperties(reader).ToList();
+        var properties = _propertySerializer.DeserializeProperties(reader, header).ToList();
 
         actorObject.Components = components;
         actorObject.Properties = properties;

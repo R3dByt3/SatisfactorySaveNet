@@ -10,20 +10,20 @@ public class SaveFileSerializer : ISaveFileSerializer
 {
     public static readonly ISaveFileSerializer Instance = new SaveFileSerializer(HeaderSerializer.Instance, ChunkSerializer.Instance, BodySerializer.Instance);
 
-    private const int BlockSize = 1024;
-    private const int LargeBufferMultiple = 1024 * 1024;
-    private const int MaxBufferSize = 16 * LargeBufferMultiple;
+    private const int BlockSize = 256 * 1024;
+    private const int LargeBufferMultiple = 64 * 1024 * 1024;
+    private const int MaxBufferSize = 128 * 1024 * 1024;
 
-    private static readonly RecyclableMemoryStreamManager Manager = new(BlockSize, LargeBufferMultiple, MaxBufferSize);
+    private static readonly RecyclableMemoryStreamManager Manager = new(new(BlockSize, LargeBufferMultiple, MaxBufferSize, 100 * BlockSize, MaxBufferSize * 4));//BlockSize, LargeBufferMultiple, MaxBufferSize);
 
     static SaveFileSerializer()
     {
 #if DEBUG
         //Manager.GenerateCallStacks = true;
 #endif
-        //manager.AggressiveBufferReturn = true;
-        Manager.MaximumFreeLargePoolBytes = MaxBufferSize * 4;
-        Manager.MaximumFreeSmallPoolBytes = 100 * BlockSize;
+        //Manager.AggressiveBufferReturn = true;
+        //Manager.MaximumFreeLargePoolBytes = MaxBufferSize * 4;
+        //Manager.MaximumFreeSmallPoolBytes = 100 * BlockSize;
     }
 
     private readonly IHeaderSerializer _headerSerializer;

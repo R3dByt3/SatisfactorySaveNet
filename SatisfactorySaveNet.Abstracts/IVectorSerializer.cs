@@ -1,4 +1,5 @@
-﻿using System.Numerics;
+﻿using SatisfactorySaveNet.Abstracts.Maths.Data;
+using SatisfactorySaveNet.Abstracts.Maths.Vector;
 
 namespace SatisfactorySaveNet.Abstracts;
 

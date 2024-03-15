@@ -4,8 +4,7 @@ using SatisfactorySaveNet.Abstracts.Model;
 using SatisfactorySaveNet.Abstracts.Model.TypedData;
 using System.Diagnostics.CodeAnalysis;
 using SatisfactorySaveNet.Abstracts.Model.Union;
-using System.Numerics;
-using System.Runtime.Intrinsics;
+using SatisfactorySaveNet.Abstracts.Maths.Vector;
 
 namespace SatisfactorySaveNet;
 
@@ -34,15 +33,15 @@ public class PropertySerializer : IPropertySerializer
         _hexSerializer = hexSerializer;
     }
 
-    public IEnumerable<Property> DeserializeProperties(BinaryReader reader)
+    public IEnumerable<Property> DeserializeProperties(BinaryReader reader, Header? header = null)
     {
         Property? property;
-        while ((property = DeserializeProperty(reader)) != null)
+        while ((property = DeserializeProperty(reader, header)) != null)
             yield return property;
     }
 
     [return: NotNullIfNotNull(nameof(type))]
-    public Property? DeserializeProperty(BinaryReader reader, string? type = null)
+    public Property? DeserializeProperty(BinaryReader reader, Header? header = null, string? type = null)
     {
         var propertyName = string.Empty;
 
@@ -67,7 +66,7 @@ public class PropertySerializer : IPropertySerializer
             nameof(FloatProperty) => DeserializeFloatProperty(reader),
             nameof(IntProperty) => DeserializeIntProperty(reader),
             nameof(Int64Property) => DeserializeInt64Property(reader),
-            nameof(MapProperty) => DeserializeMapProperty(reader, propertyName, type),
+            nameof(MapProperty) => header == null ? throw new ArgumentNullException(nameof(header)) : DeserializeMapProperty(reader, header, propertyName, type),
             nameof(NameProperty) => DeserializeNameProperty(reader),
             nameof(ObjectProperty) => DeserializeObjectProperty(reader),
             nameof(SetProperty) => DeserializeSetProperty(reader),
@@ -456,7 +455,7 @@ public class PropertySerializer : IPropertySerializer
         return property;
     }
 
-    private MapProperty DeserializeMapProperty(BinaryReader reader, string? propertyName = null, string? type = null)
+    private MapProperty DeserializeMapProperty(BinaryReader reader, Header header, string? propertyName = null, string? type = null)
     {
         var binarySize = reader.ReadInt32();
         var index = reader.ReadInt32();
@@ -487,7 +486,8 @@ public class PropertySerializer : IPropertySerializer
             ModeType = modeType
         };
 
-        var dict = new Dictionary<UnionBase, UnionBase>(count);
+        var dict = new Dictionary<Union, Union>(count);
+        object key = null!;
 
         for (var i = 0; i < count; i++)
         {
@@ -496,15 +496,18 @@ public class PropertySerializer : IPropertySerializer
                 case nameof(StructProperty):
                     if (string.Equals(propertyName, "Destroyed_Foliage_Transform", StringComparison.Ordinal))
                     {
-                        //Vector64<double> 
+                        key = header.SaveVersion >= 41
+                            ? new Vector3D(reader.ReadDouble(), reader.ReadDouble(), reader.ReadDouble())
+                            : new Vector3(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle());
+                        break;
                     }
                     else if (string.Equals(type, "/BuildGunUtilities/BGU_Subsystem.BGU_Subsystem_C", StringComparison.Ordinal))
                     {
-
+                        key = new Vector3(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle());
                     }
                     else if (string.Equals(propertyName, "mSaveData", StringComparison.Ordinal) || string.Equals(propertyName, "mUnresolvedSaveData", StringComparison.Ordinal))
                     {
-
+                        key = new Vector3I(reader.ReadInt32(), reader.ReadInt32(), reader.ReadInt32());
                     }
                     break;
             }

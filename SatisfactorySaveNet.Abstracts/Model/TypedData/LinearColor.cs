@@ -1,4 +1,4 @@
-﻿using System.Numerics;
+﻿using SatisfactorySaveNet.Abstracts.Maths.Vector;
 
 namespace SatisfactorySaveNet.Abstracts.Model.TypedData;
 
