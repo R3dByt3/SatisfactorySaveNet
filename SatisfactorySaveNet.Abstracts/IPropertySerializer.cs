@@ -1,5 +1,7 @@
 ﻿using SatisfactorySaveNet.Abstracts.Model;
 using SatisfactorySaveNet.Abstracts.Model.Properties;
+using System.Collections.Generic;
+using System.IO;
 
 namespace SatisfactorySaveNet.Abstracts;
 

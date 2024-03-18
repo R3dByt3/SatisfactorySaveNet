@@ -1,4 +1,5 @@
 using SatisfactorySaveNet.Abstracts.Maths.Vector;
+using System;
 using System.Diagnostics.Contracts;
 
 namespace SatisfactorySaveNet.Abstracts.Maths.Geometry
@@ -124,12 +125,12 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Geometry
         [Pure]
         public readonly Vector2 CalculatePoint(float t)
         {
-            float c = 1.0f - t;
+            var c = 1.0f - t;
 
-            float x = (StartAnchor.X * c * c * c) + (FirstControlPoint.X * 3 * t * c * c) +
+            var x = (StartAnchor.X * c * c * c) + (FirstControlPoint.X * 3 * t * c * c) +
                 (SecondControlPoint.X * 3 * t * t * c) + (EndAnchor.X * t * t * t);
 
-            float y = (StartAnchor.Y * c * c * c) + (FirstControlPoint.Y * 3 * t * c * c) +
+            var y = (StartAnchor.Y * c * c * c) + (FirstControlPoint.Y * 3 * t * c * c) +
                 (SecondControlPoint.Y * 3 * t * t * c) + (EndAnchor.Y * t * t * t);
 
             Vector2 r = new(x, y);
@@ -139,7 +140,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Geometry
                 return r;
             }
 
-            Vector2 perpendicular = t == 0.0f ? FirstControlPoint - StartAnchor : r - CalculatePointOfDerivative(t);
+            var perpendicular = t == 0.0f ? FirstControlPoint - StartAnchor : r - CalculatePointOfDerivative(t);
             return r + (Vector2.Normalize(perpendicular).PerpendicularRight * Parallel);
         }
 
@@ -151,7 +152,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Geometry
         [Pure]
         private readonly Vector2 CalculatePointOfDerivative(float t)
         {
-            float c = 1.0f - t;
+            var c = 1.0f - t;
             Vector2 r = new(
                 (c * c * StartAnchor.X) + (2 * t * c * FirstControlPoint.X) + (t * t * SecondControlPoint.X),
                 (c * c * StartAnchor.Y) + (2 * t * c * FirstControlPoint.Y) + (t * t * SecondControlPoint.Y)
@@ -172,12 +173,12 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Geometry
         [Pure]
         public readonly float CalculateLength(float precision)
         {
-            float length = 0.0f;
-            Vector2 old = CalculatePoint(0.0f);
+            var length = 0.0f;
+            var old = CalculatePoint(0.0f);
 
-            for (float i = precision; i < 1.0f + precision; i += precision)
+            for (var i = precision; i < 1.0f + precision; i += precision)
             {
-                Vector2 n = CalculatePoint(i);
+                var n = CalculatePoint(i);
                 length += (n - old).Length;
                 old = n;
             }

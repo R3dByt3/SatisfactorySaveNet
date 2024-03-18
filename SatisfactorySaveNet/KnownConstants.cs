@@ -1,4 +1,7 @@
-﻿namespace SatisfactorySaveNet;
+﻿using System;
+using System.Collections.Generic;
+
+namespace SatisfactorySaveNet;
 
 public static class KnownConstants
 {
@@ -34,9 +37,18 @@ public static class KnownConstants
         "/conveyorbeltmod/lift/"
     };
 
-    public static bool IsConveyorLift(string path) => ConveyorLifts.Contains(path);
+    public static bool IsConveyorLift(string path)
+    {
+        return ConveyorLifts.Contains(path);
+    }
 
-    public static bool IsConveyorBelt(string path) => ConveyorBelts.Contains(path);
+    public static bool IsConveyorBelt(string path)
+    {
+        return ConveyorBelts.Contains(path);
+    }
 
-    public static bool IsConveyor(string path) => IsConveyorLift(path) || IsConveyorBelt(path);
+    public static bool IsConveyor(string path)
+    {
+        return IsConveyorLift(path) || IsConveyorBelt(path);
+    }
 }

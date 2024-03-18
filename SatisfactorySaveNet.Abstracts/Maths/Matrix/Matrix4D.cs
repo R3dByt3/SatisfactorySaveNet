@@ -1,5 +1,6 @@
 using SatisfactorySaveNet.Abstracts.Maths.Data;
 using SatisfactorySaveNet.Abstracts.Maths.Vector;
+using System;
 using System.Diagnostics.Contracts;
 using System.Runtime.InteropServices;
 
@@ -374,13 +375,10 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
                 var tmp = rowIndex == 2
                     ? Row2[columnIndex]
                     : rowIndex;
-
-#pragma warning disable S112 // General or reserved exceptions should never be thrown
                 return tmp == 3
                     ? Row3[columnIndex]
                     : throw new IndexOutOfRangeException("You tried to access this matrix at: (" + rowIndex + ", " +
                                                    columnIndex + ")");
-#pragma warning restore S112 // General or reserved exceptions should never be thrown
             }
             set
             {
@@ -398,12 +396,10 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
                 }
                 else
                 {
-#pragma warning disable S112 // General or reserved exceptions should never be thrown
                     Row3[columnIndex] = rowIndex == 3
                         ? value
                         : throw new IndexOutOfRangeException("You tried to set this matrix at: (" + rowIndex + ", " +
                                                                            columnIndex + ")");
-#pragma warning restore S112 // General or reserved exceptions should never be thrown
                 }
             }
         }
@@ -411,12 +407,18 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         /// <summary>
         /// Converts this instance into its inverse.
         /// </summary>
-        public void Invert() => this = Invert(this);
+        public void Invert()
+        {
+            this = Invert(this);
+        }
 
         /// <summary>
         /// Converts this instance into its transpose.
         /// </summary>
-        public void Transpose() => this = Transpose(this);
+        public void Transpose()
+        {
+            this = Transpose(this);
+        }
 
         /// <summary>
         /// Returns a normalized copy of this instance.
@@ -424,7 +426,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         /// <returns>The normalized copy.</returns>
         public readonly Matrix4D Normalized()
         {
-            Matrix4D m = this;
+            var m = this;
             m.Normalize();
             return m;
         }
@@ -434,7 +436,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         /// </summary>
         public void Normalize()
         {
-            double determinant = Determinant;
+            var determinant = Determinant;
             Row0 /= determinant;
             Row1 /= determinant;
             Row2 /= determinant;
@@ -447,7 +449,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         /// <returns>The inverted copy.</returns>
         public readonly Matrix4D Inverted()
         {
-            Matrix4D m = this;
+            var m = this;
             if (m.Determinant != 0)
             {
                 m.Invert();
@@ -462,7 +464,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         /// <returns>The matrix without translation.</returns>
         public readonly Matrix4D ClearTranslation()
         {
-            Matrix4D m = this;
+            var m = this;
             m.Row3.Xyz = Vector3D.Zero;
             return m;
         }
@@ -473,7 +475,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         /// <returns>The matrix without scaling.</returns>
         public readonly Matrix4D ClearScale()
         {
-            Matrix4D m = this;
+            var m = this;
             m.Row0.Xyz = m.Row0.Xyz.Normalized();
             m.Row1.Xyz = m.Row1.Xyz.Normalized();
             m.Row2.Xyz = m.Row2.Xyz.Normalized();
@@ -486,7 +488,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         /// <returns>The matrix without rotation.</returns>
         public readonly Matrix4D ClearRotation()
         {
-            Matrix4D m = this;
+            var m = this;
             m.Row0.Xyz = new Vector3D(m.Row0.Xyz.Length, 0, 0);
             m.Row1.Xyz = new Vector3D(0, m.Row1.Xyz.Length, 0);
             m.Row2.Xyz = new Vector3D(0, 0, m.Row2.Xyz.Length);
@@ -499,7 +501,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         /// <returns>The matrix without projection.</returns>
         public readonly Matrix4D ClearProjection()
         {
-            Matrix4D m = this;
+            var m = this;
             m.Column3 = Vector4D.Zero;
             return m;
         }
@@ -508,13 +510,19 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         /// Returns the translation component of this instance.
         /// </summary>
         /// <returns>The translation.</returns>
-        public Vector3D ExtractTranslation() => Row3.Xyz;
+        public Vector3D ExtractTranslation()
+        {
+            return Row3.Xyz;
+        }
 
         /// <summary>
         /// Returns the scale component of this instance.
         /// </summary>
         /// <returns>The scale.</returns>
-        public Vector3D ExtractScale() => new(Row0.Xyz.Length, Row1.Xyz.Length, Row2.Xyz.Length);
+        public Vector3D ExtractScale()
+        {
+            return new(Row0.Xyz.Length, Row1.Xyz.Length, Row2.Xyz.Length);
+        }
 
         /// <summary>
         /// Returns the rotation component of this instance. Quite slow.
@@ -527,9 +535,9 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         [Pure]
         public QuaternionD ExtractRotation(bool rowNormalize = true)
         {
-            Vector3D row0 = Row0.Xyz;
-            Vector3D row1 = Row1.Xyz;
-            Vector3D row2 = Row2.Xyz;
+            var row0 = Row0.Xyz;
+            var row1 = Row1.Xyz;
+            var row2 = Row2.Xyz;
 
             if (rowNormalize)
             {
@@ -540,11 +548,11 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
 
             // code below adapted from Blender
             QuaternionD q = default;
-            double trace = 0.25 * (row0[0] + row1[1] + row2[2] + 1.0);
+            var trace = 0.25 * (row0[0] + row1[1] + row2[2] + 1.0);
 
             if (trace > 0)
             {
-                double sq = Math.Sqrt(trace);
+                var sq = Math.Sqrt(trace);
 
                 q.W = sq;
                 sq = 1.0 / (4.0 * sq);
@@ -554,7 +562,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
             }
             else if (row0[0] > row1[1] && row0[0] > row2[2])
             {
-                double sq = 2.0 * Math.Sqrt(1.0 + row0[0] - row1[1] - row2[2]);
+                var sq = 2.0 * Math.Sqrt(1.0 + row0[0] - row1[1] - row2[2]);
 
                 q.X = 0.25 * sq;
                 sq = 1.0 / sq;
@@ -564,7 +572,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
             }
             else if (row1[1] > row2[2])
             {
-                double sq = 2.0 * Math.Sqrt(1.0 + row1[1] - row0[0] - row2[2]);
+                var sq = 2.0 * Math.Sqrt(1.0 + row1[1] - row0[0] - row2[2]);
 
                 q.Y = 0.25 * sq;
                 sq = 1.0 / sq;
@@ -574,7 +582,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
             }
             else
             {
-                double sq = 2.0 * Math.Sqrt(1.0 + row2[2] - row0[0] - row1[1]);
+                var sq = 2.0 * Math.Sqrt(1.0 + row2[2] - row0[0] - row1[1]);
 
                 q.Z = 0.25 * sq;
                 sq = 1.0 / sq;
@@ -591,7 +599,10 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         /// Returns the projection component of this instance.
         /// </summary>
         /// <returns>The projection.</returns>
-        public readonly Vector4D ExtractProjection() => Column3;
+        public readonly Vector4D ExtractProjection()
+        {
+            return Column3;
+        }
 
         /// <summary>
         /// Build a rotation matrix from the specified axis/angle rotation.
@@ -606,21 +617,21 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
             double axisX = axis.X, axisY = axis.Y, axisZ = axis.Z;
 
             // calculate angles
-            double cos = Math.Cos(-angle);
-            double sin = Math.Sin(-angle);
-            double t = 1.0f - cos;
+            var cos = Math.Cos(-angle);
+            var sin = Math.Sin(-angle);
+            var t = 1.0f - cos;
 
             // do the conversion math once
-            double tXX = t * axisX * axisX;
-            double tXY = t * axisX * axisY;
-            double tXZ = t * axisX * axisZ;
-            double tYY = t * axisY * axisY;
-            double tYZ = t * axisY * axisZ;
-            double tZZ = t * axisZ * axisZ;
+            var tXX = t * axisX * axisX;
+            var tXY = t * axisX * axisY;
+            var tXZ = t * axisX * axisZ;
+            var tYY = t * axisY * axisY;
+            var tYZ = t * axisY * axisZ;
+            var tZZ = t * axisZ * axisZ;
 
-            double sinX = sin * axisX;
-            double sinY = sin * axisY;
-            double sinZ = sin * axisZ;
+            var sinX = sin * axisX;
+            var sinY = sin * axisY;
+            var sinZ = sin * axisZ;
 
             result.Row0.X = tXX + cos;
             result.Row0.Y = tXY - sinZ;
@@ -646,7 +657,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         [Pure]
         public static Matrix4D CreateFromAxisAngle(Vector3D axis, double angle)
         {
-            CreateFromAxisAngle(axis, angle, out Matrix4D result);
+            CreateFromAxisAngle(axis, angle, out var result);
             return result;
         }
 
@@ -657,8 +668,8 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         /// <param name="result">The resulting Matrix4d instance.</param>
         public static void CreateRotationX(double angle, out Matrix4D result)
         {
-            double cos = Math.Cos(angle);
-            double sin = Math.Sin(angle);
+            var cos = Math.Cos(angle);
+            var sin = Math.Sin(angle);
 
             result.Row0 = Vector4D.UnitX;
             result.Row1 = new Vector4D(0, cos, sin, 0);
@@ -674,7 +685,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         [Pure]
         public static Matrix4D CreateRotationX(double angle)
         {
-            CreateRotationX(angle, out Matrix4D result);
+            CreateRotationX(angle, out var result);
             return result;
         }
 
@@ -685,8 +696,8 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         /// <param name="result">The resulting Matrix4d instance.</param>
         public static void CreateRotationY(double angle, out Matrix4D result)
         {
-            double cos = Math.Cos(angle);
-            double sin = Math.Sin(angle);
+            var cos = Math.Cos(angle);
+            var sin = Math.Sin(angle);
 
             result.Row0 = new Vector4D(cos, 0, -sin, 0);
             result.Row1 = Vector4D.UnitY;
@@ -702,7 +713,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         [Pure]
         public static Matrix4D CreateRotationY(double angle)
         {
-            CreateRotationY(angle, out Matrix4D result);
+            CreateRotationY(angle, out var result);
             return result;
         }
 
@@ -713,8 +724,8 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         /// <param name="result">The resulting Matrix4d instance.</param>
         public static void CreateRotationZ(double angle, out Matrix4D result)
         {
-            double cos = Math.Cos(angle);
-            double sin = Math.Sin(angle);
+            var cos = Math.Cos(angle);
+            var sin = Math.Sin(angle);
 
             result.Row0 = new Vector4D(cos, sin, 0, 0);
             result.Row1 = new Vector4D(-sin, cos, 0, 0);
@@ -730,7 +741,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         [Pure]
         public static Matrix4D CreateRotationZ(double angle)
         {
-            CreateRotationZ(angle, out Matrix4D result);
+            CreateRotationZ(angle, out var result);
             return result;
         }
 
@@ -768,7 +779,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         [Pure]
         public static Matrix4D CreateTranslation(double x, double y, double z)
         {
-            CreateTranslation(x, y, z, out Matrix4D result);
+            CreateTranslation(x, y, z, out var result);
             return result;
         }
 
@@ -780,7 +791,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         [Pure]
         public static Matrix4D CreateTranslation(Vector3D vector)
         {
-            CreateTranslation(vector.X, vector.Y, vector.Z, out Matrix4D result);
+            CreateTranslation(vector.X, vector.Y, vector.Z, out var result);
             return result;
         }
 
@@ -799,7 +810,10 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
             double depthNear,
             double depthFar,
             out Matrix4D result
-        ) => CreateOrthographicOffCenter(-width / 2, width / 2, -height / 2, height / 2, depthNear, depthFar, out result);
+        )
+        {
+            CreateOrthographicOffCenter(-width / 2, width / 2, -height / 2, height / 2, depthNear, depthFar, out result);
+        }
 
         /// <summary>
         /// Creates an orthographic projection matrix.
@@ -812,7 +826,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         [Pure]
         public static Matrix4D CreateOrthographic(double width, double height, double depthNear, double depthFar)
         {
-            CreateOrthographicOffCenter(-width / 2, width / 2, -height / 2, height / 2, depthNear, depthFar, out Matrix4D result);
+            CreateOrthographicOffCenter(-width / 2, width / 2, -height / 2, height / 2, depthNear, depthFar, out var result);
             return result;
         }
 
@@ -837,9 +851,9 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
             out Matrix4D result
         )
         {
-            double invRL = 1 / (right - left);
-            double invTB = 1 / (top - bottom);
-            double invFN = 1 / (depthFar - depthNear);
+            var invRL = 1 / (right - left);
+            var invTB = 1 / (top - bottom);
+            var invFN = 1 / (depthFar - depthNear);
 
             result = new Matrix4D
             {
@@ -875,7 +889,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
             double depthFar
         )
         {
-            CreateOrthographicOffCenter(left, right, bottom, top, depthNear, depthFar, out Matrix4D result);
+            CreateOrthographicOffCenter(left, right, bottom, top, depthNear, depthFar, out var result);
             return result;
         }
 
@@ -911,25 +925,14 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
                 throw new ArgumentOutOfRangeException(nameof(fovy));
             }
 
-            if (aspect <= 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(aspect));
-            }
+            ArgumentOutOfRangeException.ThrowIfNegativeOrZero(aspect);
+            ArgumentOutOfRangeException.ThrowIfNegativeOrZero(depthNear);
+            ArgumentOutOfRangeException.ThrowIfNegativeOrZero(depthFar);
 
-            if (depthNear <= 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(depthNear));
-            }
-
-            if (depthFar <= 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(depthFar));
-            }
-
-            double maxY = depthNear * Math.Tan(0.5 * fovy);
-            double minY = -maxY;
-            double minX = minY * aspect;
-            double maxX = maxY * aspect;
+            var maxY = depthNear * Math.Tan(0.5 * fovy);
+            var minY = -maxY;
+            var minX = minY * aspect;
+            var maxX = maxY * aspect;
 
             CreatePerspectiveOffCenter(minX, maxX, minY, maxY, depthNear, depthFar, out result);
         }
@@ -955,7 +958,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         [Pure]
         public static Matrix4D CreatePerspectiveFieldOfView(double fovy, double aspect, double depthNear, double depthFar)
         {
-            CreatePerspectiveFieldOfView(fovy, aspect, depthNear, depthFar, out Matrix4D result);
+            CreatePerspectiveFieldOfView(fovy, aspect, depthNear, depthFar, out var result);
             return result;
         }
 
@@ -988,27 +991,16 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
             out Matrix4D result
         )
         {
-            if (depthNear <= 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(depthNear));
-            }
+            ArgumentOutOfRangeException.ThrowIfNegativeOrZero(depthNear);
+            ArgumentOutOfRangeException.ThrowIfNegativeOrZero(depthFar);
+            ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(depthNear, depthFar);
 
-            if (depthFar <= 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(depthFar));
-            }
-
-            if (depthNear >= depthFar)
-            {
-                throw new ArgumentOutOfRangeException(nameof(depthNear));
-            }
-
-            double x = 2.0 * depthNear / (right - left);
-            double y = 2.0 * depthNear / (top - bottom);
-            double a = (right + left) / (right - left);
-            double b = (top + bottom) / (top - bottom);
-            double c = -(depthFar + depthNear) / (depthFar - depthNear);
-            double d = -(2.0 * depthFar * depthNear) / (depthFar - depthNear);
+            var x = 2.0 * depthNear / (right - left);
+            var y = 2.0 * depthNear / (top - bottom);
+            var a = (right + left) / (right - left);
+            var b = (top + bottom) / (top - bottom);
+            var c = -(depthFar + depthNear) / (depthFar - depthNear);
+            var d = -(2.0 * depthFar * depthNear) / (depthFar - depthNear);
             result = new Matrix4D
             (
                 x, 0, 0, 0,
@@ -1047,7 +1039,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
             double depthFar
         )
         {
-            CreatePerspectiveOffCenter(left, right, bottom, top, depthNear, depthFar, out Matrix4D result);
+            CreatePerspectiveOffCenter(left, right, bottom, top, depthNear, depthFar, out var result);
             return result;
         }
 
@@ -1060,21 +1052,21 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         {
             // Adapted from https://en.wikipedia.org/wiki/Quaternions_and_spatial_rotation#Quaternion-derived_rotation_matrix
             // with the caviat that SatisfactorySaveNet uses row-major matrices so the matrix we create is transposed
-            double sqx = q.X * q.X;
-            double sqy = q.Y * q.Y;
-            double sqz = q.Z * q.Z;
-            double sqw = q.W * q.W;
+            var sqx = q.X * q.X;
+            var sqy = q.Y * q.Y;
+            var sqz = q.Z * q.Z;
+            var sqw = q.W * q.W;
 
-            double xy = q.X * q.Y;
-            double xz = q.X * q.Z;
-            double xw = q.X * q.W;
+            var xy = q.X * q.Y;
+            var xz = q.X * q.Z;
+            var xw = q.X * q.W;
 
-            double yz = q.Y * q.Z;
-            double yw = q.Y * q.W;
+            var yz = q.Y * q.Z;
+            var yw = q.Y * q.W;
 
-            double zw = q.Z * q.W;
+            var zw = q.Z * q.W;
 
-            double s2 = 2d / (sqx + sqy + sqz + sqw);
+            var s2 = 2d / (sqx + sqy + sqz + sqw);
 
             result.Row0.X = 1d - (s2 * (sqy + sqz));
             result.Row1.Y = 1d - (s2 * (sqx + sqz));
@@ -1103,7 +1095,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         [Pure]
         public static Matrix4D CreateFromQuaternion(QuaternionD q)
         {
-            CreateFromQuaternion(in q, out Matrix4D result);
+            CreateFromQuaternion(in q, out var result);
             return result;
         }
 
@@ -1113,7 +1105,10 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         /// <param name="scale">Single scale factor for x,y and z axes.</param>
         /// <returns>A scaling matrix.</returns>
         [Pure]
-        public static Matrix4D Scale(double scale) => Scale(scale, scale, scale);
+        public static Matrix4D Scale(double scale)
+        {
+            return Scale(scale, scale, scale);
+        }
 
         /// <summary>
         /// Build a scaling matrix.
@@ -1121,7 +1116,10 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         /// <param name="scale">Scale factors for x,y and z axes.</param>
         /// <returns>A scaling matrix.</returns>
         [Pure]
-        public static Matrix4D Scale(Vector3D scale) => Scale(scale.X, scale.Y, scale.Z);
+        public static Matrix4D Scale(Vector3D scale)
+        {
+            return Scale(scale.X, scale.Y, scale.Z);
+        }
 
         /// <summary>
         /// Build a scaling matrix.
@@ -1149,8 +1147,8 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         [Pure]
         public static Matrix4D RotateX(double angle)
         {
-            double cos = Math.Cos(angle);
-            double sin = Math.Sin(angle);
+            var cos = Math.Cos(angle);
+            var sin = Math.Sin(angle);
 
             Matrix4D result;
             result.Row0 = Vector4D.UnitX;
@@ -1168,8 +1166,8 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         [Pure]
         public static Matrix4D RotateY(double angle)
         {
-            double cos = Math.Cos(angle);
-            double sin = Math.Sin(angle);
+            var cos = Math.Cos(angle);
+            var sin = Math.Sin(angle);
 
             Matrix4D result;
             result.Row0 = new Vector4D(cos, 0.0, -sin, 0.0);
@@ -1187,8 +1185,8 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         [Pure]
         public static Matrix4D RotateZ(double angle)
         {
-            double cos = Math.Cos(angle);
-            double sin = Math.Sin(angle);
+            var cos = Math.Cos(angle);
+            var sin = Math.Sin(angle);
 
             Matrix4D result;
             result.Row0 = new Vector4D(cos, sin, 0.0, 0.0);
@@ -1209,9 +1207,9 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         [Pure]
         public static Matrix4D Rotate(Vector3D axis, double angle)
         {
-            double cos = Math.Cos(-angle);
-            double sin = Math.Sin(-angle);
-            double t = 1.0 - cos;
+            var cos = Math.Cos(-angle);
+            var sin = Math.Sin(-angle);
+            var t = 1.0 - cos;
 
             axis.Normalize();
 
@@ -1250,7 +1248,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         [Pure]
         public static Matrix4D Rotate(QuaternionD q)
         {
-            q.ToAxisAngle(out Vector3D axis, out double angle);
+            q.ToAxisAngle(out var axis, out var angle);
             return Rotate(axis, angle);
         }
 
@@ -1264,9 +1262,9 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         [Pure]
         public static Matrix4D LookAt(Vector3D eye, Vector3D target, Vector3D up)
         {
-            Vector3D z = Vector3D.Normalize(eye - target);
-            Vector3D x = Vector3D.Normalize(Vector3D.Cross(up, z));
-            Vector3D y = Vector3D.Normalize(Vector3D.Cross(z, x));
+            var z = Vector3D.Normalize(eye - target);
+            var x = Vector3D.Normalize(Vector3D.Cross(up, z));
+            var y = Vector3D.Normalize(Vector3D.Cross(z, x));
 
             Matrix4D rot = new(
                 new Vector4D(x.X, y.X, z.X, 0.0),
@@ -1275,7 +1273,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
                 Vector4D.UnitW
             );
 
-            Matrix4D trans = CreateTranslation(-eye);
+            var trans = CreateTranslation(-eye);
 
             return trans * rot;
         }
@@ -1334,9 +1332,9 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         [Pure]
         public static Matrix4D Frustum(double left, double right, double bottom, double top, double depthNear, double depthFar)
         {
-            double invRL = 1.0 / (right - left);
-            double invTB = 1.0 / (top - bottom);
-            double invFN = 1.0 / (depthFar - depthNear);
+            var invRL = 1.0 / (right - left);
+            var invTB = 1.0 / (top - bottom);
+            var invFN = 1.0 / (depthFar - depthNear);
             return new Matrix4D
             (
                 new Vector4D(2.0 * depthNear * invRL, 0.0, 0.0, 0.0),
@@ -1357,10 +1355,10 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         [Pure]
         public static Matrix4D Perspective(double fovy, double aspect, double depthNear, double depthFar)
         {
-            double yMax = depthNear * Math.Tan(0.5f * fovy);
-            double yMin = -yMax;
-            double xMin = yMin * aspect;
-            double xMax = yMax * aspect;
+            var yMax = depthNear * Math.Tan(0.5f * fovy);
+            var yMin = -yMax;
+            var xMin = yMin * aspect;
+            var xMax = yMax * aspect;
 
             return Frustum(xMin, xMax, yMin, yMax, depthNear, depthFar);
         }
@@ -1374,7 +1372,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         [Pure]
         public static Matrix4D Add(Matrix4D left, Matrix4D right)
         {
-            Add(in left, in right, out Matrix4D result);
+            Add(in left, in right, out var result);
             return result;
         }
 
@@ -1401,7 +1399,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         [Pure]
         public static Matrix4D Subtract(Matrix4D left, Matrix4D right)
         {
-            Subtract(in left, in right, out Matrix4D result);
+            Subtract(in left, in right, out var result);
             return result;
         }
 
@@ -1428,7 +1426,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         [Pure]
         public static Matrix4D Mult(Matrix4D left, Matrix4D right)
         {
-            Mult(in left, in right, out Matrix4D result);
+            Mult(in left, in right, out var result);
             return result;
         }
 
@@ -1440,38 +1438,38 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         /// <param name="result">A new instance that is the result of the multiplication.</param>
         public static void Mult(in Matrix4D left, in Matrix4D right, out Matrix4D result)
         {
-            double leftM11 = left.Row0.X;
-            double leftM12 = left.Row0.Y;
-            double leftM13 = left.Row0.Z;
-            double leftM14 = left.Row0.W;
-            double leftM21 = left.Row1.X;
-            double leftM22 = left.Row1.Y;
-            double leftM23 = left.Row1.Z;
-            double leftM24 = left.Row1.W;
-            double leftM31 = left.Row2.X;
-            double leftM32 = left.Row2.Y;
-            double leftM33 = left.Row2.Z;
-            double leftM34 = left.Row2.W;
-            double leftM41 = left.Row3.X;
-            double leftM42 = left.Row3.Y;
-            double leftM43 = left.Row3.Z;
-            double leftM44 = left.Row3.W;
-            double rightM11 = right.Row0.X;
-            double rightM12 = right.Row0.Y;
-            double rightM13 = right.Row0.Z;
-            double rightM14 = right.Row0.W;
-            double rightM21 = right.Row1.X;
-            double rightM22 = right.Row1.Y;
-            double rightM23 = right.Row1.Z;
-            double rightM24 = right.Row1.W;
-            double rightM31 = right.Row2.X;
-            double rightM32 = right.Row2.Y;
-            double rightM33 = right.Row2.Z;
-            double rightM34 = right.Row2.W;
-            double rightM41 = right.Row3.X;
-            double rightM42 = right.Row3.Y;
-            double rightM43 = right.Row3.Z;
-            double rightM44 = right.Row3.W;
+            var leftM11 = left.Row0.X;
+            var leftM12 = left.Row0.Y;
+            var leftM13 = left.Row0.Z;
+            var leftM14 = left.Row0.W;
+            var leftM21 = left.Row1.X;
+            var leftM22 = left.Row1.Y;
+            var leftM23 = left.Row1.Z;
+            var leftM24 = left.Row1.W;
+            var leftM31 = left.Row2.X;
+            var leftM32 = left.Row2.Y;
+            var leftM33 = left.Row2.Z;
+            var leftM34 = left.Row2.W;
+            var leftM41 = left.Row3.X;
+            var leftM42 = left.Row3.Y;
+            var leftM43 = left.Row3.Z;
+            var leftM44 = left.Row3.W;
+            var rightM11 = right.Row0.X;
+            var rightM12 = right.Row0.Y;
+            var rightM13 = right.Row0.Z;
+            var rightM14 = right.Row0.W;
+            var rightM21 = right.Row1.X;
+            var rightM22 = right.Row1.Y;
+            var rightM23 = right.Row1.Z;
+            var rightM24 = right.Row1.W;
+            var rightM31 = right.Row2.X;
+            var rightM32 = right.Row2.Y;
+            var rightM33 = right.Row2.Z;
+            var rightM34 = right.Row2.W;
+            var rightM41 = right.Row3.X;
+            var rightM42 = right.Row3.Y;
+            var rightM43 = right.Row3.Z;
+            var rightM44 = right.Row3.W;
 
             result.Row0.X = (leftM11 * rightM11) + (leftM12 * rightM21) + (leftM13 * rightM31) + (leftM14 * rightM41);
             result.Row0.Y = (leftM11 * rightM12) + (leftM12 * rightM22) + (leftM13 * rightM32) + (leftM14 * rightM42);
@@ -1500,7 +1498,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         [Pure]
         public static Matrix4D Mult(Matrix4D left, double right)
         {
-            Mult(in left, right, out Matrix4D result);
+            Mult(in left, right, out var result);
             return result;
         }
 
@@ -1534,26 +1532,26 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
             double i = mat.M13, j = mat.M23, k = mat.M33, l = mat.M43;
             double m = mat.M14, n = mat.M24, o = mat.M34, p = mat.M44;
 
-            double kp_lo = (k * p) - (l * o);
-            double jp_ln = (j * p) - (l * n);
-            double jo_kn = (j * o) - (k * n);
-            double ip_lm = (i * p) - (l * m);
-            double io_km = (i * o) - (k * m);
-            double in_jm = (i * n) - (j * m);
+            var kp_lo = (k * p) - (l * o);
+            var jp_ln = (j * p) - (l * n);
+            var jo_kn = (j * o) - (k * n);
+            var ip_lm = (i * p) - (l * m);
+            var io_km = (i * o) - (k * m);
+            var in_jm = (i * n) - (j * m);
 
-            double a11 = +((f * kp_lo) - (g * jp_ln) + (h * jo_kn));
-            double a12 = -((e * kp_lo) - (g * ip_lm) + (h * io_km));
-            double a13 = +((e * jp_ln) - (f * ip_lm) + (h * in_jm));
-            double a14 = -((e * jo_kn) - (f * io_km) + (g * in_jm));
+            var a11 = +((f * kp_lo) - (g * jp_ln) + (h * jo_kn));
+            var a12 = -((e * kp_lo) - (g * ip_lm) + (h * io_km));
+            var a13 = +((e * jp_ln) - (f * ip_lm) + (h * in_jm));
+            var a14 = -((e * jo_kn) - (f * io_km) + (g * in_jm));
 
-            double det = (a * a11) + (b * a12) + (c * a13) + (d * a14);
+            var det = (a * a11) + (b * a12) + (c * a13) + (d * a14);
 
             if (Math.Abs(det) < double.Epsilon)
             {
                 throw new InvalidOperationException("Matrix is singular and cannot be inverted.");
             }
 
-            double invDet = 1.0f / det;
+            var invDet = 1.0f / det;
 
             result.Row0 = new Vector4D(a11, a12, a13, a14) * invDet;
 
@@ -1563,12 +1561,12 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
                 -((a * jp_ln) - (b * ip_lm) + (d * in_jm)),
                 +((a * jo_kn) - (b * io_km) + (c * in_jm))) * invDet;
 
-            double gp_ho = (g * p) - (h * o);
-            double fp_hn = (f * p) - (h * n);
-            double fo_gn = (f * o) - (g * n);
-            double ep_hm = (e * p) - (h * m);
-            double eo_gm = (e * o) - (g * m);
-            double en_fm = (e * n) - (f * m);
+            var gp_ho = (g * p) - (h * o);
+            var fp_hn = (f * p) - (h * n);
+            var fo_gn = (f * o) - (g * n);
+            var ep_hm = (e * p) - (h * m);
+            var eo_gm = (e * o) - (g * m);
+            var en_fm = (e * n) - (f * m);
 
             result.Row2 = new Vector4D(
                 +((b * gp_ho) - (c * fp_hn) + (d * fo_gn)),
@@ -1576,12 +1574,12 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
                 +((a * fp_hn) - (b * ep_hm) + (d * en_fm)),
                 -((a * fo_gn) - (b * eo_gm) + (c * en_fm))) * invDet;
 
-            double gl_hk = (g * l) - (h * k);
-            double fl_hj = (f * l) - (h * j);
-            double fk_gj = (f * k) - (g * j);
-            double el_hi = (e * l) - (h * i);
-            double ek_gi = (e * k) - (g * i);
-            double ej_fi = (e * j) - (f * i);
+            var gl_hk = (g * l) - (h * k);
+            var fl_hj = (f * l) - (h * j);
+            var fk_gj = (f * k) - (g * j);
+            var el_hi = (e * l) - (h * i);
+            var ek_gi = (e * k) - (g * i);
+            var ej_fi = (e * j) - (f * i);
 
             result.Row3 = new Vector4D(
                 -((b * gl_hk) - (c * fl_hj) + (d * fk_gj)),
@@ -1599,7 +1597,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         [Pure]
         public static Matrix4D Invert(in Matrix4D mat)
         {
-            Invert(mat, out Matrix4D result);
+            Invert(mat, out var result);
             return result;
         }
 
@@ -1609,7 +1607,10 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         /// <param name="mat">The matrix to transpose.</param>
         /// <returns>The transpose of the given matrix.</returns>
         [Pure]
-        public static Matrix4D Transpose(Matrix4D mat) => new(mat.Column0, mat.Column1, mat.Column2, mat.Column3);
+        public static Matrix4D Transpose(Matrix4D mat)
+        {
+            return new(mat.Column0, mat.Column1, mat.Column2, mat.Column3);
+        }
 
         /// <summary>
         /// Calculate the transpose of the given matrix.
@@ -1631,7 +1632,10 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         /// <param name="right">right-hand operand.</param>
         /// <returns>A new Matrix4d which holds the result of the multiplication.</returns>
         [Pure]
-        public static Matrix4D operator *(Matrix4D left, Matrix4D right) => Mult(left, right);
+        public static Matrix4D operator *(Matrix4D left, Matrix4D right)
+        {
+            return Mult(left, right);
+        }
 
         /// <summary>
         /// Matrix-scalar multiplication.
@@ -1640,7 +1644,10 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         /// <param name="right">right-hand operand.</param>
         /// <returns>A new Matrix4d which holds the result of the multiplication.</returns>
         [Pure]
-        public static Matrix4D operator *(Matrix4D left, double right) => Mult(left, right);
+        public static Matrix4D operator *(Matrix4D left, double right)
+        {
+            return Mult(left, right);
+        }
 
         /// <summary>
         /// Matrix addition.
@@ -1649,7 +1656,10 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         /// <param name="right">right-hand operand.</param>
         /// <returns>A new Matrix4d which holds the result of the addition.</returns>
         [Pure]
-        public static Matrix4D operator +(Matrix4D left, Matrix4D right) => Add(left, right);
+        public static Matrix4D operator +(Matrix4D left, Matrix4D right)
+        {
+            return Add(left, right);
+        }
 
         /// <summary>
         /// Matrix subtraction.
@@ -1658,7 +1668,10 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         /// <param name="right">right-hand operand.</param>
         /// <returns>A new Matrix4d which holds the result of the subtraction.</returns>
         [Pure]
-        public static Matrix4D operator -(Matrix4D left, Matrix4D right) => Subtract(left, right);
+        public static Matrix4D operator -(Matrix4D left, Matrix4D right)
+        {
+            return Subtract(left, right);
+        }
 
         /// <summary>
         /// Compares two instances for equality.
@@ -1667,7 +1680,10 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         /// <param name="right">The second instance.</param>
         /// <returns>True, if left equals right; false otherwise.</returns>
         [Pure]
-        public static bool operator ==(Matrix4D left, Matrix4D right) => left.Equals(right);
+        public static bool operator ==(Matrix4D left, Matrix4D right)
+        {
+            return left.Equals(right);
+        }
 
         /// <summary>
         /// Compares two instances for inequality.
@@ -1676,24 +1692,36 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         /// <param name="right">The second instance.</param>
         /// <returns>True, if left does not equal right; false otherwise.</returns>
         [Pure]
-        public static bool operator !=(Matrix4D left, Matrix4D right) => !left.Equals(right);
+        public static bool operator !=(Matrix4D left, Matrix4D right)
+        {
+            return !left.Equals(right);
+        }
 
         /// <inheritdoc />
-        public override readonly string ToString() => ToString(null, null);
+        public readonly override string ToString()
+        {
+            return ToString(null, null);
+        }
 
         /// <inheritdoc cref="ToString(string, IFormatProvider)"/>
-        public readonly string ToString(string format) => ToString(format, null);
+        public readonly string ToString(string format)
+        {
+            return ToString(format, null);
+        }
 
         /// <inheritdoc cref="ToString(string, IFormatProvider)"/>
-        public readonly string ToString(IFormatProvider formatProvider) => ToString(null, formatProvider);
+        public readonly string ToString(IFormatProvider formatProvider)
+        {
+            return ToString(null, formatProvider);
+        }
 
         /// <inheritdoc/>
         public readonly string ToString(string? format, IFormatProvider? formatProvider)
         {
-            string row0 = Row0.ToString(format, formatProvider);
-            string row1 = Row1.ToString(format, formatProvider);
-            string row2 = Row2.ToString(format, formatProvider);
-            string row3 = Row3.ToString(format, formatProvider);
+            var row0 = Row0.ToString(format, formatProvider);
+            var row1 = Row1.ToString(format, formatProvider);
+            var row2 = Row2.ToString(format, formatProvider);
+            var row3 = Row3.ToString(format, formatProvider);
             return $"{row0}\n{row1}\n{row2}\n{row3}";
         }
 
@@ -1701,9 +1729,10 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         /// Returns the hashcode for this instance.
         /// </summary>
         /// <returns>A System.Int32 containing the unique hashcode for this instance.</returns>
-#pragma warning disable S2328 // "GetHashCode" should not reference mutable fields
-        public override readonly int GetHashCode() => HashCode.Combine(Row0, Row1, Row2, Row3);
-#pragma warning restore S2328 // "GetHashCode" should not reference mutable fields
+        public readonly override int GetHashCode()
+        {
+            return HashCode.Combine(Row0, Row1, Row2, Row3);
+        }
 
         /// <summary>
         /// Indicates whether this instance and a specified object are equal.
@@ -1711,7 +1740,10 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         /// <param name="obj">The object to compare to.</param>
         /// <returns>True if the instances are equal; false otherwise.</returns>
         [Pure]
-        public override readonly bool Equals(object? obj) => obj is Matrix4D matrix && Equals(matrix);
+        public readonly override bool Equals(object? obj)
+        {
+            return obj is Matrix4D matrix && Equals(matrix);
+        }
 
         /// <summary>
         /// Indicates whether the current matrix is equal to another matrix.
@@ -1719,9 +1751,12 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         /// <param name="other">A matrix to compare with this matrix.</param>
         /// <returns>true if the current matrix is equal to the matrix parameter; otherwise, false.</returns>
         [Pure]
-        public readonly bool Equals(Matrix4D other) => Row0 == other.Row0 &&
+        public readonly bool Equals(Matrix4D other)
+        {
+            return Row0 == other.Row0 &&
                 Row1 == other.Row1 &&
                 Row2 == other.Row2 &&
                 Row3 == other.Row3;
+        }
     }
 }

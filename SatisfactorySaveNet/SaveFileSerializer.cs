@@ -2,6 +2,7 @@
 using SatisfactorySaveNet.Abstracts;
 using SatisfactorySaveNet.Abstracts.Exceptions;
 using SatisfactorySaveNet.Abstracts.Model;
+using System.IO;
 using System.IO.Compression;
 
 namespace SatisfactorySaveNet;

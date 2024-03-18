@@ -1,4 +1,6 @@
+using System;
 using System.Diagnostics.Contracts;
+using System.IO;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
@@ -180,13 +182,19 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Vector
         /// Returns this Half2 instance's contents as Vector2.
         /// </summary>
         /// <returns>The vector.</returns>
-        public readonly Vector2 ToVector2() => new(X, Y);
+        public readonly Vector2 ToVector2()
+        {
+            return new(X, Y);
+        }
 
         /// <summary>
         /// Returns this Half2 instance's contents as Vector2d.
         /// </summary>
         /// <returns>The vector.</returns>
-        public readonly Vector2D ToVector2d() => new(X, Y);
+        public readonly Vector2D ToVector2d()
+        {
+            return new(X, Y);
+        }
 
         /// <summary>
         /// Converts SatisfactorySaveNet.Vector2h to SatisfactorySaveNet.Vector2.
@@ -194,7 +202,10 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Vector
         /// <param name="vec">The Vector2h to convert.</param>
         /// <returns>The resulting Vector2.</returns>
         [Pure]
-        public static implicit operator Vector2(Vector2H vec) => new(vec.X, vec.Y);
+        public static implicit operator Vector2(Vector2H vec)
+        {
+            return new(vec.X, vec.Y);
+        }
 
         /// <summary>
         /// Converts SatisfactorySaveNet.Vector2h to SatisfactorySaveNet.Vector2d.
@@ -202,7 +213,10 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Vector
         /// <param name="vec">The Vector2h to convert.</param>
         /// <returns>The resulting Vector2d.</returns>
         [Pure]
-        public static implicit operator Vector2D(Vector2H vec) => new(vec.X, vec.Y);
+        public static implicit operator Vector2D(Vector2H vec)
+        {
+            return new(vec.X, vec.Y);
+        }
 
         /// <summary>
         /// Converts SatisfactorySaveNet.Vector2h to SatisfactorySaveNet.Vector2i.
@@ -210,7 +224,10 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Vector
         /// <param name="vec">The Vector2h to convert.</param>
         /// <returns>The resulting Vector2i.</returns>
         [Pure]
-        public static explicit operator Vector2I(Vector2H vec) => new((int)vec.X, (int)vec.Y);
+        public static explicit operator Vector2I(Vector2H vec)
+        {
+            return new((int) vec.X, (int) vec.Y);
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Vector2H"/> struct using a tuple containing the component
@@ -219,7 +236,10 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Vector
         /// <param name="values">A tuple containing the component values.</param>
         /// <returns>A new instance of the <see cref="Vector2H"/> struct with the given component values.</returns>
         [Pure]
-        public static implicit operator Vector2H((Half X, Half Y) values) => new(values.X, values.Y);
+        public static implicit operator Vector2H((Half X, Half Y) values)
+        {
+            return new(values.X, values.Y);
+        }
 
         /// <summary>
         /// Compares the specified instances for equality.
@@ -227,7 +247,10 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Vector
         /// <param name="left">Left operand.</param>
         /// <param name="right">Right operand.</param>
         /// <returns>True if both instances are equal; false otherwise.</returns>
-        public static bool operator ==(Vector2H left, Vector2H right) => left.Equals(right);
+        public static bool operator ==(Vector2H left, Vector2H right)
+        {
+            return left.Equals(right);
+        }
 
         /// <summary>
         /// Compares the specified instances for inequality.
@@ -235,7 +258,10 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Vector
         /// <param name="left">Left operand.</param>
         /// <param name="right">Right operand.</param>
         /// <returns>True if both instances are not equal; false otherwise.</returns>
-        public static bool operator !=(Vector2H left, Vector2H right) => !(left == right);
+        public static bool operator !=(Vector2H left, Vector2H right)
+        {
+            return !(left == right);
+        }
 
         /// <summary>
         /// The size in bytes for an instance of the Half2 struct is 4.
@@ -251,8 +277,8 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Vector
         {
             var xValue = info.GetValue("X", typeof(Half)) ?? throw new ArgumentOutOfRangeException(nameof(info), null, "X must be not null");
             var yValue = info.GetValue("Y", typeof(Half)) ?? throw new ArgumentOutOfRangeException(nameof(info), null, "Y must be not null");
-            X = (Half)xValue;
-            Y = (Half)yValue;
+            X = (Half) xValue;
+            Y = (Half) yValue;
         }
 
         /// <inheritdoc/>
@@ -283,13 +309,22 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Vector
         }
 
         /// <inheritdoc/>
-        public override readonly string ToString() => ToString(null, null);
+        public readonly override string ToString()
+        {
+            return ToString(null, null);
+        }
 
         /// <inheritdoc cref="ToString(string, IFormatProvider)"/>
-        public readonly string ToString(string format) => ToString(format, null);
+        public readonly string ToString(string format)
+        {
+            return ToString(format, null);
+        }
 
         /// <inheritdoc cref="ToString(string, IFormatProvider)"/>
-        public readonly string ToString(IFormatProvider formatProvider) => ToString(null, formatProvider);
+        public readonly string ToString(IFormatProvider formatProvider)
+        {
+            return ToString(null, formatProvider);
+        }
 
         /// <inheritdoc/>
         public readonly string ToString(string? format, IFormatProvider? formatProvider)
@@ -302,16 +337,23 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Vector
         }
 
         /// <inheritdoc/>
-        public override readonly bool Equals(object? obj) => obj is Vector2H vector && Equals(vector);
+        public readonly override bool Equals(object? obj)
+        {
+            return obj is Vector2H vector && Equals(vector);
+        }
 
         /// <inheritdoc/>
-        public readonly bool Equals(Vector2H other) => X.Equals(other.X) &&
+        public readonly bool Equals(Vector2H other)
+        {
+            return X.Equals(other.X) &&
                    Y.Equals(other.Y);
+        }
 
         /// <inheritdoc/>
-#pragma warning disable S2328 // "GetHashCode" should not reference mutable fields
-        public override readonly int GetHashCode() => HashCode.Combine(X, Y);
-#pragma warning restore S2328 // "GetHashCode" should not reference mutable fields
+        public readonly override int GetHashCode()
+        {
+            return HashCode.Combine(X, Y);
+        }
 
         /// <summary>
         /// Returns the Half2 as an array of bytes.
@@ -321,9 +363,9 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Vector
         [Pure]
         public static byte[] GetBytes(Vector2H h)
         {
-            byte[] result = new byte[SizeInBytes];
+            var result = new byte[SizeInBytes];
 
-            byte[] temp = Half.GetBytes(h.X);
+            var temp = Half.GetBytes(h.X);
             result[0] = temp[0];
             result[1] = temp[1];
             temp = Half.GetBytes(h.Y);
@@ -340,9 +382,12 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Vector
         /// <param name="startIndex">The starting position within value.</param>
         /// <returns>A new Half2 instance.</returns>
         [Pure]
-        public static Vector2H FromBytes(byte[] value, int startIndex) => new(
+        public static Vector2H FromBytes(byte[] value, int startIndex)
+        {
+            return new(
                 Half.FromBytes(value, startIndex),
                 Half.FromBytes(value, startIndex + 2));
+        }
 
         /// <summary>
         /// Deconstructs the vector into it's individual components.

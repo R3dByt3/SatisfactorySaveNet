@@ -1,0 +1,35 @@
+<Project>
+    <PropertyGroup>
+        <Company>R3dByt3</Company>
+        <Copyright>R3dByt3</Copyright>
+        <Authors>R3dByt3</Authors>
+        <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+        <TargetFramework>net8.0</TargetFramework>
+        <LangVersion>12.0</LangVersion>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>disable</ImplicitUsings>
+        <IsPackable>false</IsPackable>
+        <IsPublishable>false</IsPublishable>
+
+        <VersionPrefix>0.0.9</VersionPrefix>
+        <Version Condition=" '$(VersionSuffix)' != '' ">$(VersionPrefix)-$(VersionSuffix)</Version>
+        <Version Condition=" '$(VersionSuffix)' == '' ">$(VersionPrefix)</Version>
+
+        <PublishRepositoryUrl>true</PublishRepositoryUrl>
+        <DebugType>embedded</DebugType>
+        <EmbedUntrackedSources>true</EmbedUntrackedSources>
+        <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
+        <Deterministic>true</Deterministic>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <None Include="$(ProjectDir)..\README.md" Pack="true" PackagePath="\" />
+    </ItemGroup>
+
+    <ItemGroup Condition="$(MSBuildProjectName.EndsWith('Tests'))">
+        <Using Include="FluentAssertions"/>
+        <Using Include="NSubstitute"/>
+        <Using Include="NUnit.Framework"/>
+    </ItemGroup>
+</Project>

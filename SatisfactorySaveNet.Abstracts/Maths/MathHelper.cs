@@ -1,4 +1,5 @@
-﻿using System.Diagnostics.Contracts;
+﻿using System;
+using System.Diagnostics.Contracts;
 using System.Globalization;
 
 namespace SatisfactorySaveNet.Abstracts.Maths
@@ -898,7 +899,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths
         {
             return n < 0
                 ? throw new ArgumentOutOfRangeException(nameof(n), "Must be positive.")
-                : (long)Math.Pow(2, Math.Ceiling(Math.Log(n, 2)));
+                : (long) Math.Pow(2, Math.Ceiling(Math.Log(n, 2)));
         }
 
         /// <summary>
@@ -911,7 +912,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths
         {
             return n < 0
                 ? throw new ArgumentOutOfRangeException(nameof(n), "Must be positive.")
-                : (int)Math.Pow(2, Math.Ceiling(Math.Log(n, 2)));
+                : (int) Math.Pow(2, Math.Ceiling(Math.Log(n, 2)));
         }
 
         /// <summary>
@@ -982,10 +983,10 @@ namespace SatisfactorySaveNet.Abstracts.Maths
         {
             unsafe
             {
-                float xhalf = 0.5f * x;
-                int i = *(int*)&x; // Read bits as integer.
+                var xhalf = 0.5f * x;
+                var i = *(int*) &x; // Read bits as integer.
                 i = 0x5f375a86 - (i >> 1); // Make an initial guess for Newton-Raphson approximation
-                x = *(float*)&i; // Convert bits back to float
+                x = *(float*) &i; // Convert bits back to float
                 x *= 1.5f - (xhalf * x * x); // Perform left single Newton-Raphson step.
                 return x;
             }
@@ -1009,10 +1010,10 @@ namespace SatisfactorySaveNet.Abstracts.Maths
         {
             unsafe
             {
-                double xhalf = 0.5 * x;
-                long i = *(long*)&x; // Read bits as long.
+                var xhalf = 0.5 * x;
+                var i = *(long*) &x; // Read bits as long.
                 i = 0x5fe6eb50c7b537a9 - (i >> 1); // Make an initial guess for Newton-Raphson approximation
-                x = *(double*)&i; // Convert bits back to double
+                x = *(double*) &i; // Convert bits back to double
                 x *= 1.5 - (xhalf * x * x); // Perform left single Newton-Raphson step.
                 return x;
             }
@@ -1129,8 +1130,8 @@ namespace SatisfactorySaveNet.Abstracts.Maths
         [Pure]
         public static int MapRange(int value, int valueMin, int valueMax, int resultMin, int resultMax)
         {
-            int inRange = valueMax - valueMin;
-            int resultRange = resultMax - resultMin;
+            var inRange = valueMax - valueMin;
+            var resultRange = resultMax - resultMin;
             return resultMin + (resultRange * ((value - valueMin) / inRange));
         }
 
@@ -1147,8 +1148,8 @@ namespace SatisfactorySaveNet.Abstracts.Maths
         [Pure]
         public static float MapRange(float value, float valueMin, float valueMax, float resultMin, float resultMax)
         {
-            float inRange = valueMax - valueMin;
-            float resultRange = resultMax - resultMin;
+            var inRange = valueMax - valueMin;
+            var resultRange = resultMax - resultMin;
             return resultMin + (resultRange * ((value - valueMin) / inRange));
         }
 
@@ -1165,8 +1166,8 @@ namespace SatisfactorySaveNet.Abstracts.Maths
         [Pure]
         public static double MapRange(double value, double valueMin, double valueMax, double resultMin, double resultMax)
         {
-            double inRange = valueMax - valueMin;
-            double resultRange = resultMax - resultMin;
+            var inRange = valueMax - valueMin;
+            var resultRange = resultMax - resultMin;
             return resultMin + (resultRange * ((value - valueMin) / inRange));
         }
 
@@ -1196,7 +1197,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths
                 l = int.MinValue - l;
             }
 
-            long intDiff = Math.Abs(k - l);
+            var intDiff = Math.Abs(k - l);
             return intDiff <= 1 << maxDeltaBits;
         }
 
@@ -1215,9 +1216,9 @@ namespace SatisfactorySaveNet.Abstracts.Maths
         public static bool ApproximatelyEqualEpsilon(double a, double b, double epsilon)
         {
             const double doubleNormal = (1L << 52) * double.Epsilon;
-            double absA = Math.Abs(a);
-            double absB = Math.Abs(b);
-            double diff = Math.Abs(a - b);
+            var absA = Math.Abs(a);
+            var absB = Math.Abs(b);
+            var diff = Math.Abs(a - b);
 
             if (a == b)
             {
@@ -1251,9 +1252,9 @@ namespace SatisfactorySaveNet.Abstracts.Maths
         public static bool ApproximatelyEqualEpsilon(float a, float b, float epsilon)
         {
             const float floatNormal = (1 << 23) * float.Epsilon;
-            float absA = Math.Abs(a);
-            float absB = Math.Abs(b);
-            float diff = Math.Abs(a - b);
+            var absA = Math.Abs(a);
+            var absB = Math.Abs(b);
+            var diff = Math.Abs(a - b);
 
             if (a == b)
             {
@@ -1269,7 +1270,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths
             }
 
             // use relative error
-            float relativeError = diff / Math.Min(absA + absB, float.MaxValue);
+            var relativeError = diff / Math.Min(absA + absB, float.MaxValue);
             return relativeError < epsilon;
         }
 
@@ -1292,7 +1293,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths
                 return true;
             }
 
-            float diff = Math.Abs(a - b);
+            var diff = Math.Abs(a - b);
             return diff <= tolerance;
         }
 
@@ -1315,7 +1316,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths
                 return true;
             }
 
-            double diff = Math.Abs(a - b);
+            var diff = Math.Abs(a - b);
             return diff <= tolerance;
         }
 

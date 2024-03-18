@@ -61,7 +61,7 @@ public class Unions
     [Benchmark]
     public void UnboxingHalf()
     {
-        _half = (Half)_boxHalf;
+        _half = (Half) _boxHalf;
     }
 
     [Benchmark]
@@ -111,7 +111,7 @@ public class Unions
     [Benchmark]
     public void UnboxingMatrix4D()
     {
-        _matrix4D = (Matrix4D)_boxMatrix4D;
+        _matrix4D = (Matrix4D) _boxMatrix4D;
     }
 
     [Benchmark]

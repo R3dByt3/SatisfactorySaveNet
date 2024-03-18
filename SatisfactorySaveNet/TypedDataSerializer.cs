@@ -1,6 +1,9 @@
 ﻿using SatisfactorySaveNet.Abstracts;
 using SatisfactorySaveNet.Abstracts.Model.Properties;
 using SatisfactorySaveNet.Abstracts.Model.TypedData;
+using System;
+using System.IO;
+using System.Linq;
 
 namespace SatisfactorySaveNet;
 
@@ -56,7 +59,7 @@ public class TypedDataSerializer : ITypedDataSerializer
     //    };
     //}
 
-    private ITypedData DeserializeVector(BinaryReader reader)
+    private Vector DeserializeVector(BinaryReader reader)
     {
         var value = _vectorSerializer.DeserializeVec3(reader);
 
@@ -66,7 +69,7 @@ public class TypedDataSerializer : ITypedDataSerializer
         };
     }
 
-    private ITypedData DeserializeSpawnData(BinaryReader reader)
+    private SpawnData DeserializeSpawnData(BinaryReader reader)
     {
         var properties = _propertySerializer.DeserializeProperties(reader).ToArray();
 
@@ -76,7 +79,7 @@ public class TypedDataSerializer : ITypedDataSerializer
         };
     }
 
-    private ITypedData DeserializeRailroadTrackPosition(BinaryReader reader)
+    private RailroadTrackPosition DeserializeRailroadTrackPosition(BinaryReader reader)
     {
         var levelName = _stringSerializer.Deserialize(reader);
         var pathName = _stringSerializer.Deserialize(reader);
@@ -92,7 +95,7 @@ public class TypedDataSerializer : ITypedDataSerializer
         };
     }
 
-    private ITypedData DeserializeQuat(BinaryReader reader)
+    private Quat DeserializeQuat(BinaryReader reader)
     {
         var value = _vectorSerializer.DeserializeQuaternion(reader);
 
@@ -102,7 +105,7 @@ public class TypedDataSerializer : ITypedDataSerializer
         };
     }
 
-    private ITypedData DeserializeLinearColor(BinaryReader reader)
+    private LinearColor DeserializeLinearColor(BinaryReader reader)
     {
         var color = _vectorSerializer.DeserializeVec4(reader);
 
@@ -112,7 +115,7 @@ public class TypedDataSerializer : ITypedDataSerializer
         };
     }
 
-    private ITypedData DeserializeInventoryStack(BinaryReader reader)
+    private InventoryStack DeserializeInventoryStack(BinaryReader reader)
     {
         var properties = _propertySerializer.DeserializeProperties(reader).ToArray();
 
@@ -122,7 +125,7 @@ public class TypedDataSerializer : ITypedDataSerializer
         };
     }
 
-    private ITypedData DeserializeInventoryItem(BinaryReader reader, long endPosition)
+    private InventoryItem DeserializeInventoryItem(BinaryReader reader, long endPosition)
     {
         var padding = reader.ReadInt32();
         var itemType = _stringSerializer.Deserialize(reader);
@@ -142,7 +145,7 @@ public class TypedDataSerializer : ITypedDataSerializer
         };
     }
 
-    private static ITypedData DeserializeFluidBox(BinaryReader reader)
+    private static FluidBox DeserializeFluidBox(BinaryReader reader)
     {
         var value = reader.ReadSingle();
 
@@ -152,7 +155,7 @@ public class TypedDataSerializer : ITypedDataSerializer
         };
     }
 
-    private ITypedData DeserializeFactoryCustomizationColorSlot(BinaryReader reader, long endPosition)
+    private FactoryCustomizationColorSlot DeserializeFactoryCustomizationColorSlot(BinaryReader reader, long endPosition)
     {
         var properties = _propertySerializer.DeserializeProperties(reader).ToArray();
 
@@ -162,7 +165,7 @@ public class TypedDataSerializer : ITypedDataSerializer
         };
     }
 
-    private ITypedData DeserializeBox(BinaryReader reader)
+    private Box DeserializeBox(BinaryReader reader)
     {
         var min = _vectorSerializer.DeserializeVec3(reader);
         var max = _vectorSerializer.DeserializeVec3(reader);

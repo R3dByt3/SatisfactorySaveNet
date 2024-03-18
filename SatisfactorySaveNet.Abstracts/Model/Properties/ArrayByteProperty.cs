@@ -1,6 +1,7 @@
-﻿namespace SatisfactorySaveNet.Abstracts.Model.Properties;
+﻿using System.Collections.Generic;
+namespace SatisfactorySaveNet.Abstracts.Model.Properties;
 
 public class ArrayByteProperty : IArrayProperty
 {
-    public IList<sbyte> Values { get; set; } = Array.Empty<sbyte>();
+    public IList<sbyte> Values { get; set; } = [];
 }

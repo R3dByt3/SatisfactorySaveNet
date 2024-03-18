@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<RunSettings>
+    <ResultsDirectory>./TestResults</ResultsDirectory>
+    <DataCollectionRunSettings>
+        <DataCollectors>
+            <DataCollector friendlyName="XPlat Code Coverage">
+                <Configuration>
+                    <Format>opencover</Format>
+                </Configuration>
+            </DataCollector>
+        </DataCollectors>
+    </DataCollectionRunSettings>
+    <LoggerRunSettings>
+        <Loggers>
+            <Logger friendlyName="console" enabled="True">
+                <Configuration>
+                    <Verbosity>minimal</Verbosity>
+                </Configuration>
+            </Logger>
+            <Logger friendlyName="trx" enabled="True">
+                <Configuration>
+                    <LogFileName>results.trx</LogFileName>
+                </Configuration>
+            </Logger>
+        </Loggers>
+    </LoggerRunSettings>
+</RunSettings>

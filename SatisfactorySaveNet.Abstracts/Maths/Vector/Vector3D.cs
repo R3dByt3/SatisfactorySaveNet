@@ -1,5 +1,6 @@
 using SatisfactorySaveNet.Abstracts.Maths.Data;
 using SatisfactorySaveNet.Abstracts.Maths.Matrix;
+using System;
 using System.Diagnostics.Contracts;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -102,10 +103,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Vector
                 }
 
                 var tmp = index == 1 ? Y : index;
-
-#pragma warning disable S112 // General or reserved exceptions should never be thrown
                 return tmp == 2 ? Z : throw new IndexOutOfRangeException("You tried to access this vector at index: " + index);
-#pragma warning restore S112 // General or reserved exceptions should never be thrown
             }
             set
             {
@@ -119,9 +117,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Vector
                 }
                 else
                 {
-#pragma warning disable S112 // General or reserved exceptions should never be thrown
                     Z = index == 2 ? value : throw new IndexOutOfRangeException("You tried to set this vector at index: " + index);
-#pragma warning restore S112 // General or reserved exceptions should never be thrown
                 }
             }
         }
@@ -161,7 +157,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Vector
         /// <returns>The normalized copy.</returns>
         public readonly Vector3D Normalized()
         {
-            Vector3D v = this;
+            var v = this;
             v.Normalize();
             return v;
         }
@@ -171,7 +167,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Vector
         /// </summary>
         public void Normalize()
         {
-            double scale = 1.0 / Length;
+            var scale = 1.0 / Length;
             X *= scale;
             Y *= scale;
             Z *= scale;
@@ -182,7 +178,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Vector
         /// </summary>
         public void NormalizeFast()
         {
-            double scale = MathHelper.InverseSqrtFast((X * X) + (Y * Y) + (Z * Z));
+            var scale = MathHelper.InverseSqrtFast((X * X) + (Y * Y) + (Z * Z));
             X *= scale;
             Y *= scale;
             Z *= scale;
@@ -447,7 +443,10 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Vector
         /// <param name="right">Right operand.</param>
         /// <returns>The minimum Vector3d.</returns>
         [Pure]
-        public static Vector3D MagnitudeMin(Vector3D left, Vector3D right) => left.LengthSquared < right.LengthSquared ? left : right;
+        public static Vector3D MagnitudeMin(Vector3D left, Vector3D right)
+        {
+            return left.LengthSquared < right.LengthSquared ? left : right;
+        }
 
         /// <summary>
         /// Returns the Vector3d with the minimum magnitude.
@@ -467,7 +466,10 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Vector
         /// <param name="right">Right operand.</param>
         /// <returns>The minimum Vector3d.</returns>
         [Pure]
-        public static Vector3D MagnitudeMax(Vector3D left, Vector3D right) => left.LengthSquared >= right.LengthSquared ? left : right;
+        public static Vector3D MagnitudeMax(Vector3D left, Vector3D right)
+        {
+            return left.LengthSquared >= right.LengthSquared ? left : right;
+        }
 
         /// <summary>
         /// Returns the Vector3d with the maximum magnitude.
@@ -525,7 +527,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Vector
         [Pure]
         public static double Distance(Vector3D vec1, Vector3D vec2)
         {
-            Distance(in vec1, in vec2, out double result);
+            Distance(in vec1, in vec2, out var result);
             return result;
         }
 
@@ -550,7 +552,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Vector
         [Pure]
         public static double DistanceSquared(Vector3D vec1, Vector3D vec2)
         {
-            DistanceSquared(in vec1, in vec2, out double result);
+            DistanceSquared(in vec1, in vec2, out var result);
             return result;
         }
 
@@ -574,7 +576,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Vector
         [Pure]
         public static Vector3D Normalize(Vector3D vec)
         {
-            double scale = 1.0 / vec.Length;
+            var scale = 1.0 / vec.Length;
             vec.X *= scale;
             vec.Y *= scale;
             vec.Z *= scale;
@@ -588,7 +590,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Vector
         /// <param name="result">The normalized vector.</param>
         public static void Normalize(in Vector3D vec, out Vector3D result)
         {
-            double scale = 1.0 / vec.Length;
+            var scale = 1.0 / vec.Length;
             result.X = vec.X * scale;
             result.Y = vec.Y * scale;
             result.Z = vec.Z * scale;
@@ -602,7 +604,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Vector
         [Pure]
         public static Vector3D NormalizeFast(Vector3D vec)
         {
-            double scale = MathHelper.InverseSqrtFast((vec.X * vec.X) + (vec.Y * vec.Y) + (vec.Z * vec.Z));
+            var scale = MathHelper.InverseSqrtFast((vec.X * vec.X) + (vec.Y * vec.Y) + (vec.Z * vec.Z));
             vec.X *= scale;
             vec.Y *= scale;
             vec.Z *= scale;
@@ -616,7 +618,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Vector
         /// <param name="result">The normalized vector.</param>
         public static void NormalizeFast(in Vector3D vec, out Vector3D result)
         {
-            double scale = MathHelper.InverseSqrtFast((vec.X * vec.X) + (vec.Y * vec.Y) + (vec.Z * vec.Z));
+            var scale = MathHelper.InverseSqrtFast((vec.X * vec.X) + (vec.Y * vec.Y) + (vec.Z * vec.Z));
             result.X = vec.X * scale;
             result.Y = vec.Y * scale;
             result.Z = vec.Z * scale;
@@ -629,7 +631,10 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Vector
         /// <param name="right">Second operand.</param>
         /// <returns>The dot product of the two inputs.</returns>
         [Pure]
-        public static double Dot(Vector3D left, Vector3D right) => (left.X * right.X) + (left.Y * right.Y) + (left.Z * right.Z);
+        public static double Dot(Vector3D left, Vector3D right)
+        {
+            return (left.X * right.X) + (left.Y * right.Y) + (left.Z * right.Z);
+        }
 
         /// <summary>
         /// Calculate the dot (scalar) product of two vectors.
@@ -651,7 +656,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Vector
         [Pure]
         public static Vector3D Cross(Vector3D left, Vector3D right)
         {
-            Cross(in left, in right, out Vector3D result);
+            Cross(in left, in right, out var result);
             return result;
         }
 
@@ -740,7 +745,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Vector
         [Pure]
         public static Vector3D BaryCentric(Vector3D a, Vector3D b, Vector3D c, double u, double v)
         {
-            BaryCentric(in a, in b, in c, u, v, out Vector3D result);
+            BaryCentric(in a, in b, in c, u, v, out var result);
             return result;
         }
 
@@ -767,14 +772,12 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Vector
             out Vector3D result
         )
         {
-#pragma warning disable S2234 // Arguments should be passed in the same order as the method parameters
-            Subtract(in b, in a, out Vector3D ab);
-#pragma warning restore S2234 // Arguments should be passed in the same order as the method parameters
-            Multiply(in ab, u, out Vector3D abU);
-            Add(in a, in abU, out Vector3D uPos);
+            Subtract(in b, in a, out var ab);
+            Multiply(in ab, u, out var abU);
+            Add(in a, in abU, out var uPos);
 
-            Subtract(in c, in a, out Vector3D ac);
-            Multiply(in ac, v, out Vector3D acV);
+            Subtract(in c, in a, out var ac);
+            Multiply(in ac, v, out var acV);
             Add(in uPos, in acV, out result);
         }
 
@@ -788,7 +791,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Vector
         [Pure]
         public static Vector3D TransformVector(Vector3D vec, Matrix4D mat)
         {
-            TransformVector(in vec, in mat, out Vector3D result);
+            TransformVector(in vec, in mat, out var result);
             return result;
         }
 
@@ -843,7 +846,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Vector
         /// <param name="result">The transformed normal.</param>
         public static void TransformNormal(in Vector3D norm, in Matrix4D mat, out Vector3D result)
         {
-            Matrix4D inverse = Matrix4D.Invert(mat);
+            var inverse = Matrix4D.Invert(mat);
             TransformNormalInverse(in norm, in inverse, out result);
         }
 
@@ -860,7 +863,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Vector
         [Pure]
         public static Vector3D TransformNormalInverse(Vector3D norm, Matrix4D invMat)
         {
-            TransformNormalInverse(in norm, in invMat, out Vector3D result);
+            TransformNormalInverse(in norm, in invMat, out var result);
             return result;
         }
 
@@ -898,7 +901,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Vector
         [Pure]
         public static Vector3D TransformPosition(Vector3D pos, Matrix4D mat)
         {
-            TransformPosition(in pos, in mat, out Vector3D result);
+            TransformPosition(in pos, in mat, out var result);
             return result;
         }
 
@@ -935,7 +938,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Vector
         [Pure]
         public static Vector3D TransformRow(Vector3D vec, Matrix3D mat)
         {
-            TransformRow(in vec, in mat, out Vector3D result);
+            TransformRow(in vec, in mat, out var result);
             return result;
         }
 
@@ -961,7 +964,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Vector
         [Pure]
         public static Vector3D Transform(Vector3D vec, QuaternionD quat)
         {
-            Transform(in vec, in quat, out Vector3D result);
+            Transform(in vec, in quat, out var result);
             return result;
         }
 
@@ -975,9 +978,9 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Vector
         {
             // Since vec.W == 0, we can optimize quat * vec * quat^-1 as follows:
             // vec + 2.0 * cross(quat.xyz, cross(quat.xyz, vec) + quat.w * vec)
-            Vector3D xyz = quat.Xyz;
-            Cross(in xyz, in vec, out Vector3D temp);
-            Multiply(in vec, quat.W, out Vector3D temp2);
+            var xyz = quat.Xyz;
+            Cross(in xyz, in vec, out var temp);
+            Multiply(in vec, quat.W, out var temp2);
             Add(in temp, in temp2, out temp);
             Cross(in xyz, in temp, out temp2);
             Multiply(in temp2, 2f, out temp2);
@@ -993,7 +996,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Vector
         [Pure]
         public static Vector3D TransformColumn(Matrix3D mat, Vector3D vec)
         {
-            TransformColumn(in mat, in vec, out Vector3D result);
+            TransformColumn(in mat, in vec, out var result);
             return result;
         }
 
@@ -1019,7 +1022,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Vector
         [Pure]
         public static Vector3D TransformPerspective(Vector3D vec, Matrix4D mat)
         {
-            TransformPerspective(in vec, in mat, out Vector3D result);
+            TransformPerspective(in vec, in mat, out var result);
             return result;
         }
 
@@ -1048,7 +1051,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Vector
         [Pure]
         public static double CalculateAngle(Vector3D first, Vector3D second)
         {
-            CalculateAngle(in first, in second, out double result);
+            CalculateAngle(in first, in second, out var result);
             return result;
         }
 
@@ -1061,7 +1064,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Vector
         /// <remarks>Note that the returned angle is never bigger than the constant Pi.</remarks>
         public static void CalculateAngle(in Vector3D first, in Vector3D second, out double result)
         {
-            Dot(in first, in second, out double temp);
+            Dot(in first, in second, out var temp);
             result = Math.Acos(MathHelper.Clamp(temp / (first.Length * second.Length), -1.0, 1.0));
         }
 
@@ -1322,7 +1325,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Vector
         [Pure]
         public static Vector3D operator *(Vector3D vec, Matrix3D mat)
         {
-            TransformRow(in vec, in mat, out Vector3D result);
+            TransformRow(in vec, in mat, out var result);
             return result;
         }
 
@@ -1335,7 +1338,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Vector
         [Pure]
         public static Vector3D operator *(Matrix3D mat, Vector3D vec)
         {
-            TransformColumn(in mat, in vec, out Vector3D result);
+            TransformColumn(in mat, in vec, out var result);
             return result;
         }
 
@@ -1348,7 +1351,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Vector
         [Pure]
         public static Vector3D operator *(QuaternionD quat, Vector3D vec)
         {
-            Transform(in vec, in quat, out Vector3D result);
+            Transform(in vec, in quat, out var result);
             return result;
         }
 
@@ -1388,7 +1391,10 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Vector
         /// <param name="left">The first instance.</param>
         /// <param name="right">The second instance.</param>
         /// <returns>True, if left equals right; false otherwise.</returns>
-        public static bool operator ==(Vector3D left, Vector3D right) => left.Equals(right);
+        public static bool operator ==(Vector3D left, Vector3D right)
+        {
+            return left.Equals(right);
+        }
 
         /// <summary>
         /// Compares two instances for inequality.
@@ -1396,7 +1402,10 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Vector
         /// <param name="left">The first instance.</param>
         /// <param name="right">The second instance.</param>
         /// <returns>True, if left does not equa lright; false otherwise.</returns>
-        public static bool operator !=(Vector3D left, Vector3D right) => !(left == right);
+        public static bool operator !=(Vector3D left, Vector3D right)
+        {
+            return !(left == right);
+        }
 
         /// <summary>
         /// Converts SatisfactorySaveNet.Vector3d to SatisfactorySaveNet.Vector3.
@@ -1404,7 +1413,10 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Vector
         /// <param name="vec">The Vector3d to convert.</param>
         /// <returns>The resulting Vector3.</returns>
         [Pure]
-        public static explicit operator Vector3(Vector3D vec) => new((float)vec.X, (float)vec.Y, (float)vec.Z);
+        public static explicit operator Vector3(Vector3D vec)
+        {
+            return new((float) vec.X, (float) vec.Y, (float) vec.Z);
+        }
 
         /// <summary>
         /// Converts SatisfactorySaveNet.Vector3d to SatisfactorySaveNet.Vector3h.
@@ -1412,7 +1424,10 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Vector
         /// <param name="vec">The Vector3d to convert.</param>
         /// <returns>The resulting Vector3h.</returns>
         [Pure]
-        public static explicit operator Vector3H(Vector3D vec) => new(new Half(vec.X), new Half(vec.Y), new Half(vec.Z));
+        public static explicit operator Vector3H(Vector3D vec)
+        {
+            return new(new Half(vec.X), new Half(vec.Y), new Half(vec.Z));
+        }
 
         /// <summary>
         /// Converts SatisfactorySaveNet.Vector3d to SatisfactorySaveNet.Vector3i.
@@ -1420,7 +1435,10 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Vector
         /// <param name="vec">The Vector3d to convert.</param>
         /// <returns>The resulting Vector3i.</returns>
         [Pure]
-        public static explicit operator Vector3I(Vector3D vec) => new((int)vec.X, (int)vec.Y, (int)vec.Z);
+        public static explicit operator Vector3I(Vector3D vec)
+        {
+            return new((int) vec.X, (int) vec.Y, (int) vec.Z);
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Vector3D"/> struct using a tuple containing the component
@@ -1429,16 +1447,28 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Vector
         /// <param name="values">A tuple containing the component values.</param>
         /// <returns>A new instance of the <see cref="Vector3D"/> struct with the given component values.</returns>
         [Pure]
-        public static implicit operator Vector3D((double X, double Y, double Z) values) => new(values.X, values.Y, values.Z);
+        public static implicit operator Vector3D((double X, double Y, double Z) values)
+        {
+            return new(values.X, values.Y, values.Z);
+        }
 
         /// <inheritdoc/>
-        public override readonly string ToString() => ToString(null, null);
+        public readonly override string ToString()
+        {
+            return ToString(null, null);
+        }
 
         /// <inheritdoc cref="ToString(string, IFormatProvider)"/>
-        public readonly string ToString(string format) => ToString(format, null);
+        public readonly string ToString(string format)
+        {
+            return ToString(format, null);
+        }
 
         /// <inheritdoc cref="ToString(string, IFormatProvider)"/>
-        public readonly string ToString(IFormatProvider formatProvider) => ToString(null, formatProvider);
+        public readonly string ToString(IFormatProvider formatProvider)
+        {
+            return ToString(null, formatProvider);
+        }
 
         /// <inheritdoc />
         public readonly string ToString(string? format, IFormatProvider? formatProvider)
@@ -1452,17 +1482,24 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Vector
         }
 
         /// <inheritdoc />
-        public override readonly bool Equals(object? obj) => obj is Vector3D vector && Equals(vector);
+        public readonly override bool Equals(object? obj)
+        {
+            return obj is Vector3D vector && Equals(vector);
+        }
 
         /// <inheritdoc />
-        public readonly bool Equals(Vector3D other) => X == other.X &&
+        public readonly bool Equals(Vector3D other)
+        {
+            return X == other.X &&
                    Y == other.Y &&
                    Z == other.Z;
+        }
 
         /// <inheritdoc />
-#pragma warning disable S2328 // "GetHashCode" should not reference mutable fields
-        public override readonly int GetHashCode() => HashCode.Combine(X, Y, Z);
-#pragma warning restore S2328 // "GetHashCode" should not reference mutable fields
+        public readonly override int GetHashCode()
+        {
+            return HashCode.Combine(X, Y, Z);
+        }
 
         /// <summary>
         /// Deconstructs the vector into it's individual components.

@@ -1,10 +1,13 @@
 ﻿using SatisfactorySaveNet.Abstracts;
-using SatisfactorySaveNet.Abstracts.Model.Properties;
-using SatisfactorySaveNet.Abstracts.Model;
-using SatisfactorySaveNet.Abstracts.Model.TypedData;
-using System.Diagnostics.CodeAnalysis;
-using SatisfactorySaveNet.Abstracts.Model.Union;
 using SatisfactorySaveNet.Abstracts.Maths.Vector;
+using SatisfactorySaveNet.Abstracts.Model;
+using SatisfactorySaveNet.Abstracts.Model.Properties;
+using SatisfactorySaveNet.Abstracts.Model.TypedData;
+using SatisfactorySaveNet.Abstracts.Model.Union;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+using System.IO;
 
 namespace SatisfactorySaveNet;
 
@@ -55,8 +58,6 @@ public class PropertySerializer : IPropertySerializer
             type = _stringSerializer.Deserialize(reader);
         }
 
-#pragma warning disable S3928 // Parameter names used into ArgumentException constructors should match an existing one 
-#pragma warning disable CA2208 // Instantiate argument exceptions correctly
         return type switch
         {
             nameof(ArrayProperty) => DeserializeArrayProperty(reader),
@@ -76,29 +77,30 @@ public class PropertySerializer : IPropertySerializer
             nameof(UInt32Property) => DeserializeUInt32Property(reader),
             _ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
         };
-#pragma warning restore CA2208 // Instantiate argument exceptions correctly
-#pragma warning restore S3928 // Parameter names used into ArgumentException constructors should match an existing one 
     }
 
-    private IArrayProperty DeserializeArrayProperty(BinaryReader reader, string type, int count) => type switch
+    private IArrayProperty DeserializeArrayProperty(BinaryReader reader, string type, int count)
     {
-        //nameof(ArrayProperty) => DeserializeArrayProperty(reader, count),
-        nameof(StructProperty) => DeserializeArrayStructProperty(reader, count),
-        nameof(BoolProperty) => DeserializeBoolArrayProperty(reader, count),
-        nameof(ByteProperty) => DeserializeArrayByteProperty(reader, count),
-        nameof(EnumProperty) => DeserializeArrayEnumProperty(reader, count),
-        nameof(FloatProperty) => DeserializeArrayFloatProperty(reader, count),
-        nameof(IntProperty) => DeserializeArrayIntProperty(reader, count),
-        nameof(Int64Property) => DeserializeArrayInt64Property(reader, count),
-        //nameof(MapProperty) => DeserializeMapProperty(reader, count),
-        //nameof(NameProperty) => DeserializeNameProperty(reader, count),
-        nameof(ObjectProperty) => DeserializeArrayObjectProperty(reader, count),
-        //nameof(SetProperty) => DeserializeSetProperty(reader, count),
-        nameof(StrProperty) => DeserializeArrayStrProperty(reader, count),
-        //nameof(StructProperty) => DeserializeStructProperty(reader, count),
-        nameof(TextProperty) => DeserializeArrayTextProperty(reader, count),
-        _ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
-    };
+        return type switch
+        {
+            //nameof(ArrayProperty) => DeserializeArrayProperty(reader, count),
+            nameof(StructProperty) => DeserializeArrayStructProperty(reader, count),
+            nameof(BoolProperty) => DeserializeBoolArrayProperty(reader, count),
+            nameof(ByteProperty) => DeserializeArrayByteProperty(reader, count),
+            nameof(EnumProperty) => DeserializeArrayEnumProperty(reader, count),
+            nameof(FloatProperty) => DeserializeArrayFloatProperty(reader, count),
+            nameof(IntProperty) => DeserializeArrayIntProperty(reader, count),
+            nameof(Int64Property) => DeserializeArrayInt64Property(reader, count),
+            //nameof(MapProperty) => DeserializeMapProperty(reader, count),
+            //nameof(NameProperty) => DeserializeNameProperty(reader, count),
+            nameof(ObjectProperty) => DeserializeArrayObjectProperty(reader, count),
+            //nameof(SetProperty) => DeserializeSetProperty(reader, count),
+            nameof(StrProperty) => DeserializeArrayStrProperty(reader, count),
+            //nameof(StructProperty) => DeserializeStructProperty(reader, count),
+            nameof(TextProperty) => DeserializeArrayTextProperty(reader, count),
+            _ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
+        };
+    }
 
     private ArrayTextProperty DeserializeArrayTextProperty(BinaryReader reader, int count)
     {
@@ -109,7 +111,7 @@ public class PropertySerializer : IPropertySerializer
         string? key = null;
         string? value = null;
         TextProperty? sourceFmt = null;
-        
+
         switch (historyType)
         {
             case 0:

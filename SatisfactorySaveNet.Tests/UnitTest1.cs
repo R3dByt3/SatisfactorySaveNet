@@ -1,5 +1,6 @@
 using SatisfactorySaveNet.Abstracts;
 using SatisfactorySaveNet.Abstracts.Maths.Vector;
+using System;
 using System.Reflection;
 using System.Runtime.InteropServices;
 
@@ -21,20 +22,20 @@ public class Tests
     [Test]
     public void GetMaxStructSize()
     {
-        Assembly assembly = Assembly.GetAssembly(typeof(Vector3))!;
+        var assembly = Assembly.GetAssembly(typeof(Vector3))!;
 
-        Type[] types = assembly.GetTypes();
+        var types = assembly.GetTypes();
 
-        int maxStructSize = 0;
-        string maxStructName = "";
+        var maxStructSize = 0;
+        var maxStructName = "";
 
-        foreach (Type type in types)
+        foreach (var type in types)
         {
             if (type.IsValueType && type.IsValueType && !type.IsEnum)
             {
                 try
                 {
-                    int size = Marshal.SizeOf(type);
+                    var size = Marshal.SizeOf(type);
                     Console.WriteLine($"Struct: {type.Name}, Size: {size} bytes");
 
                     if (size > maxStructSize)

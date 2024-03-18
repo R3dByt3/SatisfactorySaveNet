@@ -1,4 +1,6 @@
 using SatisfactorySaveNet.Abstracts.Maths.Vector;
+using System;
+using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 
 namespace SatisfactorySaveNet.Abstracts.Maths.Geometry
@@ -28,10 +30,10 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Geometry
         /// <remarks>The first point and the last points represent the anchor points.</remarks>
         public readonly IList<Vector2> Points => _points;
 
-        public float Parallel 
-        { 
+        public float Parallel
+        {
             readonly get => _parallel;
-            set => _parallel = value; 
+            set => _parallel = value;
         }
 
         /// <summary>
@@ -102,7 +104,10 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Geometry
         /// <param name="t">The t value, between 0.0f and 1.0f.</param>
         /// <returns>Resulting point.</returns>
         [Pure]
-        public readonly Vector2 CalculatePoint(float t) => CalculatePoint(_points, t, Parallel);
+        public readonly Vector2 CalculatePoint(float t)
+        {
+            return CalculatePoint(_points, t, Parallel);
+        }
 
         /// <summary>
         /// Calculates the length of this bezier curve.
@@ -114,7 +119,10 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Geometry
         /// value gets smaller.
         /// </remarks>
         [Pure]
-        public readonly float CalculateLength(float precision) => CalculateLength(_points, precision, Parallel);
+        public readonly float CalculateLength(float precision)
+        {
+            return CalculateLength(_points, precision, Parallel);
+        }
 
         /// <summary>
         /// Calculates the length of the specified bezier curve.
@@ -126,7 +134,10 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Geometry
         /// value gets smaller.
         /// </returns>
         [Pure]
-        public static float CalculateLength(IList<Vector2> points, float precision) => CalculateLength(points, precision, 0.0f);
+        public static float CalculateLength(IList<Vector2> points, float precision)
+        {
+            return CalculateLength(points, precision, 0.0f);
+        }
 
         /// <summary>
         /// Calculates the length of the specified bezier curve.
@@ -150,12 +161,12 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Geometry
         [Pure]
         public static float CalculateLength(IList<Vector2> points, float precision, float parallel)
         {
-            float length = 0.0f;
-            Vector2 old = CalculatePoint(points, 0.0f, parallel);
+            var length = 0.0f;
+            var old = CalculatePoint(points, 0.0f, parallel);
 
-            for (float i = precision; i < 1.0f + precision; i += precision)
+            for (var i = precision; i < 1.0f + precision; i += precision)
             {
-                Vector2 n = CalculatePoint(points, i, parallel);
+                var n = CalculatePoint(points, i, parallel);
                 length += (n - old).Length;
                 old = n;
             }
@@ -170,7 +181,10 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Geometry
         /// <param name="t">The t parameter, a value between 0.0f and 1.0f.</param>
         /// <returns>Resulting point.</returns>
         [Pure]
-        public static Vector2 CalculatePoint(IList<Vector2> points, float t) => CalculatePoint(points, t, 0.0f);
+        public static Vector2 CalculatePoint(IList<Vector2> points, float t)
+        {
+            return CalculatePoint(points, t, 0.0f);
+        }
 
         /// <summary>
         /// Calculates the point on the given bezier curve with the specified t parameter.
@@ -189,11 +203,11 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Geometry
         public static Vector2 CalculatePoint(IList<Vector2> points, float t, float parallel)
         {
             Vector2 r = default;
-            float c = 1 - t;
+            var c = 1 - t;
             float temp;
-            int i = 0;
+            var i = 0;
 
-            foreach (Vector2 pt in points)
+            foreach (var pt in points)
             {
                 temp = MathHelper.BinomialCoefficient
                 (
@@ -210,7 +224,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Geometry
                 return r;
             }
 
-            Vector2 perpendicular = t != 0.0f ? r - CalculatePointOfDerivative(points, t) : points[1] - points[0];
+            var perpendicular = t != 0.0f ? r - CalculatePointOfDerivative(points, t) : points[1] - points[0];
             return r + (Vector2.Normalize(perpendicular).PerpendicularRight * parallel);
         }
 
@@ -224,11 +238,11 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Geometry
         private static Vector2 CalculatePointOfDerivative(IList<Vector2> points, float t)
         {
             Vector2 r = default;
-            float c = 1 - t;
+            var c = 1 - t;
             float temp;
-            int i = 0;
+            var i = 0;
 
-            foreach (Vector2 pt in points)
+            foreach (var pt in points)
             {
                 temp = MathHelper.BinomialCoefficient
                 (

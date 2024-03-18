@@ -1,4 +1,6 @@
 ﻿using SatisfactorySaveNet.Abstracts;
+using System.IO;
+using System.Linq;
 
 namespace SatisfactorySaveNet;
 
@@ -10,9 +12,9 @@ public class HexSerializer : IHexSerializer
     {
         var hexChars = new char[length];
 
-        for (int i = 0; i < length; i++)
+        for (var i = 0; i < length; i++)
         {
-            char hexChar = (char)reader.ReadByte();
+            var hexChar = (char) reader.ReadByte();
             hexChars[i] = hexChar;
         }
 

@@ -1,4 +1,6 @@
-﻿namespace SatisfactorySaveNet.Abstracts.Model.Properties;
+﻿using System.Collections.Generic;
+
+namespace SatisfactorySaveNet.Abstracts.Model.Properties;
 
 public class MapProperty : Property
 {

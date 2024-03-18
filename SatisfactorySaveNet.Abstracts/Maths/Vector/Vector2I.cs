@@ -1,3 +1,4 @@
+using System;
 using System.Diagnostics.Contracts;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -56,9 +57,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Vector
             readonly get
             {
                 var tmp = index == 0 ? X : index;
-#pragma warning disable S112 // General or reserved exceptions should never be thrown
                 return tmp == 1 ? Y : throw new IndexOutOfRangeException("You tried to access this vector at index: " + index);
-#pragma warning restore S112 // General or reserved exceptions should never be thrown
             }
 
             set
@@ -69,9 +68,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Vector
                 }
                 else
                 {
-#pragma warning disable S112 // General or reserved exceptions should never be thrown
                     Y = index == 1 ? value : throw new IndexOutOfRangeException("You tried to set this vector at index: " + index);
-#pragma warning restore S112 // General or reserved exceptions should never be thrown
                 }
             }
         }
@@ -374,7 +371,10 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Vector
         /// Gets a <see cref="Vector2"/> object with the same component values as the <see cref="Vector2I"/> instance.
         /// </summary>
         /// <returns>The resulting <see cref="Vector3"/> instance.</returns>
-        public readonly Vector2 ToVector2() => new(X, Y);
+        public readonly Vector2 ToVector2()
+        {
+            return new(X, Y);
+        }
 
         /// <summary>
         /// Gets a <see cref="Vector2"/> object with the same component values as the <see cref="Vector2I"/> instance.
@@ -504,7 +504,10 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Vector
         /// <param name="left">Left operand.</param>
         /// <param name="right">Right operand.</param>
         /// <returns>True if both instances are equal; false otherwise.</returns>
-        public static bool operator ==(Vector2I left, Vector2I right) => left.Equals(right);
+        public static bool operator ==(Vector2I left, Vector2I right)
+        {
+            return left.Equals(right);
+        }
 
         /// <summary>
         /// Compares the specified instances for inequality.
@@ -512,7 +515,10 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Vector
         /// <param name="left">Left operand.</param>
         /// <param name="right">Right operand.</param>
         /// <returns>True if both instances are not equal; false otherwise.</returns>
-        public static bool operator !=(Vector2I left, Vector2I right) => !(left == right);
+        public static bool operator !=(Vector2I left, Vector2I right)
+        {
+            return !(left == right);
+        }
 
         /// <summary>
         /// Converts SatisfactorySaveNet.Vector2i to SatisfactorySaveNet.Vector2.
@@ -520,7 +526,10 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Vector
         /// <param name="vec">The Vector2i to convert.</param>
         /// <returns>The resulting Vector2.</returns>
         [Pure]
-        public static implicit operator Vector2(Vector2I vec) => new(vec.X, vec.Y);
+        public static implicit operator Vector2(Vector2I vec)
+        {
+            return new(vec.X, vec.Y);
+        }
 
         /// <summary>
         /// Converts SatisfactorySaveNet.Vector2i to SatisfactorySaveNet.Vector2d.
@@ -528,7 +537,10 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Vector
         /// <param name="vec">The Vector2i to convert.</param>
         /// <returns>The resulting Vector2d.</returns>
         [Pure]
-        public static implicit operator Vector2D(Vector2I vec) => new(vec.X, vec.Y);
+        public static implicit operator Vector2D(Vector2I vec)
+        {
+            return new(vec.X, vec.Y);
+        }
 
         /// <summary>
         /// Converts SatisfactorySaveNet.Vector2i to SatisfactorySaveNet.Vector2h.
@@ -536,7 +548,10 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Vector
         /// <param name="vec">The Vector2i to convert.</param>
         /// <returns>The resulting Vector2h.</returns>
         [Pure]
-        public static explicit operator Vector2H(Vector2I vec) => new(vec.X, vec.Y);
+        public static explicit operator Vector2H(Vector2I vec)
+        {
+            return new(vec.X, vec.Y);
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Vector2I"/> struct using a tuple containing the component
@@ -545,16 +560,28 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Vector
         /// <param name="values">A tuple containing the component values.</param>
         /// <returns>A new instance of the <see cref="Vector2I"/> struct with the given component values.</returns>
         [Pure]
-        public static implicit operator Vector2I((int X, int Y) values) => new(values.X, values.Y);
+        public static implicit operator Vector2I((int X, int Y) values)
+        {
+            return new(values.X, values.Y);
+        }
 
         /// <inheritdoc/>
-        public override readonly string ToString() => ToString(null, null);
+        public readonly override string ToString()
+        {
+            return ToString(null, null);
+        }
 
         /// <inheritdoc cref="ToString(string, IFormatProvider)"/>
-        public readonly string ToString(string format) => ToString(format, null);
+        public readonly string ToString(string format)
+        {
+            return ToString(format, null);
+        }
 
         /// <inheritdoc cref="ToString(string, IFormatProvider)"/>
-        public readonly string ToString(IFormatProvider formatProvider) => ToString(null, formatProvider);
+        public readonly string ToString(IFormatProvider formatProvider)
+        {
+            return ToString(null, formatProvider);
+        }
 
         /// <inheritdoc />
         public readonly string ToString(string? format, IFormatProvider? formatProvider)
@@ -567,16 +594,23 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Vector
         }
 
         /// <inheritdoc/>
-        public override readonly bool Equals(object? obj) => obj is Vector2I vector && Equals(vector);
+        public readonly override bool Equals(object? obj)
+        {
+            return obj is Vector2I vector && Equals(vector);
+        }
 
         /// <inheritdoc/>
-        public readonly bool Equals(Vector2I other) => X == other.X &&
+        public readonly bool Equals(Vector2I other)
+        {
+            return X == other.X &&
                    Y == other.Y;
+        }
 
         /// <inheritdoc/>
-#pragma warning disable S2328 // "GetHashCode" should not reference mutable fields
-        public override readonly int GetHashCode() => HashCode.Combine(X, Y);
-#pragma warning restore S2328 // "GetHashCode" should not reference mutable fields
+        public readonly override int GetHashCode()
+        {
+            return HashCode.Combine(X, Y);
+        }
 
         /// <summary>
         /// Deconstructs the vector into it's individual components.

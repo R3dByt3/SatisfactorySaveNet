@@ -2,7 +2,7 @@
 
 public class ChunkInfo
 {
-    public const int MagicValue = unchecked((int)0x9E2A83C1);
+    public const int MagicValue = unchecked((int) 0x9E2A83C1);
     public const int ChunkSize = 128 * 1024;
 
     public int CompressedSize { get; set; }

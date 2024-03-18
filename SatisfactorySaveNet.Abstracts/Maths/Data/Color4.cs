@@ -1,6 +1,6 @@
 ﻿using SatisfactorySaveNet.Abstracts.Maths.Vector;
+using System;
 using System.Diagnostics.Contracts;
-using System.Drawing;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
@@ -57,10 +57,10 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Data
         /// <param name="a">The alpha component of the new Color4 structure.</param>
         public Color4(byte r, byte g, byte b, byte a)
         {
-            R = r / (float)byte.MaxValue;
-            G = g / (float)byte.MaxValue;
-            B = b / (float)byte.MaxValue;
-            A = a / (float)byte.MaxValue;
+            R = r / (float) byte.MaxValue;
+            G = g / (float) byte.MaxValue;
+            B = b / (float) byte.MaxValue;
+            A = a / (float) byte.MaxValue;
         }
 
         /// <summary>
@@ -73,13 +73,13 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Data
         /// </remarks>
         public readonly int ToArgb()
         {
-            uint value =
-                ((uint)(A * byte.MaxValue) << 24) |
-                ((uint)(R * byte.MaxValue) << 16) |
-                ((uint)(G * byte.MaxValue) << 8) |
-                (uint)(B * byte.MaxValue);
+            var value =
+                ((uint) (A * byte.MaxValue) << 24) |
+                ((uint) (R * byte.MaxValue) << 16) |
+                ((uint) (G * byte.MaxValue) << 8) |
+                (uint) (B * byte.MaxValue);
 
-            return unchecked((int)value);
+            return unchecked((int) value);
         }
 
         /// <summary>
@@ -89,7 +89,10 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Data
         /// <param name="right">The right-hand side of the comparison.</param>
         /// <returns>True if left is equal to right; false otherwise.</returns>
         [Pure]
-        public static bool operator ==(Color4 left, Color4 right) => left.Equals(right);
+        public static bool operator ==(Color4 left, Color4 right)
+        {
+            return left.Equals(right);
+        }
 
         /// <summary>
         /// Compares the specified Color4 structures for inequality.
@@ -98,27 +101,10 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Data
         /// <param name="right">The right-hand side of the comparison.</param>
         /// <returns>True if left is not equal to right; false otherwise.</returns>
         [Pure]
-        public static bool operator !=(Color4 left, Color4 right) => !left.Equals(right);
-
-        /// <summary>
-        /// Converts the specified System.Drawing.Color to a Color4 structure.
-        /// </summary>
-        /// <param name="color">The System.Drawing.Color to convert.</param>
-        /// <returns>A new Color4 structure containing the converted components.</returns>
-        [Pure]
-        public static implicit operator Color4(Color color) => new(color.R, color.G, color.B, color.A);
-
-        /// <summary>
-        /// Converts the specified Color4 to a System.Drawing.Color structure.
-        /// </summary>
-        /// <param name="color">The Color4 to convert.</param>
-        /// <returns>A new System.Drawing.Color structure containing the converted components.</returns>
-        [Pure]
-        public static explicit operator Color(Color4 color) => Color.FromArgb(
-                (int)(color.A * byte.MaxValue),
-                (int)(color.R * byte.MaxValue),
-                (int)(color.G * byte.MaxValue),
-                (int)(color.B * byte.MaxValue));
+        public static bool operator !=(Color4 left, Color4 right)
+        {
+            return !left.Equals(right);
+        }
 
         /// <summary>
         /// Returns this Color4 as a Vector4. The resulting struct will have XYZW mapped to RGBA, in that order.
@@ -127,36 +113,49 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Data
         /// <returns>The Color4, converted into a Vector4.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [Pure]
-        public static explicit operator Vector4(Color4 c) => Unsafe.As<Color4, Vector4>(ref c);
+        public static explicit operator Vector4(Color4 c)
+        {
+            return Unsafe.As<Color4, Vector4>(ref c);
+        }
 
         /// <summary>
         /// Calculates the hash code for this Color4 structure.
         /// </summary>
         /// <returns>A System.Int32 containing the hashcode of this Color4 structure.</returns>
-#pragma warning disable S2328 // "GetHashCode" should not reference mutable fields
-        public override readonly int GetHashCode() => HashCode.Combine(R, G, B, A);
-#pragma warning restore S2328 // "GetHashCode" should not reference mutable fields
+        public readonly override int GetHashCode()
+        {
+            return HashCode.Combine(R, G, B, A);
+        }
 
         /// <summary>
         /// Creates a System.String that describes this Color4 structure.
         /// </summary>
         /// <returns>A System.String that describes this Color4 structure.</returns>
-        public override readonly string ToString() => ToString(null, null);
+        public readonly override string ToString()
+        {
+            return ToString(null, null);
+        }
 
         /// <inheritdoc cref="ToString(string, IFormatProvider)"/>
-        public readonly string ToString(string format) => ToString(format, null);
+        public readonly string ToString(string format)
+        {
+            return ToString(format, null);
+        }
 
         /// <inheritdoc cref="ToString(string, IFormatProvider)"/>
-        public readonly string ToString(IFormatProvider formatProvider) => ToString(null, formatProvider);
+        public readonly string ToString(IFormatProvider formatProvider)
+        {
+            return ToString(null, formatProvider);
+        }
 
         /// <inheritdoc/>
         public readonly string ToString(string? format, IFormatProvider? formatProvider)
         {
-            string ls = MathHelper.GetListSeparator(formatProvider);
-            string r = R.ToString(format, formatProvider);
-            string g = G.ToString(format, formatProvider);
-            string b = B.ToString(format, formatProvider);
-            string a = A.ToString(format, formatProvider);
+            var ls = MathHelper.GetListSeparator(formatProvider);
+            var r = R.ToString(format, formatProvider);
+            var g = G.ToString(format, formatProvider);
+            var b = B.ToString(format, formatProvider);
+            var a = A.ToString(format, formatProvider);
 
             return $"{{(R{ls} G{ls} B{ls} A) = ({r}{ls} {g}{ls} {b}{ls} {a})}}";
         }
@@ -925,14 +924,14 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Data
         [Pure]
         public static Color4 FromHsl(Vector4 hsl)
         {
-            float hue = hsl.X * 360.0f;
-            float saturation = hsl.Y;
-            float lightness = hsl.Z;
+            var hue = hsl.X * 360.0f;
+            var saturation = hsl.Y;
+            var lightness = hsl.Z;
 
-            float c = (1.0f - Math.Abs((2.0f * lightness) - 1.0f)) * saturation;
+            var c = (1.0f - Math.Abs((2.0f * lightness) - 1.0f)) * saturation;
 
-            float h = hue / 60.0f;
-            float x = c * (1.0f - Math.Abs((h % 2.0f) - 1.0f));
+            var h = hue / 60.0f;
+            var x = c * (1.0f - Math.Abs((h % 2.0f) - 1.0f));
 
             float r, g, b;
             if (h is >= 0.0f and < 1.0f)
@@ -978,7 +977,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Data
                 b = 0.0f;
             }
 
-            float m = lightness - (c / 2.0f);
+            var m = lightness - (c / 2.0f);
             if (m < 0)
             {
                 m = 0;
@@ -999,11 +998,11 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Data
         [Pure]
         public static Vector4 ToHsl(Color4 rgb)
         {
-            float max = Math.Max(rgb.R, Math.Max(rgb.G, rgb.B));
-            float min = Math.Min(rgb.R, Math.Min(rgb.G, rgb.B));
-            float diff = max - min;
+            var max = Math.Max(rgb.R, Math.Max(rgb.G, rgb.B));
+            var min = Math.Min(rgb.R, Math.Min(rgb.G, rgb.B));
+            var diff = max - min;
 
-            float h = 0.0f;
+            var h = 0.0f;
             if (diff == 0)
             {
                 h = 0.0f;
@@ -1025,15 +1024,15 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Data
                 h = ((rgb.R - rgb.G) / diff) + 4.0f;
             }
 
-            float hue = h / 6.0f;
+            var hue = h / 6.0f;
             if (hue < 0.0f)
             {
                 hue += 1.0f;
             }
 
-            float lightness = (max + min) / 2.0f;
+            var lightness = (max + min) / 2.0f;
 
-            float saturation = 0.0f;
+            var saturation = 0.0f;
             if ((1.0f - Math.Abs((2.0f * lightness) - 1.0f)) != 0)
             {
                 saturation = diff / (1.0f - Math.Abs((2.0f * lightness) - 1.0f));
@@ -1057,14 +1056,14 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Data
         [Pure]
         public static Color4 FromHsv(Vector4 hsv)
         {
-            float hue = hsv.X * 360.0f;
-            float saturation = hsv.Y;
-            float value = hsv.Z;
+            var hue = hsv.X * 360.0f;
+            var saturation = hsv.Y;
+            var value = hsv.Z;
 
-            float c = value * saturation;
+            var c = value * saturation;
 
-            float h = hue / 60.0f;
-            float x = c * (1.0f - Math.Abs((h % 2.0f) - 1.0f));
+            var h = hue / 60.0f;
+            var x = c * (1.0f - Math.Abs((h % 2.0f) - 1.0f));
 
             float r, g, b;
             if (h is >= 0.0f and < 1.0f)
@@ -1110,7 +1109,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Data
                 b = 0.0f;
             }
 
-            float m = value - c;
+            var m = value - c;
             return new Color4(r + m, g + m, b + m, hsv.W);
         }
 
@@ -1127,11 +1126,11 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Data
         [Pure]
         public static Vector4 ToHsv(Color4 rgb)
         {
-            float max = Math.Max(rgb.R, Math.Max(rgb.G, rgb.B));
-            float min = Math.Min(rgb.R, Math.Min(rgb.G, rgb.B));
-            float diff = max - min;
+            var max = Math.Max(rgb.R, Math.Max(rgb.G, rgb.B));
+            var min = Math.Min(rgb.R, Math.Min(rgb.G, rgb.B));
+            var diff = max - min;
 
-            float h = 0.0f;
+            var h = 0.0f;
             if (diff == 0)
             {
                 h = 0.0f;
@@ -1153,9 +1152,9 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Data
                 h = ((rgb.R - rgb.G) / diff) + 4.0f;
             }
 
-            float hue = h * 60.0f / 360.0f;
+            var hue = h * 60.0f / 360.0f;
 
-            float saturation = 0.0f;
+            var saturation = 0.0f;
             if (max != 0.0f)
             {
                 saturation = diff / max;
@@ -1179,9 +1178,9 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Data
         [Pure]
         public static Color4 FromXyz(Vector4 xyz)
         {
-            float r = (0.41847f * xyz.X) + (-0.15866f * xyz.Y) + (-0.082835f * xyz.Z);
-            float g = (-0.091169f * xyz.X) + (0.25243f * xyz.Y) + (0.015708f * xyz.Z);
-            float b = (0.00092090f * xyz.X) + (-0.0025498f * xyz.Y) + (0.17860f * xyz.Z);
+            var r = (0.41847f * xyz.X) + (-0.15866f * xyz.Y) + (-0.082835f * xyz.Z);
+            var g = (-0.091169f * xyz.X) + (0.25243f * xyz.Y) + (0.015708f * xyz.Z);
+            var b = (0.00092090f * xyz.X) + (-0.0025498f * xyz.Y) + (0.17860f * xyz.Z);
             return new Color4(r, g, b, xyz.W);
         }
 
@@ -1198,9 +1197,9 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Data
         [Pure]
         public static Vector4 ToXyz(Color4 rgb)
         {
-            float x = ((0.49f * rgb.R) + (0.31f * rgb.G) + (0.20f * rgb.B)) / 0.17697f;
-            float y = ((0.17697f * rgb.R) + (0.81240f * rgb.G) + (0.01063f * rgb.B)) / 0.17697f;
-            float z = ((0.00f * rgb.R) + (0.01f * rgb.G) + (0.99f * rgb.B)) / 0.17697f;
+            var x = ((0.49f * rgb.R) + (0.31f * rgb.G) + (0.20f * rgb.B)) / 0.17697f;
+            var y = ((0.17697f * rgb.R) + (0.81240f * rgb.G) + (0.01063f * rgb.B)) / 0.17697f;
+            var z = ((0.00f * rgb.R) + (0.01f * rgb.G) + (0.99f * rgb.B)) / 0.17697f;
             return new Vector4(x, y, z, rgb.A);
         }
 
@@ -1220,9 +1219,9 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Data
         [Pure]
         public static Color4 FromYcbcr(Vector4 ycbcr)
         {
-            float r = (1.0f * ycbcr.X) + (0.0f * ycbcr.Y) + (1.402f * ycbcr.Z);
-            float g = (1.0f * ycbcr.X) + (-0.344136f * ycbcr.Y) + (-0.714136f * ycbcr.Z);
-            float b = (1.0f * ycbcr.X) + (1.772f * ycbcr.Y) + (0.0f * ycbcr.Z);
+            var r = (1.0f * ycbcr.X) + (0.0f * ycbcr.Y) + (1.402f * ycbcr.Z);
+            var g = (1.0f * ycbcr.X) + (-0.344136f * ycbcr.Y) + (-0.714136f * ycbcr.Z);
+            var b = (1.0f * ycbcr.X) + (1.772f * ycbcr.Y) + (0.0f * ycbcr.Z);
             return new Color4(r, g, b, ycbcr.W);
         }
 
@@ -1241,9 +1240,9 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Data
         [Pure]
         public static Vector4 ToYcbcr(Color4 rgb)
         {
-            float y = (0.299f * rgb.R) + (0.587f * rgb.G) + (0.114f * rgb.B);
-            float u = (-0.168736f * rgb.R) + (-0.331264f * rgb.G) + (0.5f * rgb.B);
-            float v = (0.5f * rgb.R) + (-0.418688f * rgb.G) + (-0.081312f * rgb.B);
+            var y = (0.299f * rgb.R) + (0.587f * rgb.G) + (0.114f * rgb.B);
+            var u = (-0.168736f * rgb.R) + (-0.331264f * rgb.G) + (0.5f * rgb.B);
+            var v = (0.5f * rgb.R) + (-0.418688f * rgb.G) + (-0.081312f * rgb.B);
             return new Vector4(y, u, v, rgb.A);
         }
 
@@ -1262,12 +1261,12 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Data
         [Pure]
         public static Color4 FromHcy(Vector4 hcy)
         {
-            float hue = hcy.X * 360.0f;
-            float y = hcy.Y;
-            float luminance = hcy.Z;
+            var hue = hcy.X * 360.0f;
+            var y = hcy.Y;
+            var luminance = hcy.Z;
 
-            float h = hue / 60.0f;
-            float x = y * (1.0f - Math.Abs((h % 2.0f) - 1.0f));
+            var h = hue / 60.0f;
+            var x = y * (1.0f - Math.Abs((h % 2.0f) - 1.0f));
 
             float r, g, b;
             if (h is >= 0.0f and < 1.0f)
@@ -1313,7 +1312,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Data
                 b = 0.0f;
             }
 
-            float m = luminance - (0.30f * r) + (0.59f * g) + (0.11f * b);
+            var m = luminance - (0.30f * r) + (0.59f * g) + (0.11f * b);
             return new Color4(r + m, g + m, b + m, hcy.W);
         }
 
@@ -1330,11 +1329,11 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Data
         [Pure]
         public static Vector4 ToHcy(Color4 rgb)
         {
-            float max = Math.Max(rgb.R, Math.Max(rgb.G, rgb.B));
-            float min = Math.Min(rgb.R, Math.Min(rgb.G, rgb.B));
-            float diff = max - min;
+            var max = Math.Max(rgb.R, Math.Max(rgb.G, rgb.B));
+            var min = Math.Min(rgb.R, Math.Min(rgb.G, rgb.B));
+            var diff = max - min;
 
-            float h = 0.0f;
+            var h = 0.0f;
             if (max == rgb.R)
             {
                 h = (rgb.G - rgb.B) / diff % 6.0f;
@@ -1348,9 +1347,9 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Data
                 h = ((rgb.R - rgb.G) / diff) + 4.0f;
             }
 
-            float hue = h * 60.0f / 360.0f;
+            var hue = h * 60.0f / 360.0f;
 
-            float luminance = (0.30f * rgb.R) + (0.59f * rgb.G) + (0.11f * rgb.B);
+            var luminance = (0.30f * rgb.R) + (0.59f * rgb.G) + (0.11f * rgb.B);
 
             return new Vector4(hue, diff, luminance, rgb.A);
         }
@@ -1361,10 +1360,13 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Data
         /// <param name="other">The Color4 structure to compare to.</param>
         /// <returns>True if both Color4 structures contain the same components; false otherwise.</returns>
         [Pure]
-        public readonly bool Equals(Color4 other) => R == other.R &&
+        public readonly bool Equals(Color4 other)
+        {
+            return R == other.R &&
                 G == other.G &&
                 B == other.B &&
                 A == other.A;
+        }
 
         /// <summary>
         /// Compares whether this Color4 structure is equal to the specified object.
@@ -1372,6 +1374,9 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Data
         /// <param name="obj">An object to compare to.</param>
         /// <returns>True obj is a Color4 structure with the same components as this Color4; false otherwise.</returns>
         [Pure]
-        public override readonly bool Equals(object? obj) => obj is Color4 color && Equals(color);
+        public readonly override bool Equals(object? obj)
+        {
+            return obj is Color4 color && Equals(color);
+        }
     }
 }

@@ -1,4 +1,6 @@
-﻿namespace SatisfactorySaveNet.Abstracts;
+﻿using System.IO;
+
+namespace SatisfactorySaveNet.Abstracts;
 
 public interface IStringSerializer
 {

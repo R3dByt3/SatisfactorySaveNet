@@ -1,4 +1,6 @@
-﻿namespace SatisfactorySaveNet.Abstracts.Model;
+﻿using System;
+
+namespace SatisfactorySaveNet.Abstracts.Model;
 
 public class Header
 {

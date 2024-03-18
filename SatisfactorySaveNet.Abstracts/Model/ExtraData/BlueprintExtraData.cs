@@ -1,4 +1,6 @@
-﻿namespace SatisfactorySaveNet.Abstracts.Model.ExtraData;
+﻿using System.Collections.Generic;
+
+namespace SatisfactorySaveNet.Abstracts.Model.ExtraData;
 
 public class BlueprintExtraData : IExtraData
 {

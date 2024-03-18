@@ -1,6 +1,8 @@
 ﻿using SatisfactorySaveNet.Abstracts;
 using SatisfactorySaveNet.Abstracts.Exceptions;
 using SatisfactorySaveNet.Abstracts.Model;
+using System.Collections.Generic;
+using System.IO;
 
 namespace SatisfactorySaveNet;
 
@@ -21,7 +23,7 @@ public class BodySerializer : IBodySerializer
         _objectSerializer = objectSerializer;
     }
 
-    public Body Deserialize(BinaryReader reader, Header header)
+    public Body? Deserialize(BinaryReader reader, Header header)
     {
         if (header.SaveVersion >= 41)
         {
@@ -31,7 +33,7 @@ public class BodySerializer : IBodySerializer
             var x4 = reader.ReadInt32();
             var x5 = _stringSerializer.Deserialize(reader);
             var x6 = reader.ReadInt32();
-            for (var x = 1; x  < x1; x++)
+            for (var x = 1; x < x1; x++)
             {
                 var s = _stringSerializer.Deserialize(reader);
                 var y1 = reader.ReadInt32();
@@ -79,10 +81,10 @@ public class BodySerializer : IBodySerializer
                     else if (reader.BaseStream.Position == position + binaryLength - 4)
                     {
                         reader.ReadInt32();
-                        collectables = new List<ObjectReference>();
+                        collectables = [];
                     }
                     else
-                        collectables = new List<ObjectReference>();
+                        collectables = [];
                 }
                 else
                 {

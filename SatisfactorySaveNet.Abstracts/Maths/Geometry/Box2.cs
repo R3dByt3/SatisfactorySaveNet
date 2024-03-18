@@ -1,4 +1,5 @@
 ﻿using SatisfactorySaveNet.Abstracts.Maths.Vector;
+using System;
 using System.Diagnostics.Contracts;
 using System.Runtime.InteropServices;
 using System.Xml.Serialization;
@@ -90,7 +91,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Geometry
             readonly get => Max - Min;
             set
             {
-                Vector2 center = Center;
+                var center = Center;
                 _min = center - (value * 0.5f);
                 _max = center + (value * 0.5f);
             }
@@ -122,8 +123,11 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Geometry
         /// <param name="point">The point to query.</param>
         /// <returns>Whether this box contains the point.</returns>
         [Pure]
-        public readonly bool ContainsInclusive(Vector2 point) => _min.X <= point.X && point.X <= _max.X &&
+        public readonly bool ContainsInclusive(Vector2 point)
+        {
+            return _min.X <= point.X && point.X <= _max.X &&
                    _min.Y <= point.Y && point.Y <= _max.Y;
+        }
 
         /// <summary>
         /// Returns whether the box contains the specified point (borders exclusive).
@@ -131,8 +135,11 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Geometry
         /// <param name="point">The point to query.</param>
         /// <returns>Whether this box contains the point.</returns>
         [Pure]
-        public readonly bool ContainsExclusive(Vector2 point) => _min.X < point.X && point.X < _max.X &&
+        public readonly bool ContainsExclusive(Vector2 point)
+        {
+            return _min.X < point.X && point.X < _max.X &&
                    _min.Y < point.Y && point.Y < _max.Y;
+        }
 
         /// <summary>
         /// Returns whether the box contains the specified point.
@@ -143,7 +150,10 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Geometry
         /// </param>
         /// <returns>Whether this box contains the point.</returns>
         [Pure]
-        public readonly bool Contains(Vector2 point, bool boundaryInclusive) => boundaryInclusive ? ContainsInclusive(point) : ContainsExclusive(point);
+        public readonly bool Contains(Vector2 point, bool boundaryInclusive)
+        {
+            return boundaryInclusive ? ContainsInclusive(point) : ContainsExclusive(point);
+        }
 
         /// <summary>
         /// Returns whether the box contains the specified box (borders inclusive).
@@ -151,8 +161,11 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Geometry
         /// <param name="other">The box to query.</param>
         /// <returns>Whether this box contains the other box.</returns>
         [Pure]
-        public readonly bool Contains(Box2 other) => _max.X >= other._min.X && _min.X <= other._max.X &&
+        public readonly bool Contains(Box2 other)
+        {
+            return _max.X >= other._min.X && _min.X <= other._max.X &&
                    _max.Y >= other._min.Y && _min.Y <= other._max.Y;
+        }
 
         /// <summary>
         /// Returns whether the box contains the specified point (borders exclusive).
@@ -161,8 +174,11 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Geometry
         /// <returns>Whether this box contains the point.</returns>
         [Pure]
         [Obsolete("This function used to exclude borders, but to follow changes from the other Box structs it's deprecated. Use ContainsInclusive and ContainsExclusive for the desired behaviour.")]
-        public readonly bool Contains(Vector2 point) => _min.X < point.X && point.X < _max.X &&
+        public readonly bool Contains(Vector2 point)
+        {
+            return _min.X < point.X && point.X < _max.X &&
                    _min.Y < point.Y && point.Y < _max.Y;
+        }
 
         /// <summary>
         /// Returns the distance between the nearest edge and the specified point.
@@ -197,7 +213,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Geometry
         public readonly Box2 Translated(Vector2 distance)
         {
             // create a local copy of this box
-            Box2 box = this;
+            var box = this;
             box.Translate(distance);
             return box;
         }
@@ -223,7 +239,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Geometry
         public readonly Box2 Scaled(Vector2 scale, Vector2 anchor)
         {
             // create a local copy of this box
-            Box2 box = this;
+            var box = this;
             box.Scale(scale, anchor);
             return box;
         }
@@ -236,8 +252,8 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Geometry
         public void Inflate(Vector2 size)
         {
             size = Vector2.ComponentMax(size, -HalfSize);
-            Vector2 newMin = _min - size;
-            Vector2 newMax = _max + size;
+            var newMin = _min - size;
+            var newMax = _max + size;
             _min = Vector2.ComponentMin(newMin, newMax);
             _max = Vector2.ComponentMax(newMin, newMax);
         }
@@ -252,7 +268,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Geometry
         public readonly Box2 Inflated(Vector2 size)
         {
             // create a local copy of this box
-            Box2 box = this;
+            var box = this;
             box.Inflate(size);
             return box;
         }
@@ -276,7 +292,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Geometry
         public readonly Box2 Extended(Vector2 point)
         {
             // create a local copy of this box
-            Box2 box = this;
+            var box = this;
             box.Extend(point);
             return box;
         }
@@ -286,36 +302,62 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Geometry
         /// </summary>
         /// <param name="left">The left operand.</param>
         /// <param name="right">The right operand.</param>
-        public static bool operator ==(Box2 left, Box2 right) => left.Equals(right);
+        public static bool operator ==(Box2 left, Box2 right)
+        {
+            return left.Equals(right);
+        }
 
         /// <summary>
         /// Inequality comparator.
         /// </summary>
         /// <param name="left">The left operand.</param>
         /// <param name="right">The right operand.</param>
-        public static bool operator !=(Box2 left, Box2 right) => !(left == right);
+        public static bool operator !=(Box2 left, Box2 right)
+        {
+            return !(left == right);
+        }
 
         /// <inheritdoc/>
-        public override readonly bool Equals(object? obj) => obj is Box2 box && Equals(box);
+        public readonly override bool Equals(object? obj)
+        {
+            return obj is Box2 box && Equals(box);
+        }
 
         /// <inheritdoc/>
-        public readonly bool Equals(Box2 other) => _min.Equals(other._min) &&
+        public readonly bool Equals(Box2 other)
+        {
+            return _min.Equals(other._min) &&
                    _max.Equals(other._max);
+        }
 
         /// <inheritdoc/>
-#pragma warning disable S2328 // "GetHashCode" should not reference mutable fields
-        public override readonly int GetHashCode() => HashCode.Combine(_min, _max);
+        public readonly override int GetHashCode()
+        {
+            return HashCode.Combine(_min, _max);
+        }
 
         /// <inheritdoc/>
-        public override readonly string ToString() => ToString(null, null);
+        public readonly override string ToString()
+        {
+            return ToString(null, null);
+        }
 
         /// <inheritdoc cref="ToString(string, IFormatProvider)"/>
-        public readonly string ToString(string format) => ToString(format, null);
+        public readonly string ToString(string format)
+        {
+            return ToString(format, null);
+        }
 
         /// <inheritdoc cref="ToString(string, IFormatProvider)"/>
-        public readonly string ToString(IFormatProvider formatProvider) => ToString(null, formatProvider);
+        public readonly string ToString(IFormatProvider formatProvider)
+        {
+            return ToString(null, formatProvider);
+        }
 
         /// <inheritdoc/>
-        public readonly string ToString(string? format, IFormatProvider? formatProvider) => $"{Min.ToString(format, formatProvider)} - {Max.ToString(format, formatProvider)}";
+        public readonly string ToString(string? format, IFormatProvider? formatProvider)
+        {
+            return $"{Min.ToString(format, formatProvider)} - {Max.ToString(format, formatProvider)}";
+        }
     }
 }

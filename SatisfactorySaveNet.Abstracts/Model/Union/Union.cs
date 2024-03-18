@@ -1,4 +1,5 @@
 ﻿using SatisfactorySaveNet.Abstracts.Maths.Matrix;
+using System;
 using Half = SatisfactorySaveNet.Abstracts.Maths.Data.Half;
 
 namespace SatisfactorySaveNet.Abstracts.Model.Union;
@@ -24,14 +25,14 @@ public unsafe class Union
 
             fixed (byte* pData = _data)
             {
-                return *(Half*)pData;
+                return *(Half*) pData;
             }
         }
         set
         {
             fixed (byte* pData = _data)
             {
-                *(Half*)pData = value;
+                *(Half*) pData = value;
             }
             _constraint = UnionConstraint.Half;
         }
@@ -46,14 +47,14 @@ public unsafe class Union
 
             fixed (byte* pData = _data)
             {
-                return *(Matrix4D*)pData;
+                return *(Matrix4D*) pData;
             }
         }
         set
         {
             fixed (byte* pData = _data)
             {
-                *(Matrix4D*)pData = value;
+                *(Matrix4D*) pData = value;
             }
             _constraint = UnionConstraint.Matrix4D;
         }
@@ -74,14 +75,14 @@ public unsafe struct UnionStr
 
             fixed (byte* pData = _data)
             {
-                return *(Half*)pData;
+                return *(Half*) pData;
             }
         }
         set
         {
             fixed (byte* pData = _data)
             {
-                *(Half*)pData = value;
+                *(Half*) pData = value;
             }
             _constraint = UnionConstraint.Half;
         }
@@ -96,14 +97,14 @@ public unsafe struct UnionStr
 
             fixed (byte* pData = _data)
             {
-                return *(Matrix4D*)pData;
+                return *(Matrix4D*) pData;
             }
         }
         set
         {
             fixed (byte* pData = _data)
             {
-                *(Matrix4D*)pData = value;
+                *(Matrix4D*) pData = value;
             }
             _constraint = UnionConstraint.Matrix4D;
         }

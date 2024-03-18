@@ -1,4 +1,5 @@
 using SatisfactorySaveNet.Abstracts.Maths.Vector;
+using System;
 using System.Diagnostics.Contracts;
 
 namespace SatisfactorySaveNet.Abstracts.Maths.Geometry
@@ -96,7 +97,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Geometry
         [Pure]
         public Vector2 CalculatePoint(float t)
         {
-            float c = 1.0f - t;
+            var c = 1.0f - t;
             Vector2 r = new(
                 (c * c * StartAnchor.X) + (2 * t * c * ControlPoint.X) + (t * t * EndAnchor.X),
                 (c * c * StartAnchor.Y) + (2 * t * c * ControlPoint.Y) + (t * t * EndAnchor.Y)
@@ -107,7 +108,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Geometry
                 return r;
             }
 
-            Vector2 perpendicular = t == 0.0f ? ControlPoint - StartAnchor : r - CalculatePointOfDerivative(t);
+            var perpendicular = t == 0.0f ? ControlPoint - StartAnchor : r - CalculatePointOfDerivative(t);
             return r + (Vector2.Normalize(perpendicular).PerpendicularRight * Parallel);
         }
 
@@ -140,12 +141,12 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Geometry
         [Pure]
         public float CalculateLength(float precision)
         {
-            float length = 0.0f;
-            Vector2 old = CalculatePoint(0.0f);
+            var length = 0.0f;
+            var old = CalculatePoint(0.0f);
 
-            for (float i = precision; i < 1.0f + precision; i += precision)
+            for (var i = precision; i < 1.0f + precision; i += precision)
             {
-                Vector2 n = CalculatePoint(i);
+                var n = CalculatePoint(i);
                 length += (n - old).Length;
                 old = n;
             }

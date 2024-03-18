@@ -1,4 +1,6 @@
+using System;
 using System.Diagnostics.Contracts;
+using System.IO;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
@@ -1173,13 +1175,19 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Vector
         /// Returns this Half4 instance's contents as Vector4.
         /// </summary>
         /// <returns>The vector.</returns>
-        public readonly Vector4 ToVector4() => new(X, Y, Z, W);
+        public readonly Vector4 ToVector4()
+        {
+            return new(X, Y, Z, W);
+        }
 
         /// <summary>
         /// Returns this Half4 instance's contents as Vector4d.
         /// </summary>
         /// <returns>The vector.</returns>
-        public readonly Vector4D ToVector4d() => new(X, Y, Z, W);
+        public readonly Vector4D ToVector4d()
+        {
+            return new(X, Y, Z, W);
+        }
 
         /// <summary>
         /// Converts SatisfactorySaveNet.Vector4 to SatisfactorySaveNet.Half4.
@@ -1187,7 +1195,10 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Vector
         /// <param name="v4f">The Vector4 to convert.</param>
         /// <returns>The resulting Half vector.</returns>
         [Pure]
-        public static explicit operator Vector4H(Vector4 v4f) => new(v4f);
+        public static explicit operator Vector4H(Vector4 v4f)
+        {
+            return new(v4f);
+        }
 
         /// <summary>
         /// Converts SatisfactorySaveNet.Vector4d to SatisfactorySaveNet.Half4.
@@ -1195,7 +1206,10 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Vector
         /// <param name="v4d">The Vector4d to convert.</param>
         /// <returns>The resulting Half vector.</returns>
         [Pure]
-        public static explicit operator Vector4H(Vector4D v4d) => new(v4d);
+        public static explicit operator Vector4H(Vector4D v4d)
+        {
+            return new(v4d);
+        }
 
         /// <summary>
         /// Converts SatisfactorySaveNet.Vector4h to SatisfactorySaveNet.Vector4.
@@ -1203,7 +1217,10 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Vector
         /// <param name="vec">The Vector4h to convert.</param>
         /// <returns>The resulting Vector4.</returns>
         [Pure]
-        public static implicit operator Vector4(Vector4H vec) => new(vec.X, vec.Y, vec.Z, vec.W);
+        public static implicit operator Vector4(Vector4H vec)
+        {
+            return new(vec.X, vec.Y, vec.Z, vec.W);
+        }
 
         /// <summary>
         /// Converts SatisfactorySaveNet.Vector4h to SatisfactorySaveNet.Vector4d.
@@ -1211,7 +1228,10 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Vector
         /// <param name="vec">The Vector4h to convert.</param>
         /// <returns>The resulting Vector4d.</returns>
         [Pure]
-        public static implicit operator Vector4D(Vector4H vec) => new(vec.X, vec.Y, vec.Z, vec.W);
+        public static implicit operator Vector4D(Vector4H vec)
+        {
+            return new(vec.X, vec.Y, vec.Z, vec.W);
+        }
 
         /// <summary>
         /// Converts SatisfactorySaveNet.Vector4h to SatisfactorySaveNet.Vector4i.
@@ -1219,7 +1239,10 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Vector
         /// <param name="vec">The Vector4h to convert.</param>
         /// <returns>The resulting Vector4i.</returns>
         [Pure]
-        public static explicit operator Vector4I(Vector4H vec) => new((int)vec.X, (int)vec.Y, (int)vec.Z, (int)vec.W);
+        public static explicit operator Vector4I(Vector4H vec)
+        {
+            return new((int) vec.X, (int) vec.Y, (int) vec.Z, (int) vec.W);
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Vector4H"/> struct using a tuple containing the component
@@ -1228,7 +1251,10 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Vector
         /// <param name="values">A tuple containing the component values.</param>
         /// <returns>A new instance of the <see cref="Vector4H"/> struct with the given component values.</returns>
         [Pure]
-        public static implicit operator Vector4H((Half X, Half Y, Half Z, Half W) values) => new(values.X, values.Y, values.Z, values.W);
+        public static implicit operator Vector4H((Half X, Half Y, Half Z, Half W) values)
+        {
+            return new(values.X, values.Y, values.Z, values.W);
+        }
 
         /// <summary>
         /// Compares two instances for equality.
@@ -1236,7 +1262,10 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Vector
         /// <param name="left">The first instance.</param>
         /// <param name="right">The second instance.</param>
         /// <returns>True, if left equals right; false otherwise.</returns>
-        public static bool operator ==(Vector4H left, Vector4H right) => left.Equals(right);
+        public static bool operator ==(Vector4H left, Vector4H right)
+        {
+            return left.Equals(right);
+        }
 
         /// <summary>
         /// Compares two instances for inequality.
@@ -1244,7 +1273,10 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Vector
         /// <param name="left">The first instance.</param>
         /// <param name="right">The second instance.</param>
         /// <returns>True, if left does not equa lright; false otherwise.</returns>
-        public static bool operator !=(Vector4H left, Vector4H right) => !(left == right);
+        public static bool operator !=(Vector4H left, Vector4H right)
+        {
+            return !(left == right);
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Vector4H"/> struct.
@@ -1257,10 +1289,10 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Vector
             var yValue = info.GetValue("Y", typeof(Half)) ?? throw new ArgumentOutOfRangeException(nameof(info), null, "Y must be not null");
             var zValue = info.GetValue("Z", typeof(Half)) ?? throw new ArgumentOutOfRangeException(nameof(info), null, "Z must be not null");
             var WValue = info.GetValue("W", typeof(Half)) ?? throw new ArgumentOutOfRangeException(nameof(info), null, "W must be not null");
-            X = (Half)xValue;
-            Y = (Half)yValue;
-            Z = (Half)zValue;
-            W = (Half)WValue;
+            X = (Half) xValue;
+            Y = (Half) yValue;
+            Z = (Half) zValue;
+            W = (Half) WValue;
         }
 
         /// <inheritdoc />
@@ -1297,13 +1329,22 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Vector
         }
 
         /// <inheritdoc/>
-        public override readonly string ToString() => ToString(null, null);
+        public readonly override string ToString()
+        {
+            return ToString(null, null);
+        }
 
         /// <inheritdoc cref="ToString(string, IFormatProvider)"/>
-        public readonly string ToString(string format) => ToString(format, null);
+        public readonly string ToString(string format)
+        {
+            return ToString(format, null);
+        }
 
         /// <inheritdoc cref="ToString(string, IFormatProvider)"/>
-        public readonly string ToString(IFormatProvider formatProvider) => ToString(null, formatProvider);
+        public readonly string ToString(IFormatProvider formatProvider)
+        {
+            return ToString(null, formatProvider);
+        }
 
         /// <inheritdoc />
         public readonly string ToString(string? format, IFormatProvider? formatProvider)
@@ -1318,18 +1359,25 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Vector
         }
 
         /// <inheritdoc/>
-        public override readonly bool Equals(object? obj) => obj is Vector4H vector && Equals(vector);
+        public readonly override bool Equals(object? obj)
+        {
+            return obj is Vector4H vector && Equals(vector);
+        }
 
         /// <inheritdoc/>
-        public readonly bool Equals(Vector4H other) => X.Equals(other.X) &&
+        public readonly bool Equals(Vector4H other)
+        {
+            return X.Equals(other.X) &&
                    Y.Equals(other.Y) &&
                    Z.Equals(other.Z) &&
                    W.Equals(other.W);
+        }
 
         /// <inheritdoc/>
-#pragma warning disable S2328 // "GetHashCode" should not reference mutable fields
-        public override readonly int GetHashCode() => HashCode.Combine(X, Y, Z, W);
-#pragma warning restore S2328 // "GetHashCode" should not reference mutable fields
+        public readonly override int GetHashCode()
+        {
+            return HashCode.Combine(X, Y, Z, W);
+        }
 
         /// <summary>
         /// Returns the Half4 as an array of bytes.
@@ -1339,9 +1387,9 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Vector
         [Pure]
         public static byte[] GetBytes(Vector4H h)
         {
-            byte[] result = new byte[SizeInBytes];
+            var result = new byte[SizeInBytes];
 
-            byte[] temp = Half.GetBytes(h.X);
+            var temp = Half.GetBytes(h.X);
             result[0] = temp[0];
             result[1] = temp[1];
             temp = Half.GetBytes(h.Y);

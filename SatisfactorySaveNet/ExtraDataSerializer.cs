@@ -1,5 +1,4 @@
 ﻿using SatisfactorySaveNet.Abstracts;
-using SatisfactorySaveNet.Abstracts.Model.ExtraData;
 
 namespace SatisfactorySaveNet;
 

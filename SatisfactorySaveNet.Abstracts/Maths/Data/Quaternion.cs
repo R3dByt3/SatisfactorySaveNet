@@ -1,5 +1,6 @@
 using SatisfactorySaveNet.Abstracts.Maths.Matrix;
 using SatisfactorySaveNet.Abstracts.Maths.Vector;
+using System;
 using System.Diagnostics.Contracts;
 using System.Runtime.InteropServices;
 using System.Xml.Serialization;
@@ -59,12 +60,12 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Data
             rotationY *= 0.5f;
             rotationZ *= 0.5f;
 
-            float c1 = MathF.Cos(rotationX);
-            float c2 = MathF.Cos(rotationY);
-            float c3 = MathF.Cos(rotationZ);
-            float s1 = MathF.Sin(rotationX);
-            float s2 = MathF.Sin(rotationY);
-            float s3 = MathF.Sin(rotationZ);
+            var c1 = MathF.Cos(rotationX);
+            var c2 = MathF.Cos(rotationY);
+            var c3 = MathF.Cos(rotationZ);
+            var s1 = MathF.Sin(rotationX);
+            var s2 = MathF.Sin(rotationY);
+            var s3 = MathF.Sin(rotationZ);
 
             W = (c1 * c2 * c3) - (s1 * s2 * s3);
             Xyz.X = (s1 * c2 * c3) + (c1 * s2 * s3);
@@ -120,7 +121,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Data
         /// <param name="angle">The resultant angle.</param>
         public void ToAxisAngle(out Vector3 axis, out float angle)
         {
-            Vector4 result = ToAxisAngle();
+            var result = ToAxisAngle();
             axis = result.Xyz;
             angle = result.W;
         }
@@ -131,7 +132,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Data
         /// <returns>A Vector4 that is the axis-angle representation of this quaternion.</returns>
         public Vector4 ToAxisAngle()
         {
-            Quaternion q = this;
+            var q = this;
             if (Math.Abs(q.W) > 1.0f)
             {
                 q.Normalize();
@@ -142,7 +143,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Data
                 W = 2.0f * MathF.Acos(q.W) // angle
             };
 
-            float den = MathF.Sqrt(1.0f - (q.W * q.W));
+            var den = MathF.Sqrt(1.0f - (q.W * q.W));
             if (den > 0.0001f)
             {
                 result.Xyz = q.Xyz / den;
@@ -178,19 +179,19 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Data
             http://www.euclideanspace.com/maths/geometry/rotations/conversions/quaternionToEuler/
             */
 
-            Quaternion q = this;
+            var q = this;
 
             Vector3 eulerAngles;
 
             // Threshold for the singularities found at the north/south poles.
             const float SINGULARITY_THRESHOLD = 0.4999995f;
 
-            float sqw = q.W * q.W;
-            float sqx = q.X * q.X;
-            float sqy = q.Y * q.Y;
-            float sqz = q.Z * q.Z;
-            float unit = sqx + sqy + sqz + sqw; // if normalised is one, otherwise is correction factor
-            float singularityTest = (q.X * q.Z) + (q.W * q.Y);
+            var sqw = q.W * q.W;
+            var sqx = q.X * q.X;
+            var sqy = q.Y * q.Y;
+            var sqz = q.Z * q.Z;
+            var unit = sqx + sqy + sqz + sqw; // if normalised is one, otherwise is correction factor
+            var singularityTest = (q.X * q.Z) + (q.W * q.Y);
 
             if (singularityTest > SINGULARITY_THRESHOLD * unit)
             {
@@ -231,7 +232,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Data
         /// <returns>The normalized copy.</returns>
         public readonly Quaternion Normalized()
         {
-            Quaternion q = this;
+            var q = this;
             q.Normalize();
             return q;
         }
@@ -239,7 +240,10 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Data
         /// <summary>
         /// Inverts this Quaternion.
         /// </summary>
-        public void Invert() => Invert(in this, out this);
+        public void Invert()
+        {
+            Invert(in this, out this);
+        }
 
         /// <summary>
         /// Returns the inverse of this Quaternion.
@@ -247,7 +251,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Data
         /// <returns>The inverted copy.</returns>
         public readonly Quaternion Inverted()
         {
-            Quaternion q = this;
+            var q = this;
             q.Invert();
             return q;
         }
@@ -257,7 +261,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Data
         /// </summary>
         public void Normalize()
         {
-            float scale = 1.0f / Length;
+            var scale = 1.0f / Length;
             Xyz *= scale;
             W *= scale;
         }
@@ -282,9 +286,12 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Data
         /// <param name="right">The second operand.</param>
         /// <returns>The result of the addition.</returns>
         [Pure]
-        public static Quaternion Add(Quaternion left, Quaternion right) => new(
+        public static Quaternion Add(Quaternion left, Quaternion right)
+        {
+            return new(
                 left.Xyz + right.Xyz,
                 left.W + right.W);
+        }
 
         /// <summary>
         /// Add two quaternions.
@@ -306,9 +313,12 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Data
         /// <param name="right">The right instance.</param>
         /// <returns>The result of the operation.</returns>
         [Pure]
-        public static Quaternion Sub(Quaternion left, Quaternion right) => new(
+        public static Quaternion Sub(Quaternion left, Quaternion right)
+        {
+            return new(
                 left.Xyz - right.Xyz,
                 left.W - right.W);
+        }
 
         /// <summary>
         /// Subtracts two instances.
@@ -332,7 +342,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Data
         [Pure]
         public static Quaternion Multiply(Quaternion left, Quaternion right)
         {
-            Multiply(in left, in right, out Quaternion result);
+            Multiply(in left, in right, out var result);
             return result;
         }
 
@@ -373,12 +383,15 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Data
         /// <param name="scale">The scalar.</param>
         /// <returns>A new instance containing the result of the calculation.</returns>
         [Pure]
-        public static Quaternion Multiply(Quaternion quaternion, float scale) => new(
+        public static Quaternion Multiply(Quaternion quaternion, float scale)
+        {
+            return new(
                 quaternion.X * scale,
                 quaternion.Y * scale,
                 quaternion.Z * scale,
                 quaternion.W * scale
             );
+        }
 
         /// <summary>
         /// Get the conjugate of the given quaternion.
@@ -386,7 +399,10 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Data
         /// <param name="q">The quaternion.</param>
         /// <returns>The conjugate of the given quaternion.</returns>
         [Pure]
-        public static Quaternion Conjugate(Quaternion q) => new(-q.Xyz, q.W);
+        public static Quaternion Conjugate(Quaternion q)
+        {
+            return new(-q.Xyz, q.W);
+        }
 
         /// <summary>
         /// Get the conjugate of the given quaternion.
@@ -406,7 +422,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Data
         [Pure]
         public static Quaternion Invert(Quaternion q)
         {
-            Invert(in q, out Quaternion result);
+            Invert(in q, out var result);
             return result;
         }
 
@@ -417,10 +433,10 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Data
         /// <param name="result">The inverse of the given quaternion.</param>
         public static void Invert(in Quaternion q, out Quaternion result)
         {
-            float lengthSq = q.LengthSquared;
+            var lengthSq = q.LengthSquared;
             if (lengthSq != 0.0)
             {
-                float i = 1.0f / lengthSq;
+                var i = 1.0f / lengthSq;
                 result = new Quaternion(q.Xyz * -i, q.W * i);
             }
             else
@@ -437,7 +453,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Data
         [Pure]
         public static Quaternion Normalize(Quaternion q)
         {
-            Normalize(in q, out Quaternion result);
+            Normalize(in q, out var result);
             return result;
         }
 
@@ -448,7 +464,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Data
         /// <param name="result">The normalized quaternion.</param>
         public static void Normalize(in Quaternion q, out Quaternion result)
         {
-            float scale = 1.0f / q.Length;
+            var scale = 1.0f / q.Length;
             result = new Quaternion(q.Xyz * scale, q.W * scale);
         }
 
@@ -466,7 +482,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Data
                 return Identity;
             }
 
-            Quaternion result = Identity;
+            var result = Identity;
 
             angle *= 0.5f;
             axis.Normalize();
@@ -486,7 +502,10 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Data
         /// <param name="roll">The roll (bank), counterclockwise rotation around Z axis.</param>
         /// <returns>The quaternion.</returns>
         [Pure]
-        public static Quaternion FromEulerAngles(float pitch, float yaw, float roll) => new(pitch, yaw, roll);
+        public static Quaternion FromEulerAngles(float pitch, float yaw, float roll)
+        {
+            return new(pitch, yaw, roll);
+        }
 
         /// <summary>
         /// Builds a Quaternion from the given euler angles in radians.
@@ -496,7 +515,10 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Data
         /// <param name="eulerAngles">The counterclockwise euler angles as a vector.</param>
         /// <returns>The equivalent Quaternion.</returns>
         [Pure]
-        public static Quaternion FromEulerAngles(Vector3 eulerAngles) => new(eulerAngles);
+        public static Quaternion FromEulerAngles(Vector3 eulerAngles)
+        {
+            return new(eulerAngles);
+        }
 
         /// <summary>
         /// Builds a Quaternion from the given euler angles in radians.
@@ -507,12 +529,12 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Data
         /// <param name="result">The equivalent Quaternion.</param>
         public static void FromEulerAngles(in Vector3 eulerAngles, out Quaternion result)
         {
-            float c1 = MathF.Cos(eulerAngles.X * 0.5f);
-            float c2 = MathF.Cos(eulerAngles.Y * 0.5f);
-            float c3 = MathF.Cos(eulerAngles.Z * 0.5f);
-            float s1 = MathF.Sin(eulerAngles.X * 0.5f);
-            float s2 = MathF.Sin(eulerAngles.Y * 0.5f);
-            float s3 = MathF.Sin(eulerAngles.Z * 0.5f);
+            var c1 = MathF.Cos(eulerAngles.X * 0.5f);
+            var c2 = MathF.Cos(eulerAngles.Y * 0.5f);
+            var c3 = MathF.Cos(eulerAngles.Z * 0.5f);
+            var s1 = MathF.Sin(eulerAngles.X * 0.5f);
+            var s2 = MathF.Sin(eulerAngles.Y * 0.5f);
+            var s3 = MathF.Sin(eulerAngles.Z * 0.5f);
 
             result.W = (c1 * c2 * c3) - (s1 * s2 * s3);
             result.Xyz.X = (s1 * c2 * c3) + (c1 * s2 * s3);
@@ -538,7 +560,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Data
         [Pure]
         public static Quaternion FromMatrix(Matrix3 matrix)
         {
-            FromMatrix(in matrix, out Quaternion result);
+            FromMatrix(in matrix, out var result);
             return result;
         }
 
@@ -549,12 +571,12 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Data
         /// <param name="result">The equivalent quaternion.</param>
         public static void FromMatrix(in Matrix3 matrix, out Quaternion result)
         {
-            float trace = matrix.Trace;
+            var trace = matrix.Trace;
 
             if (trace > 0)
             {
-                float s = MathF.Sqrt(trace + 1) * 2;
-                float invS = 1f / s;
+                var s = MathF.Sqrt(trace + 1) * 2;
+                var invS = 1f / s;
 
                 result.W = s * 0.25f;
                 result.Xyz.X = (matrix.Row2.Y - matrix.Row1.Z) * invS;
@@ -567,8 +589,8 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Data
 
                 if (m00 > m11 && m00 > m22)
                 {
-                    float s = MathF.Sqrt(1 + m00 - m11 - m22) * 2;
-                    float invS = 1f / s;
+                    var s = MathF.Sqrt(1 + m00 - m11 - m22) * 2;
+                    var invS = 1f / s;
 
                     result.W = (matrix.Row2.Y - matrix.Row1.Z) * invS;
                     result.Xyz.X = s * 0.25f;
@@ -577,8 +599,8 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Data
                 }
                 else if (m11 > m22)
                 {
-                    float s = MathF.Sqrt(1 + m11 - m00 - m22) * 2;
-                    float invS = 1f / s;
+                    var s = MathF.Sqrt(1 + m11 - m00 - m22) * 2;
+                    var invS = 1f / s;
 
                     result.W = (matrix.Row0.Z - matrix.Row2.X) * invS;
                     result.Xyz.X = (matrix.Row0.Y + matrix.Row1.X) * invS;
@@ -587,8 +609,8 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Data
                 }
                 else
                 {
-                    float s = MathF.Sqrt(1 + m22 - m00 - m11) * 2;
-                    float invS = 1f / s;
+                    var s = MathF.Sqrt(1 + m22 - m00 - m11) * 2;
+                    var invS = 1f / s;
 
                     result.W = (matrix.Row1.X - matrix.Row0.Y) * invS;
                     result.Xyz.X = (matrix.Row0.Z + matrix.Row2.X) * invS;
@@ -619,7 +641,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Data
                 return q1;
             }
 
-            float cosHalfAngle = (q1.W * q2.W) + Vector3.Dot(q1.Xyz, q2.Xyz);
+            var cosHalfAngle = (q1.W * q2.W) + Vector3.Dot(q1.Xyz, q2.Xyz);
 
             if (cosHalfAngle is >= 1.0f or <= (-1.0f))
             {
@@ -639,9 +661,9 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Data
             if (cosHalfAngle < 0.99f)
             {
                 // do proper slerp for big angles
-                float halfAngle = MathF.Acos(cosHalfAngle);
-                float sinHalfAngle = MathF.Sin(halfAngle);
-                float oneOverSinHalfAngle = 1.0f / sinHalfAngle;
+                var halfAngle = MathF.Acos(cosHalfAngle);
+                var sinHalfAngle = MathF.Sin(halfAngle);
+                var oneOverSinHalfAngle = 1.0f / sinHalfAngle;
                 blendA = MathF.Sin(halfAngle * (1.0f - blend)) * oneOverSinHalfAngle;
                 blendB = MathF.Sin(halfAngle * blend) * oneOverSinHalfAngle;
             }
@@ -717,12 +739,15 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Data
         /// <param name="scale">The scalar.</param>
         /// <returns>A new instance containing the result of the calculation.</returns>
         [Pure]
-        public static Quaternion operator *(float scale, Quaternion quaternion) => new(
+        public static Quaternion operator *(float scale, Quaternion quaternion)
+        {
+            return new(
                 quaternion.X * scale,
                 quaternion.Y * scale,
                 quaternion.Z * scale,
                 quaternion.W * scale
             );
+        }
 
         /// <summary>
         /// Compares two instances for equality.
@@ -730,7 +755,10 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Data
         /// <param name="left">The first instance.</param>
         /// <param name="right">The second instance.</param>
         /// <returns>True, if left equals right; false otherwise.</returns>
-        public static bool operator ==(Quaternion left, Quaternion right) => left.Equals(right);
+        public static bool operator ==(Quaternion left, Quaternion right)
+        {
+            return left.Equals(right);
+        }
 
         /// <summary>
         /// Compares two instances for inequality.
@@ -738,38 +766,57 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Data
         /// <param name="left">The first instance.</param>
         /// <param name="right">The second instance.</param>
         /// <returns>True, if left does not equal right; false otherwise.</returns>
-        public static bool operator !=(Quaternion left, Quaternion right) => !(left == right);
+        public static bool operator !=(Quaternion left, Quaternion right)
+        {
+            return !(left == right);
+        }
 
         /// <inheritdoc />
-        public override readonly bool Equals(object? obj) => obj is Quaternion quaternion && Equals(quaternion);
+        public readonly override bool Equals(object? obj)
+        {
+            return obj is Quaternion quaternion && Equals(quaternion);
+        }
 
         /// <inheritdoc />
-        public readonly bool Equals(Quaternion other) => Xyz.Equals(other.Xyz) &&
+        public readonly bool Equals(Quaternion other)
+        {
+            return Xyz.Equals(other.Xyz) &&
                    W == other.W;
+        }
 
         /// <inheritdoc />
-#pragma warning disable S2328 // "GetHashCode" should not reference mutable fields
-        public override readonly int GetHashCode() => HashCode.Combine(Xyz, W);
-#pragma warning restore S2328 // "GetHashCode" should not reference mutable fields
+        public readonly override int GetHashCode()
+        {
+            return HashCode.Combine(Xyz, W);
+        }
 
         /// <summary>
         /// Returns a System.String that represents the current Quaternion.
         /// </summary>
         /// <returns>A human-readable representation of the quaternion.</returns>
-        public override readonly string ToString() => ToString(null, null);
+        public readonly override string ToString()
+        {
+            return ToString(null, null);
+        }
 
         /// <inheritdoc cref="ToString(string, IFormatProvider)"/>
-        public readonly string ToString(string format) => ToString(format, null);
+        public readonly string ToString(string format)
+        {
+            return ToString(format, null);
+        }
 
         /// <inheritdoc cref="ToString(string, IFormatProvider)"/>
-        public readonly string ToString(IFormatProvider formatProvider) => ToString(null, formatProvider);
+        public readonly string ToString(IFormatProvider formatProvider)
+        {
+            return ToString(null, formatProvider);
+        }
 
         /// <inheritdoc/>
         public readonly string ToString(string? format, IFormatProvider? formatProvider)
         {
-            string ls = MathHelper.GetListSeparator(formatProvider);
-            string xyz = Xyz.ToString(format, formatProvider);
-            string w = W.ToString(format, formatProvider);
+            var ls = MathHelper.GetListSeparator(formatProvider);
+            var xyz = Xyz.ToString(format, formatProvider);
+            var w = W.ToString(format, formatProvider);
             return $"V: {xyz}{ls} W: {w}";
         }
     }

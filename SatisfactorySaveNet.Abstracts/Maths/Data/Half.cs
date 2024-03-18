@@ -1,5 +1,7 @@
+using System;
 using System.Diagnostics.Contracts;
 using System.Globalization;
+using System.IO;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 
@@ -55,7 +57,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Data
         {
             unsafe
             {
-                _bits = SingleToHalf(*(int*)&f);
+                _bits = SingleToHalf(*(int*) &f);
             }
         }
 
@@ -105,7 +107,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Data
         /// </summary>
         /// <param name="d">64-bit double-precision floating-point number.</param>
         public Half(double d)
-            : this((float)d)
+            : this((float) d)
         {
         }
 
@@ -116,7 +118,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Data
         /// <param name="d">64-bit double-precision floating-point number.</param>
         /// <param name="throwOnError">Enable checks that will throw if the conversion result is not meaningful.</param>
         public Half(double d, bool throwOnError)
-            : this((float)d, throwOnError)
+            : this((float) d, throwOnError)
         {
         }
 
@@ -130,9 +132,9 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Data
             // Disassemble that bit pattern into the sign, S, the exponent, E, and the significand, M.
             // Shift S into the position where it will go in in the resulting half number.
             // Adjust E, accounting for the different exponent bias of float and half (127 versus 15).
-            int sign = (si32 >> 16) & 0x00008000;
-            int exponent = ((si32 >> 23) & 0x000000ff) - (127 - 15);
-            int mantissa = si32 & 0x007fffff;
+            var sign = (si32 >> 16) & 0x00008000;
+            var exponent = ((si32 >> 23) & 0x000000ff) - (127 - 15);
+            var mantissa = si32 & 0x007fffff;
 
             // Now reassemble S, E and M into a half:
             if (exponent <= 0)
@@ -143,7 +145,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Data
                     // (F may be a small normalized float, a denormalized float or a zero).
                     //
                     // We convert F to a half zero with the same sign as F.
-                    return (ushort)sign;
+                    return (ushort) sign;
                 }
 
                 // E is between -10 and 0. F is a normalized float whose magnitude is less than Half.MinNormalizedValue.
@@ -157,14 +159,14 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Data
                 //
                 // Rounding may cause the significand to overflow and make our number normalized. Because of the way a half's bits
                 // are laid out, we don't have to treat this case separately; the code below will handle it correctly.
-                int t = 14 - exponent;
-                int a = (1 << (t - 1)) - 1;
-                int b = (mantissa >> t) & 1;
+                var t = 14 - exponent;
+                var a = (1 << (t - 1)) - 1;
+                var b = (mantissa >> t) & 1;
 
                 mantissa = (mantissa + a + b) >> t;
 
                 // Assemble the half from S, E (==zero) and M.
-                return (ushort)(sign | mantissa);
+                return (ushort) (sign | mantissa);
             }
 
             if (exponent == 0xff - (127 - 15))
@@ -172,14 +174,14 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Data
                 if (mantissa == 0)
                 {
                     // F is an infinity; convert F to a half infinity with the same sign as F.
-                    return (ushort)(sign | 0x7c00);
+                    return (ushort) (sign | 0x7c00);
                 }
 
                 // F is a NAN; we produce a half NAN that preserves the sign bit and the 10 leftmost bits of the
                 // significand of F, with one exception: If the 10 leftmost bits are all zero, the NAN would turn
                 // into an infinity, so we have to set at least one bit in the significand.
                 mantissa >>= 13;
-                return (ushort)(sign | 0x7c00 | mantissa | (mantissa == 0 ? 1 : 0));
+                return (ushort) (sign | 0x7c00 | mantissa | (mantissa == 0 ? 1 : 0));
             }
 
             // E is greater than zero.  F is a normalized float. We try to convert F to a normalized half.
@@ -200,7 +202,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Data
             }
 
             // Assemble the half from S, E and M.
-            return (ushort)(sign | (exponent << 10) | (mantissa >> 13));
+            return (ushort) (sign | (exponent << 10) | (mantissa >> 13));
         }
 
         /// <summary>
@@ -209,11 +211,11 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Data
         /// <returns>A single-precision floating-point number.</returns>
         public float ToSingle()
         {
-            int i = HalfToFloat(_bits);
+            var i = HalfToFloat(_bits);
 
             unsafe
             {
-                return *(float*)&i;
+                return *(float*) &i;
             }
         }
 
@@ -223,9 +225,9 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Data
         [Pure]
         private static int HalfToFloat(ushort ui16)
         {
-            int sign = (ui16 >> 15) & 0x00000001;
-            int exponent = (ui16 >> 10) & 0x0000001f;
-            int mantissa = ui16 & 0x000003ff;
+            var sign = (ui16 >> 15) & 0x00000001;
+            var exponent = (ui16 >> 10) & 0x0000001f;
+            var mantissa = ui16 & 0x000003ff;
 
             if (exponent == 0)
             {
@@ -275,7 +277,10 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Data
         /// The <see cref="Half"/> result of the conversion.
         /// </returns>
         [Pure]
-        public static explicit operator Half(float f) => new(f);
+        public static explicit operator Half(float f)
+        {
+            return new(f);
+        }
 
         /// <summary>
         /// Converts a System.Double to a SatisfactorySaveNet.Half.
@@ -287,7 +292,10 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Data
         /// The <see cref="Half"/> result of the conversion.
         /// </returns>
         [Pure]
-        public static explicit operator Half(double d) => new(d);
+        public static explicit operator Half(double d)
+        {
+            return new(d);
+        }
 
         /// <summary>
         /// Converts a SatisfactorySaveNet.Half to a System.Single.
@@ -299,7 +307,10 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Data
         /// The <see cref="float"/> result of the conversion.
         /// </returns>
         [Pure]
-        public static implicit operator float(Half h) => h.ToSingle();
+        public static implicit operator float(Half h)
+        {
+            return h.ToSingle();
+        }
 
         /// <summary>
         /// Converts a SatisfactorySaveNet.Half to a System.Double.
@@ -311,11 +322,20 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Data
         /// The <see cref="double"/> result of the conversion.
         /// </returns>
         [Pure]
-        public static implicit operator double(Half h) => h.ToSingle();
+        public static implicit operator double(Half h)
+        {
+            return h.ToSingle();
+        }
 
-        public static bool operator ==(Half left, Half right) => left.Equals(right);
+        public static bool operator ==(Half left, Half right)
+        {
+            return left.Equals(right);
+        }
 
-        public static bool operator !=(Half left, Half right) => !(left == right);
+        public static bool operator !=(Half left, Half right)
+        {
+            return !(left == right);
+        }
 
         /// <summary>
         /// The size in bytes for an instance of the Half struct.
@@ -351,7 +371,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Data
         private Half(SerializationInfo info, StreamingContext context)
         {
             var value = info.GetValue("bits", typeof(ushort)) ?? throw new ArgumentOutOfRangeException(nameof(info), null, "bits must be not null");
-            _bits = (ushort)value;
+            _bits = (ushort) value;
         }
 
         /// <inheritdoc/>
@@ -364,19 +384,31 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Data
         /// Updates the Half by reading from a Stream.
         /// </summary>
         /// <param name="bin">A BinaryReader instance associated with an open Stream.</param>
-        public static Half FromBinaryStream(BinaryReader bin) => new(bin.ReadUInt16());
+        public static Half FromBinaryStream(BinaryReader bin)
+        {
+            return new(bin.ReadUInt16());
+        }
 
         /// <summary>
         /// Writes the Half into a Stream.
         /// </summary>
         /// <param name="bin">A BinaryWriter instance associated with an open Stream.</param>
-        public void ToBinaryStream(BinaryWriter bin) => bin.Write(_bits);
+        public void ToBinaryStream(BinaryWriter bin)
+        {
+            bin.Write(_bits);
+        }
 
         /// <inheritdoc />
-        public override int GetHashCode() => HashCode.Combine(_bits);
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(_bits);
+        }
 
         /// <inheritdoc />
-        public override bool Equals(object? obj) => base.Equals(obj);
+        public override bool Equals(object? obj)
+        {
+            return base.Equals(obj);
+        }
 
         /// <summary>
         /// Returns a value indicating whether this instance is equal to a specified SatisfactorySaveNet.Half value.
@@ -388,22 +420,22 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Data
         {
             const int maxUlps = 1;
 
-            short k = unchecked((short)other._bits);
-            short l = unchecked((short)_bits);
+            var k = unchecked((short) other._bits);
+            var l = unchecked((short) _bits);
 
             // Make a lexicographically ordered as a twos-complement int
             if (k < 0)
             {
-                k = (short)(0x8000 - k);
+                k = (short) (0x8000 - k);
             }
 
             // Make b lexicographically ordered as a twos-complement int
             if (l < 0)
             {
-                l = (short)(0x8000 - l);
+                l = (short) (0x8000 - l);
             }
 
-            short intDiff = Math.Abs((short)(k - l));
+            var intDiff = Math.Abs((short) (k - l));
 
             return intDiff <= maxUlps;
         }
@@ -432,19 +464,31 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Data
         ///  </para>
         /// </returns>
         [Pure]
-        public readonly int CompareTo(Half other) => ((float)this).CompareTo(other);
+        public readonly int CompareTo(Half other)
+        {
+            return ((float) this).CompareTo(other);
+        }
 
         /// <summary>
         /// Converts this Half into a human-legible string representation.
         /// </summary>
         /// <returns>The string representation of this instance.</returns>
-        public override string ToString() => ToString(null, null);
+        public override string ToString()
+        {
+            return ToString(null, null);
+        }
 
         /// <inheritdoc cref="ToString(string, IFormatProvider)"/>
-        public string ToString(string format) => ToString(format, null);
+        public string ToString(string format)
+        {
+            return ToString(format, null);
+        }
 
         /// <inheritdoc cref="ToString(string, IFormatProvider)"/>
-        public string ToString(IFormatProvider formatProvider) => ToString(null, formatProvider);
+        public string ToString(IFormatProvider formatProvider)
+        {
+            return ToString(null, formatProvider);
+        }
 
         /// <summary>
         /// Converts this Half into a human-legible string representation.
@@ -453,7 +497,10 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Data
         /// <param name="formatProvider">Culture-specific formatting information.</param>
         /// <returns>The string representation of this instance.</returns>
         [Pure]
-        public string ToString(string? format, IFormatProvider? formatProvider) => ToSingle().ToString(format, formatProvider);
+        public string ToString(string? format, IFormatProvider? formatProvider)
+        {
+            return ToSingle().ToString(format, formatProvider);
+        }
 
         /// <summary>
         /// Converts the string representation of a number to a half-precision floating-point equivalent.
@@ -461,7 +508,10 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Data
         /// <param name="s">String representation of the number to convert.</param>
         /// <returns>A new Half instance.</returns>
         [Pure]
-        public static Half Parse(string s) => (Half)float.Parse(s);
+        public static Half Parse(string s)
+        {
+            return (Half) float.Parse(s);
+        }
 
         /// <summary>
         /// Converts the string representation of a number to a half-precision floating-point equivalent.
@@ -471,7 +521,10 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Data
         /// <param name="provider">Culture-specific formatting information.</param>
         /// <returns>A new Half instance.</returns>
         [Pure]
-        public static Half Parse(string s, NumberStyles style, IFormatProvider provider) => (Half)float.Parse(s, style, provider);
+        public static Half Parse(string s, NumberStyles style, IFormatProvider provider)
+        {
+            return (Half) float.Parse(s, style, provider);
+        }
 
         /// <summary>
         /// Converts the string representation of a number to a half-precision floating-point equivalent. Returns success.
@@ -482,8 +535,8 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Data
         [Pure]
         public static bool TryParse(string s, out Half result)
         {
-            bool b = float.TryParse(s, out float f);
-            result = (Half)f;
+            var b = float.TryParse(s, out var f);
+            result = (Half) f;
             return b;
         }
 
@@ -498,8 +551,8 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Data
         [Pure]
         public static bool TryParse(string s, NumberStyles style, IFormatProvider provider, out Half result)
         {
-            bool b = float.TryParse(s, style, provider, out float f);
-            result = (Half)f;
+            var b = float.TryParse(s, style, provider, out var f);
+            result = (Half) f;
             return b;
         }
 
@@ -509,7 +562,10 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Data
         /// <param name="h">The Half to convert.</param>
         /// <returns>The input as byte array.</returns>
         [Pure]
-        public static byte[] GetBytes(Half h) => BitConverter.GetBytes(h._bits);
+        public static byte[] GetBytes(Half h)
+        {
+            return BitConverter.GetBytes(h._bits);
+        }
 
         /// <summary>
         /// Converts an array of bytes into Half.
@@ -518,14 +574,29 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Data
         /// <param name="startIndex">The starting position within value.</param>
         /// <returns>A new Half instance.</returns>
         [Pure]
-        public static Half FromBytes(byte[] value, int startIndex) => new(BitConverter.ToUInt16(value, startIndex));
+        public static Half FromBytes(byte[] value, int startIndex)
+        {
+            return new(BitConverter.ToUInt16(value, startIndex));
+        }
 
-        public static bool operator <(Half left, Half right) => left.CompareTo(right) < 0;
+        public static bool operator <(Half left, Half right)
+        {
+            return left.CompareTo(right) < 0;
+        }
 
-        public static bool operator <=(Half left, Half right) => left.CompareTo(right) <= 0;
+        public static bool operator <=(Half left, Half right)
+        {
+            return left.CompareTo(right) <= 0;
+        }
 
-        public static bool operator >(Half left, Half right) => left.CompareTo(right) > 0;
+        public static bool operator >(Half left, Half right)
+        {
+            return left.CompareTo(right) > 0;
+        }
 
-        public static bool operator >=(Half left, Half right) => left.CompareTo(right) >= 0;
+        public static bool operator >=(Half left, Half right)
+        {
+            return left.CompareTo(right) >= 0;
+        }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using SatisfactorySaveNet.Abstracts.Maths.Vector;
+using System.Collections.Generic;
 
 namespace SatisfactorySaveNet.Abstracts.Model;
 
@@ -15,5 +16,5 @@ public class ActorObject : ComponentObject
 
     public string ParentObjectRoot { get; set; } = string.Empty;
     public string ParentObjectName { get; set; } = string.Empty;
-    public IList<ObjectReference> Components { get; set; } = Array.Empty<ObjectReference>();
+    public IList<ObjectReference> Components { get; set; } = [];
 }

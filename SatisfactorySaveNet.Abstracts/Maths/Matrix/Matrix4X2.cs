@@ -1,4 +1,5 @@
 ﻿using SatisfactorySaveNet.Abstracts.Maths.Vector;
+using System;
 using System.Diagnostics.Contracts;
 using System.Runtime.InteropServices;
 
@@ -219,13 +220,10 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
                 var tmp = rowIndex == 2
                     ? Row2[columnIndex]
                     : rowIndex;
-
-#pragma warning disable S112 // General or reserved exceptions should never be thrown
                 return tmp == 3
                     ? Row3[columnIndex]
                     : throw new IndexOutOfRangeException("You tried to access this matrix at: (" + rowIndex + ", " +
                                                    columnIndex + ")");
-#pragma warning restore S112 // General or reserved exceptions should never be thrown
             }
             set
             {
@@ -243,12 +241,10 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
                 }
                 else
                 {
-#pragma warning disable S112 // General or reserved exceptions should never be thrown
                     Row3[columnIndex] = rowIndex == 3
                         ? value
                         : throw new IndexOutOfRangeException("You tried to set this matrix at: (" + rowIndex + ", " +
                                                                            columnIndex + ")");
-#pragma warning restore S112 // General or reserved exceptions should never be thrown
                 }
             }
         }
@@ -260,8 +256,8 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         /// <param name="result">The resulting Matrix3x2 instance.</param>
         public static void CreateRotation(float angle, out Matrix4X2 result)
         {
-            float cos = MathF.Cos(angle);
-            float sin = MathF.Sin(angle);
+            var cos = MathF.Cos(angle);
+            var sin = MathF.Sin(angle);
 
             result.Row0.X = cos;
             result.Row0.Y = sin;
@@ -281,7 +277,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         [Pure]
         public static Matrix4X2 CreateRotation(float angle)
         {
-            CreateRotation(angle, out Matrix4X2 result);
+            CreateRotation(angle, out var result);
             return result;
         }
 
@@ -310,7 +306,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         [Pure]
         public static Matrix4X2 CreateScale(float scale)
         {
-            CreateScale(scale, out Matrix4X2 result);
+            CreateScale(scale, out var result);
             return result;
         }
 
@@ -339,7 +335,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         [Pure]
         public static Matrix4X2 CreateScale(Vector2 scale)
         {
-            CreateScale(scale, out Matrix4X2 result);
+            CreateScale(scale, out var result);
             return result;
         }
 
@@ -370,7 +366,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         [Pure]
         public static Matrix4X2 CreateScale(float x, float y)
         {
-            CreateScale(x, y, out Matrix4X2 result);
+            CreateScale(x, y, out var result);
             return result;
         }
 
@@ -401,7 +397,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         [Pure]
         public static Matrix4X2 Mult(Matrix4X2 left, float right)
         {
-            Mult(in left, right, out Matrix4X2 result);
+            Mult(in left, right, out var result);
             return result;
         }
 
@@ -413,18 +409,18 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         /// <param name="result">A new instance that is the result of the multiplication.</param>
         public static void Mult(in Matrix4X2 left, in Matrix2 right, out Matrix4X2 result)
         {
-            float leftM11 = left.Row0.X;
-            float leftM12 = left.Row0.Y;
-            float leftM21 = left.Row1.X;
-            float leftM22 = left.Row1.Y;
-            float leftM31 = left.Row2.X;
-            float leftM32 = left.Row2.Y;
-            float leftM41 = left.Row3.X;
-            float leftM42 = left.Row3.Y;
-            float rightM11 = right.Row0.X;
-            float rightM12 = right.Row0.Y;
-            float rightM21 = right.Row1.X;
-            float rightM22 = right.Row1.Y;
+            var leftM11 = left.Row0.X;
+            var leftM12 = left.Row0.Y;
+            var leftM21 = left.Row1.X;
+            var leftM22 = left.Row1.Y;
+            var leftM31 = left.Row2.X;
+            var leftM32 = left.Row2.Y;
+            var leftM41 = left.Row3.X;
+            var leftM42 = left.Row3.Y;
+            var rightM11 = right.Row0.X;
+            var rightM12 = right.Row0.Y;
+            var rightM21 = right.Row1.X;
+            var rightM22 = right.Row1.Y;
 
             result.Row0.X = (leftM11 * rightM11) + (leftM12 * rightM21);
             result.Row0.Y = (leftM11 * rightM12) + (leftM12 * rightM22);
@@ -445,7 +441,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         [Pure]
         public static Matrix4X2 Mult(Matrix4X2 left, Matrix2 right)
         {
-            Mult(in left, in right, out Matrix4X2 result);
+            Mult(in left, in right, out var result);
             return result;
         }
 
@@ -457,20 +453,20 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         /// <param name="result">A new instance that is the result of the multiplication.</param>
         public static void Mult(in Matrix4X2 left, in Matrix2X3 right, out Matrix4X3 result)
         {
-            float leftM11 = left.Row0.X;
-            float leftM12 = left.Row0.Y;
-            float leftM21 = left.Row1.X;
-            float leftM22 = left.Row1.Y;
-            float leftM31 = left.Row2.X;
-            float leftM32 = left.Row2.Y;
-            float leftM41 = left.Row3.X;
-            float leftM42 = left.Row3.Y;
-            float rightM11 = right.Row0.X;
-            float rightM12 = right.Row0.Y;
-            float rightM13 = right.Row0.Z;
-            float rightM21 = right.Row1.X;
-            float rightM22 = right.Row1.Y;
-            float rightM23 = right.Row1.Z;
+            var leftM11 = left.Row0.X;
+            var leftM12 = left.Row0.Y;
+            var leftM21 = left.Row1.X;
+            var leftM22 = left.Row1.Y;
+            var leftM31 = left.Row2.X;
+            var leftM32 = left.Row2.Y;
+            var leftM41 = left.Row3.X;
+            var leftM42 = left.Row3.Y;
+            var rightM11 = right.Row0.X;
+            var rightM12 = right.Row0.Y;
+            var rightM13 = right.Row0.Z;
+            var rightM21 = right.Row1.X;
+            var rightM22 = right.Row1.Y;
+            var rightM23 = right.Row1.Z;
 
             result.Row0.X = (leftM11 * rightM11) + (leftM12 * rightM21);
             result.Row0.Y = (leftM11 * rightM12) + (leftM12 * rightM22);
@@ -495,7 +491,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         [Pure]
         public static Matrix4X3 Mult(Matrix4X2 left, Matrix2X3 right)
         {
-            Mult(in left, in right, out Matrix4X3 result);
+            Mult(in left, in right, out var result);
             return result;
         }
 
@@ -507,22 +503,22 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         /// <param name="result">A new instance that is the result of the multiplication.</param>
         public static void Mult(in Matrix4X2 left, in Matrix2X4 right, out Matrix4 result)
         {
-            float leftM11 = left.Row0.X;
-            float leftM12 = left.Row0.Y;
-            float leftM21 = left.Row1.X;
-            float leftM22 = left.Row1.Y;
-            float leftM31 = left.Row2.X;
-            float leftM32 = left.Row2.Y;
-            float leftM41 = left.Row3.X;
-            float leftM42 = left.Row3.Y;
-            float rightM11 = right.Row0.X;
-            float rightM12 = right.Row0.Y;
-            float rightM13 = right.Row0.Z;
-            float rightM14 = right.Row0.W;
-            float rightM21 = right.Row1.X;
-            float rightM22 = right.Row1.Y;
-            float rightM23 = right.Row1.Z;
-            float rightM24 = right.Row1.W;
+            var leftM11 = left.Row0.X;
+            var leftM12 = left.Row0.Y;
+            var leftM21 = left.Row1.X;
+            var leftM22 = left.Row1.Y;
+            var leftM31 = left.Row2.X;
+            var leftM32 = left.Row2.Y;
+            var leftM41 = left.Row3.X;
+            var leftM42 = left.Row3.Y;
+            var rightM11 = right.Row0.X;
+            var rightM12 = right.Row0.Y;
+            var rightM13 = right.Row0.Z;
+            var rightM14 = right.Row0.W;
+            var rightM21 = right.Row1.X;
+            var rightM22 = right.Row1.Y;
+            var rightM23 = right.Row1.Z;
+            var rightM24 = right.Row1.W;
 
             result.Row0.X = (leftM11 * rightM11) + (leftM12 * rightM21);
             result.Row0.Y = (leftM11 * rightM12) + (leftM12 * rightM22);
@@ -551,7 +547,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         [Pure]
         public static Matrix4 Mult(Matrix4X2 left, Matrix2X4 right)
         {
-            Mult(in left, in right, out Matrix4 result);
+            Mult(in left, in right, out var result);
             return result;
         }
 
@@ -582,7 +578,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         [Pure]
         public static Matrix4X2 Add(Matrix4X2 left, Matrix4X2 right)
         {
-            Add(in left, in right, out Matrix4X2 result);
+            Add(in left, in right, out var result);
             return result;
         }
 
@@ -613,7 +609,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         [Pure]
         public static Matrix4X2 Subtract(Matrix4X2 left, Matrix4X2 right)
         {
-            Subtract(in left, in right, out Matrix4X2 result);
+            Subtract(in left, in right, out var result);
             return result;
         }
 
@@ -642,7 +638,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         [Pure]
         public static Matrix2X4 Transpose(Matrix4X2 mat)
         {
-            Transpose(in mat, out Matrix2X4 result);
+            Transpose(in mat, out var result);
             return result;
         }
 
@@ -653,7 +649,10 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         /// <param name="right">right-hand operand.</param>
         /// <returns>A new Matrix4x2 which holds the result of the multiplication.</returns>
         [Pure]
-        public static Matrix4X2 operator *(float left, Matrix4X2 right) => Mult(right, left);
+        public static Matrix4X2 operator *(float left, Matrix4X2 right)
+        {
+            return Mult(right, left);
+        }
 
         /// <summary>
         /// Scalar multiplication.
@@ -662,7 +661,10 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         /// <param name="right">right-hand operand.</param>
         /// <returns>A new Matrix4x2 which holds the result of the multiplication.</returns>
         [Pure]
-        public static Matrix4X2 operator *(Matrix4X2 left, float right) => Mult(left, right);
+        public static Matrix4X2 operator *(Matrix4X2 left, float right)
+        {
+            return Mult(left, right);
+        }
 
         /// <summary>
         /// Matrix multiplication.
@@ -671,7 +673,10 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         /// <param name="right">right-hand operand.</param>
         /// <returns>A new Matrix2 which holds the result of the multiplication.</returns>
         [Pure]
-        public static Matrix4X2 operator *(Matrix4X2 left, Matrix2 right) => Mult(left, right);
+        public static Matrix4X2 operator *(Matrix4X2 left, Matrix2 right)
+        {
+            return Mult(left, right);
+        }
 
         /// <summary>
         /// Matrix multiplication.
@@ -680,7 +685,10 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         /// <param name="right">right-hand operand.</param>
         /// <returns>A new Matrix4x3 which holds the result of the multiplication.</returns>
         [Pure]
-        public static Matrix4X3 operator *(Matrix4X2 left, Matrix2X3 right) => Mult(left, right);
+        public static Matrix4X3 operator *(Matrix4X2 left, Matrix2X3 right)
+        {
+            return Mult(left, right);
+        }
 
         /// <summary>
         /// Matrix multiplication.
@@ -689,7 +697,10 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         /// <param name="right">right-hand operand.</param>
         /// <returns>A new Matrix4 which holds the result of the multiplication.</returns>
         [Pure]
-        public static Matrix4 operator *(Matrix4X2 left, Matrix2X4 right) => Mult(left, right);
+        public static Matrix4 operator *(Matrix4X2 left, Matrix2X4 right)
+        {
+            return Mult(left, right);
+        }
 
         /// <summary>
         /// Matrix addition.
@@ -698,7 +709,10 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         /// <param name="right">right-hand operand.</param>
         /// <returns>A new Matrix4x2 which holds the result of the addition.</returns>
         [Pure]
-        public static Matrix4X2 operator +(Matrix4X2 left, Matrix4X2 right) => Add(left, right);
+        public static Matrix4X2 operator +(Matrix4X2 left, Matrix4X2 right)
+        {
+            return Add(left, right);
+        }
 
         /// <summary>
         /// Matrix subtraction.
@@ -707,7 +721,10 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         /// <param name="right">right-hand operand.</param>
         /// <returns>A new Matrix4x2 which holds the result of the subtraction.</returns>
         [Pure]
-        public static Matrix4X2 operator -(Matrix4X2 left, Matrix4X2 right) => Subtract(left, right);
+        public static Matrix4X2 operator -(Matrix4X2 left, Matrix4X2 right)
+        {
+            return Subtract(left, right);
+        }
 
         /// <summary>
         /// Compares two instances for equality.
@@ -716,7 +733,10 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         /// <param name="right">The second instance.</param>
         /// <returns>True, if left equals right; false otherwise.</returns>
         [Pure]
-        public static bool operator ==(Matrix4X2 left, Matrix4X2 right) => left.Equals(right);
+        public static bool operator ==(Matrix4X2 left, Matrix4X2 right)
+        {
+            return left.Equals(right);
+        }
 
         /// <summary>
         /// Compares two instances for inequality.
@@ -725,27 +745,39 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         /// <param name="right">The second instance.</param>
         /// <returns>True, if left does not equal right; false otherwise.</returns>
         [Pure]
-        public static bool operator !=(Matrix4X2 left, Matrix4X2 right) => !left.Equals(right);
+        public static bool operator !=(Matrix4X2 left, Matrix4X2 right)
+        {
+            return !left.Equals(right);
+        }
 
         /// <summary>
         /// Returns a System.String that represents the current Matrix3d.
         /// </summary>
         /// <returns>The string representation of the matrix.</returns>
-        public override readonly string ToString() => ToString(null, null);
+        public readonly override string ToString()
+        {
+            return ToString(null, null);
+        }
 
         /// <inheritdoc cref="ToString(string, IFormatProvider)"/>
-        public readonly string ToString(string format) => ToString(format, null);
+        public readonly string ToString(string format)
+        {
+            return ToString(format, null);
+        }
 
         /// <inheritdoc cref="ToString(string, IFormatProvider)"/>
-        public readonly string ToString(IFormatProvider formatProvider) => ToString(null, formatProvider);
+        public readonly string ToString(IFormatProvider formatProvider)
+        {
+            return ToString(null, formatProvider);
+        }
 
         /// <inheritdoc/>
         public readonly string ToString(string? format, IFormatProvider? formatProvider)
         {
-            string row0 = Row0.ToString(format, formatProvider);
-            string row1 = Row1.ToString(format, formatProvider);
-            string row2 = Row2.ToString(format, formatProvider);
-            string row3 = Row3.ToString(format, formatProvider);
+            var row0 = Row0.ToString(format, formatProvider);
+            var row1 = Row1.ToString(format, formatProvider);
+            var row2 = Row2.ToString(format, formatProvider);
+            var row3 = Row3.ToString(format, formatProvider);
             return $"{row0}\n{row1}\n{row2}\n{row3}";
         }
 
@@ -753,9 +785,10 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         /// Returns the hashcode for this instance.
         /// </summary>
         /// <returns>A System.Int32 containing the unique hashcode for this instance.</returns>
-#pragma warning disable S2328 // "GetHashCode" should not reference mutable fields
-        public override readonly int GetHashCode() => HashCode.Combine(Row0, Row1, Row2, Row3);
-#pragma warning restore S2328 // "GetHashCode" should not reference mutable fields
+        public readonly override int GetHashCode()
+        {
+            return HashCode.Combine(Row0, Row1, Row2, Row3);
+        }
 
         /// <summary>
         /// Indicates whether this instance and a specified object are equal.
@@ -763,7 +796,10 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         /// <param name="obj">The object to compare to.</param>
         /// <returns>True if the instances are equal; false otherwise.</returns>
         [Pure]
-        public override readonly bool Equals(object? obj) => obj is Matrix4X2 matrix && Equals(matrix);
+        public readonly override bool Equals(object? obj)
+        {
+            return obj is Matrix4X2 matrix && Equals(matrix);
+        }
 
         /// <summary>
         /// Indicates whether the current matrix is equal to another matrix.
@@ -771,9 +807,12 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         /// <param name="other">An matrix to compare with this matrix.</param>
         /// <returns>true if the current matrix is equal to the matrix parameter; otherwise, false.</returns>
         [Pure]
-        public readonly bool Equals(Matrix4X2 other) => Row0 == other.Row0 &&
+        public readonly bool Equals(Matrix4X2 other)
+        {
+            return Row0 == other.Row0 &&
                 Row1 == other.Row1 &&
                 Row2 == other.Row2 &&
                 Row3 == other.Row3;
+        }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using SatisfactorySaveNet.Abstracts;
 using SatisfactorySaveNet.Abstracts.Maths.Data;
 using SatisfactorySaveNet.Abstracts.Maths.Vector;
+using System.IO;
 
 namespace SatisfactorySaveNet;
 

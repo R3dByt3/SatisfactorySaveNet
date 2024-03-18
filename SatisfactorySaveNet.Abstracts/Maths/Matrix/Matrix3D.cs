@@ -1,5 +1,6 @@
 using SatisfactorySaveNet.Abstracts.Maths.Data;
 using SatisfactorySaveNet.Abstracts.Maths.Vector;
+using System;
 using System.Diagnostics.Contracts;
 using System.Runtime.InteropServices;
 
@@ -87,15 +88,15 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         {
             get
             {
-                double m11 = Row0.X;
-                double m12 = Row0.Y;
-                double m13 = Row0.Z;
-                double m21 = Row1.X;
-                double m22 = Row1.Y;
-                double m23 = Row1.Z;
-                double m31 = Row2.X;
-                double m32 = Row2.Y;
-                double m33 = Row2.Z;
+                var m11 = Row0.X;
+                var m12 = Row0.Y;
+                var m13 = Row0.Z;
+                var m21 = Row1.X;
+                var m22 = Row1.Y;
+                var m23 = Row1.Z;
+                var m31 = Row2.X;
+                var m32 = Row2.Y;
+                var m33 = Row2.Z;
 
                 return
                     (m11 * m22 * m33) + (m12 * m23 * m31) + (m13 * m21 * m32)
@@ -131,7 +132,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         /// Gets or sets the value at row 1, column 2 of this instance.
         /// </summary>
         public double M12
-        { 
+        {
             readonly get => Row0.Y;
             set => Row0.Y = value;
         }
@@ -140,7 +141,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         /// Gets or sets the value at row 1, column 3 of this instance.
         /// </summary>
         public double M13
-        { 
+        {
             readonly get => Row0.Z;
             set => Row0.Z = value;
         }
@@ -149,7 +150,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         /// Gets or sets the value at row 2, column 1 of this instance.
         /// </summary>
         public double M21
-        { 
+        {
             readonly get => Row1.X;
             set => Row1.X = value;
         }
@@ -158,7 +159,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         /// Gets or sets the value at row 2, column 2 of this instance.
         /// </summary>
         public double M22
-        { 
+        {
             readonly get => Row1.Y;
             set => Row1.Y = value;
         }
@@ -167,7 +168,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         /// Gets or sets the value at row 2, column 3 of this instance.
         /// </summary>
         public double M23
-        { 
+        {
             readonly get => Row1.Z;
             set => Row1.Z = value;
         }
@@ -176,7 +177,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         /// Gets or sets the value at row 3, column 1 of this instance.
         /// </summary>
         public double M31
-        { 
+        {
             readonly get => Row2.X;
             set => Row2.X = value;
         }
@@ -185,7 +186,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         /// Gets or sets the value at row 3, column 2 of this instance.
         /// </summary>
         public double M32
-        { 
+        {
             readonly get => Row2.Y;
             set => Row2.Y = value;
         }
@@ -194,7 +195,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         /// Gets or sets the value at row 3, column 3 of this instance.
         /// </summary>
         public double M33
-        { 
+        {
             readonly get => Row2.Z;
             set => Row2.Z = value;
         }
@@ -235,12 +236,10 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
                 var tmp = rowIndex == 1
                     ? Row1[columnIndex]
                     : rowIndex;
-#pragma warning disable S112 // General or reserved exceptions should never be thrown
                 return tmp == 2
                     ? Row2[columnIndex]
                     : throw new IndexOutOfRangeException("You tried to access this matrix at: (" + rowIndex + ", " +
                                                    columnIndex + ")");
-#pragma warning restore S112 // General or reserved exceptions should never be thrown
             }
 
             set
@@ -255,12 +254,10 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
                 }
                 else
                 {
-#pragma warning disable S112 // General or reserved exceptions should never be thrown
                     Row2[columnIndex] = rowIndex == 2
                         ? value
                         : throw new IndexOutOfRangeException("You tried to set this matrix at: (" + rowIndex + ", " +
                                                                            columnIndex + ")");
-#pragma warning restore S112 // General or reserved exceptions should never be thrown
                 }
             }
         }
@@ -287,7 +284,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         /// <returns>The normalized copy.</returns>
         public readonly Matrix3D Normalized()
         {
-            Matrix3D m = this;
+            var m = this;
             m.Normalize();
             return m;
         }
@@ -297,7 +294,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         /// </summary>
         public void Normalize()
         {
-            double determinant = Determinant;
+            var determinant = Determinant;
             Row0 /= determinant;
             Row1 /= determinant;
             Row2 /= determinant;
@@ -309,7 +306,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         /// <returns>The inverted copy.</returns>
         public readonly Matrix3D Inverted()
         {
-            Matrix3D m = this;
+            var m = this;
             if (m.Determinant != 0)
             {
                 m.Invert();
@@ -324,7 +321,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         /// <returns>The matrix without scaling.</returns>
         public readonly Matrix3D ClearScale()
         {
-            Matrix3D m = this;
+            var m = this;
             m.Row0 = m.Row0.Normalized();
             m.Row1 = m.Row1.Normalized();
             m.Row2 = m.Row2.Normalized();
@@ -337,7 +334,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         /// <returns>The matrix without rotation.</returns>
         public readonly Matrix3D ClearRotation()
         {
-            Matrix3D m = this;
+            var m = this;
             m.Row0 = new Vector3D(m.Row0.Length, 0, 0);
             m.Row1 = new Vector3D(0, m.Row1.Length, 0);
             m.Row2 = new Vector3D(0, 0, m.Row2.Length);
@@ -348,7 +345,10 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         /// Returns the scale component of this instance.
         /// </summary>
         /// <returns>The scale components.</returns>
-        public readonly Vector3D ExtractScale() => new(Row0.Length, Row1.Length, Row2.Length);
+        public readonly Vector3D ExtractScale()
+        {
+            return new(Row0.Length, Row1.Length, Row2.Length);
+        }
 
         /// <summary>
         /// Returns the rotation component of this instance. Quite slow.
@@ -361,9 +361,9 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         [Pure]
         public readonly QuaternionD ExtractRotation(bool rowNormalize = true)
         {
-            Vector3D row0 = Row0;
-            Vector3D row1 = Row1;
-            Vector3D row2 = Row2;
+            var row0 = Row0;
+            var row1 = Row1;
+            var row2 = Row2;
 
             if (rowNormalize)
             {
@@ -374,11 +374,11 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
 
             // code below adapted from Blender
             QuaternionD q = default;
-            double trace = 0.25 * (row0[0] + row1[1] + row2[2] + 1.0);
+            var trace = 0.25 * (row0[0] + row1[1] + row2[2] + 1.0);
 
             if (trace > 0)
             {
-                double sq = Math.Sqrt(trace);
+                var sq = Math.Sqrt(trace);
 
                 q.W = sq;
                 sq = 1.0 / (4.0 * sq);
@@ -388,7 +388,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
             }
             else if (row0[0] > row1[1] && row0[0] > row2[2])
             {
-                double sq = 2.0 * Math.Sqrt(1.0 + row0[0] - row1[1] - row2[2]);
+                var sq = 2.0 * Math.Sqrt(1.0 + row0[0] - row1[1] - row2[2]);
 
                 q.X = 0.25 * sq;
                 sq = 1.0 / sq;
@@ -398,7 +398,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
             }
             else if (row1[1] > row2[2])
             {
-                double sq = 2.0 * Math.Sqrt(1.0 + row1[1] - row0[0] - row2[2]);
+                var sq = 2.0 * Math.Sqrt(1.0 + row1[1] - row0[0] - row2[2]);
 
                 q.Y = 0.25 * sq;
                 sq = 1.0 / sq;
@@ -408,7 +408,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
             }
             else
             {
-                double sq = 2.0 * Math.Sqrt(1.0 + row2[2] - row0[0] - row1[1]);
+                var sq = 2.0 * Math.Sqrt(1.0 + row2[2] - row0[0] - row1[1]);
 
                 q.Z = 0.25 * sq;
                 sq = 1.0 / sq;
@@ -434,21 +434,21 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
             double axisX = axis.X, axisY = axis.Y, axisZ = axis.Z;
 
             // calculate angles
-            double cos = Math.Cos(-angle);
-            double sin = Math.Sin(-angle);
-            double t = 1.0f - cos;
+            var cos = Math.Cos(-angle);
+            var sin = Math.Sin(-angle);
+            var t = 1.0f - cos;
 
             // do the conversion math once
-            double tXX = t * axisX * axisX;
-            double tXY = t * axisX * axisY;
-            double tXZ = t * axisX * axisZ;
-            double tYY = t * axisY * axisY;
-            double tYZ = t * axisY * axisZ;
-            double tZZ = t * axisZ * axisZ;
+            var tXX = t * axisX * axisX;
+            var tXY = t * axisX * axisY;
+            var tXZ = t * axisX * axisZ;
+            var tYY = t * axisY * axisY;
+            var tYZ = t * axisY * axisZ;
+            var tZZ = t * axisZ * axisZ;
 
-            double sinX = sin * axisX;
-            double sinY = sin * axisY;
-            double sinZ = sin * axisZ;
+            var sinX = sin * axisX;
+            var sinY = sin * axisY;
+            var sinZ = sin * axisZ;
 
             result.Row0.X = tXX + cos;
             result.Row0.Y = tXY - sinZ;
@@ -470,7 +470,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         [Pure]
         public static Matrix3D CreateFromAxisAngle(Vector3D axis, double angle)
         {
-            CreateFromAxisAngle(axis, angle, out Matrix3D result);
+            CreateFromAxisAngle(axis, angle, out var result);
             return result;
         }
 
@@ -483,21 +483,21 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         {
             // Adapted from https://en.wikipedia.org/wiki/Quaternions_and_spatial_rotation#Quaternion-derived_rotation_matrix
             // with the caviat that SatisfactorySaveNet uses row-major matrices so the matrix we create is transposed
-            double sqx = q.X * q.X;
-            double sqy = q.Y * q.Y;
-            double sqz = q.Z * q.Z;
-            double sqw = q.W * q.W;
+            var sqx = q.X * q.X;
+            var sqy = q.Y * q.Y;
+            var sqz = q.Z * q.Z;
+            var sqw = q.W * q.W;
 
-            double xy = q.X * q.Y;
-            double xz = q.X * q.Z;
-            double xw = q.X * q.W;
+            var xy = q.X * q.Y;
+            var xz = q.X * q.Z;
+            var xw = q.X * q.W;
 
-            double yz = q.Y * q.Z;
-            double yw = q.Y * q.W;
+            var yz = q.Y * q.Z;
+            var yw = q.Y * q.W;
 
-            double zw = q.Z * q.W;
+            var zw = q.Z * q.W;
 
-            double s2 = 2d / (sqx + sqy + sqz + sqw);
+            var s2 = 2d / (sqx + sqy + sqz + sqw);
 
             result.Row0.X = 1d - (s2 * (sqy + sqz));
             result.Row1.Y = 1d - (s2 * (sqx + sqz));
@@ -521,7 +521,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         [Pure]
         public static Matrix3D CreateFromQuaternion(QuaternionD q)
         {
-            CreateFromQuaternion(in q, out Matrix3D result);
+            CreateFromQuaternion(in q, out var result);
             return result;
         }
 
@@ -532,8 +532,8 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         /// <param name="result">The resulting Matrix3d instance.</param>
         public static void CreateRotationX(double angle, out Matrix3D result)
         {
-            double cos = Math.Cos(angle);
-            double sin = Math.Sin(angle);
+            var cos = Math.Cos(angle);
+            var sin = Math.Sin(angle);
 
             result = Identity;
             result.Row1.Y = cos;
@@ -550,7 +550,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         [Pure]
         public static Matrix3D CreateRotationX(double angle)
         {
-            CreateRotationX(angle, out Matrix3D result);
+            CreateRotationX(angle, out var result);
             return result;
         }
 
@@ -561,8 +561,8 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         /// <param name="result">The resulting Matrix3d instance.</param>
         public static void CreateRotationY(double angle, out Matrix3D result)
         {
-            double cos = Math.Cos(angle);
-            double sin = Math.Sin(angle);
+            var cos = Math.Cos(angle);
+            var sin = Math.Sin(angle);
 
             result = Identity;
             result.Row0.X = cos;
@@ -579,7 +579,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         [Pure]
         public static Matrix3D CreateRotationY(double angle)
         {
-            CreateRotationY(angle, out Matrix3D result);
+            CreateRotationY(angle, out var result);
             return result;
         }
 
@@ -590,8 +590,8 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         /// <param name="result">The resulting Matrix3d instance.</param>
         public static void CreateRotationZ(double angle, out Matrix3D result)
         {
-            double cos = Math.Cos(angle);
-            double sin = Math.Sin(angle);
+            var cos = Math.Cos(angle);
+            var sin = Math.Sin(angle);
 
             result = Identity;
             result.Row0.X = cos;
@@ -608,7 +608,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         [Pure]
         public static Matrix3D CreateRotationZ(double angle)
         {
-            CreateRotationZ(angle, out Matrix3D result);
+            CreateRotationZ(angle, out var result);
             return result;
         }
 
@@ -620,7 +620,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         [Pure]
         public static Matrix3D CreateScale(double scale)
         {
-            CreateScale(scale, out Matrix3D result);
+            CreateScale(scale, out var result);
             return result;
         }
 
@@ -632,7 +632,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         [Pure]
         public static Matrix3D CreateScale(Vector3D scale)
         {
-            CreateScale(in scale, out Matrix3D result);
+            CreateScale(in scale, out var result);
             return result;
         }
 
@@ -646,7 +646,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         [Pure]
         public static Matrix3D CreateScale(double x, double y, double z)
         {
-            CreateScale(x, y, z, out Matrix3D result);
+            CreateScale(x, y, z, out var result);
             return result;
         }
 
@@ -700,7 +700,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         [Pure]
         public static Matrix3D Add(Matrix3D left, Matrix3D right)
         {
-            Add(in left, in right, out Matrix3D result);
+            Add(in left, in right, out var result);
             return result;
         }
 
@@ -726,7 +726,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         [Pure]
         public static Matrix3D Mult(Matrix3D left, Matrix3D right)
         {
-            Mult(in left, in right, out Matrix3D result);
+            Mult(in left, in right, out var result);
             return result;
         }
 
@@ -738,24 +738,24 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         /// <param name="result">A new instance that is the result of the multiplication.</param>
         public static void Mult(in Matrix3D left, in Matrix3D right, out Matrix3D result)
         {
-            double leftM11 = left.Row0.X;
-            double leftM12 = left.Row0.Y;
-            double leftM13 = left.Row0.Z;
-            double leftM21 = left.Row1.X;
-            double leftM22 = left.Row1.Y;
-            double leftM23 = left.Row1.Z;
-            double leftM31 = left.Row2.X;
-            double leftM32 = left.Row2.Y;
-            double leftM33 = left.Row2.Z;
-            double rightM11 = right.Row0.X;
-            double rightM12 = right.Row0.Y;
-            double rightM13 = right.Row0.Z;
-            double rightM21 = right.Row1.X;
-            double rightM22 = right.Row1.Y;
-            double rightM23 = right.Row1.Z;
-            double rightM31 = right.Row2.X;
-            double rightM32 = right.Row2.Y;
-            double rightM33 = right.Row2.Z;
+            var leftM11 = left.Row0.X;
+            var leftM12 = left.Row0.Y;
+            var leftM13 = left.Row0.Z;
+            var leftM21 = left.Row1.X;
+            var leftM22 = left.Row1.Y;
+            var leftM23 = left.Row1.Z;
+            var leftM31 = left.Row2.X;
+            var leftM32 = left.Row2.Y;
+            var leftM33 = left.Row2.Z;
+            var rightM11 = right.Row0.X;
+            var rightM12 = right.Row0.Y;
+            var rightM13 = right.Row0.Z;
+            var rightM21 = right.Row1.X;
+            var rightM22 = right.Row1.Y;
+            var rightM23 = right.Row1.Z;
+            var rightM31 = right.Row2.X;
+            var rightM32 = right.Row2.Y;
+            var rightM33 = right.Row2.Z;
 
             result.Row0.X = (leftM11 * rightM11) + (leftM12 * rightM21) + (leftM13 * rightM31);
             result.Row0.Y = (leftM11 * rightM12) + (leftM12 * rightM22) + (leftM13 * rightM32);
@@ -784,12 +784,12 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
 
             // Compute the elements needed to calculate the determinant
             // so that we can throw without writing anything to the out parameter.
-            double invRow0X = (+row1Y * row2Z) - (row1Z * row2Y);
-            double invRow1X = (-row1X * row2Z) + (row1Z * row2X);
-            double invRow2X = (+row1X * row2Y) - (row1Y * row2X);
+            var invRow0X = (+row1Y * row2Z) - (row1Z * row2Y);
+            var invRow1X = (-row1X * row2Z) + (row1Z * row2X);
+            var invRow2X = (+row1X * row2Y) - (row1Y * row2X);
 
             // Compute determinant:
-            double det = (row0X * invRow0X) + (row0Y * invRow1X) + (row0Z * invRow2X);
+            var det = (row0X * invRow0X) + (row0Y * invRow1X) + (row0Z * invRow2X);
 
             if (det == 0f)
             {
@@ -830,7 +830,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         [Pure]
         public static Matrix3D Invert(Matrix3D mat)
         {
-            Invert(in mat, out Matrix3D result);
+            Invert(in mat, out var result);
             return result;
         }
 
@@ -840,7 +840,10 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         /// <param name="mat">The matrix to transpose.</param>
         /// <returns>The transpose of the given matrix.</returns>
         [Pure]
-        public static Matrix3D Transpose(Matrix3D mat) => new(mat.Column0, mat.Column1, mat.Column2);
+        public static Matrix3D Transpose(Matrix3D mat)
+        {
+            return new(mat.Column0, mat.Column1, mat.Column2);
+        }
 
         /// <summary>
         /// Calculate the transpose of the given matrix.
@@ -861,7 +864,10 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         /// <param name="right">right-hand operand.</param>
         /// <returns>A new Matrix3d which holds the result of the multiplication.</returns>
         [Pure]
-        public static Matrix3D operator *(Matrix3D left, Matrix3D right) => Mult(left, right);
+        public static Matrix3D operator *(Matrix3D left, Matrix3D right)
+        {
+            return Mult(left, right);
+        }
 
         /// <summary>
         /// Compares two instances for equality.
@@ -870,7 +876,10 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         /// <param name="right">The second instance.</param>
         /// <returns>True, if left equals right; false otherwise.</returns>
         [Pure]
-        public static bool operator ==(Matrix3D left, Matrix3D right) => left.Equals(right);
+        public static bool operator ==(Matrix3D left, Matrix3D right)
+        {
+            return left.Equals(right);
+        }
 
         /// <summary>
         /// Compares two instances for inequality.
@@ -879,26 +888,38 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         /// <param name="right">The second instance.</param>
         /// <returns>True, if left does not equal right; false otherwise.</returns>
         [Pure]
-        public static bool operator !=(Matrix3D left, Matrix3D right) => !left.Equals(right);
+        public static bool operator !=(Matrix3D left, Matrix3D right)
+        {
+            return !left.Equals(right);
+        }
 
         /// <summary>
         /// Returns a System.String that represents the current Matrix3d.
         /// </summary>
         /// <returns>The string representation of the matrix.</returns>
-        public override readonly string ToString() => ToString(null, null);
+        public readonly override string ToString()
+        {
+            return ToString(null, null);
+        }
 
         /// <inheritdoc cref="ToString(string, IFormatProvider)"/>
-        public readonly string ToString(string format) => ToString(format, null);
+        public readonly string ToString(string format)
+        {
+            return ToString(format, null);
+        }
 
         /// <inheritdoc cref="ToString(string, IFormatProvider)"/>
-        public readonly string ToString(IFormatProvider formatProvider) => ToString(null, formatProvider);
+        public readonly string ToString(IFormatProvider formatProvider)
+        {
+            return ToString(null, formatProvider);
+        }
 
         /// <inheritdoc/>
         public readonly string ToString(string? format, IFormatProvider? formatProvider)
         {
-            string row0 = Row0.ToString(format, formatProvider);
-            string row1 = Row1.ToString(format, formatProvider);
-            string row2 = Row2.ToString(format, formatProvider);
+            var row0 = Row0.ToString(format, formatProvider);
+            var row1 = Row1.ToString(format, formatProvider);
+            var row2 = Row2.ToString(format, formatProvider);
             return $"{row0}\n{row1}\n{row2}";
         }
 
@@ -906,9 +927,10 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         /// Returns the hashcode for this instance.
         /// </summary>
         /// <returns>A System.Int32 containing the unique hashcode for this instance.</returns>
-#pragma warning disable S2328 // "GetHashCode" should not reference mutable fields
-        public override readonly int GetHashCode() => HashCode.Combine(Row0, Row1, Row2);
-#pragma warning restore S2328 // "GetHashCode" should not reference mutable fields
+        public readonly override int GetHashCode()
+        {
+            return HashCode.Combine(Row0, Row1, Row2);
+        }
 
         /// <summary>
         /// Indicates whether this instance and a specified object are equal.
@@ -916,7 +938,10 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         /// <param name="obj">The object to compare to.</param>
         /// <returns>True if the instances are equal; false otherwise.</returns>
         [Pure]
-        public override readonly bool Equals(object? obj) => obj is Matrix3D matrix && Equals(matrix);
+        public readonly override bool Equals(object? obj)
+        {
+            return obj is Matrix3D matrix && Equals(matrix);
+        }
 
         /// <summary>
         /// Indicates whether the current matrix is equal to another matrix.
@@ -924,8 +949,11 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         /// <param name="other">A matrix to compare with this matrix.</param>
         /// <returns>true if the current matrix is equal to the matrix parameter; otherwise, false.</returns>
         [Pure]
-        public readonly bool Equals(Matrix3D other) => Row0 == other.Row0 &&
+        public readonly bool Equals(Matrix3D other)
+        {
+            return Row0 == other.Row0 &&
                 Row1 == other.Row1 &&
                 Row2 == other.Row2;
+        }
     }
 }

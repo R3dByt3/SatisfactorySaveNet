@@ -1,6 +1,8 @@
-﻿namespace SatisfactorySaveNet.Abstracts.Model.Properties;
+﻿using System.Collections.Generic;
+
+namespace SatisfactorySaveNet.Abstracts.Model.Properties;
 
 public class ArrayObjectProperty : IArrayProperty
 {
-    public IList<ObjectReference> Values { get; set; } = Array.Empty<ObjectReference>();
+    public IList<ObjectReference> Values { get; set; } = [];
 }

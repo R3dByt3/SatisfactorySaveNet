@@ -1,4 +1,6 @@
+using System;
 using System.Diagnostics.Contracts;
+using System.IO;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
@@ -348,13 +350,19 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Vector
         /// Returns this Half3 instance's contents as Vector3.
         /// </summary>
         /// <returns>The vector.</returns>
-        public readonly Vector3 ToVector3() => new(X, Y, Z);
+        public readonly Vector3 ToVector3()
+        {
+            return new(X, Y, Z);
+        }
 
         /// <summary>
         /// Returns this Half3 instance's contents as Vector3d.
         /// </summary>
         /// <returns>The vector.</returns>
-        public readonly Vector3D ToVector3d() => new(X, Y, Z);
+        public readonly Vector3D ToVector3d()
+        {
+            return new(X, Y, Z);
+        }
 
         /// <summary>
         /// Converts SatisfactorySaveNet.Vector3h to SatisfactorySaveNet.Vector3.
@@ -362,7 +370,10 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Vector
         /// <param name="vec">The Vector3h to convert.</param>
         /// <returns>The resulting Vector3.</returns>
         [Pure]
-        public static implicit operator Vector3(Vector3H vec) => new(vec.X, vec.Y, vec.Z);
+        public static implicit operator Vector3(Vector3H vec)
+        {
+            return new(vec.X, vec.Y, vec.Z);
+        }
 
         /// <summary>
         /// Converts SatisfactorySaveNet.Vector3h to SatisfactorySaveNet.Vector3d.
@@ -370,7 +381,10 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Vector
         /// <param name="vec">The Vector3h to convert.</param>
         /// <returns>The resulting Vector3d.</returns>
         [Pure]
-        public static implicit operator Vector3D(Vector3H vec) => new(vec.X, vec.Y, vec.Z);
+        public static implicit operator Vector3D(Vector3H vec)
+        {
+            return new(vec.X, vec.Y, vec.Z);
+        }
 
         /// <summary>
         /// Converts SatisfactorySaveNet.Vector3h to SatisfactorySaveNet.Vector3i.
@@ -378,7 +392,10 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Vector
         /// <param name="vec">The Vector3h to convert.</param>
         /// <returns>The resulting Vector3i.</returns>
         [Pure]
-        public static explicit operator Vector3I(Vector3H vec) => new((int)vec.X, (int)vec.Y, (int)vec.Z);
+        public static explicit operator Vector3I(Vector3H vec)
+        {
+            return new((int) vec.X, (int) vec.Y, (int) vec.Z);
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Vector3H"/> struct using a tuple containing the component
@@ -387,7 +404,10 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Vector
         /// <param name="values">A tuple containing the component values.</param>
         /// <returns>A new instance of the <see cref="Vector3H"/> struct with the given component values.</returns>
         [Pure]
-        public static implicit operator Vector3H((Half X, Half Y, Half Z) values) => new(values.X, values.Y, values.Z);
+        public static implicit operator Vector3H((Half X, Half Y, Half Z) values)
+        {
+            return new(values.X, values.Y, values.Z);
+        }
 
         /// <summary>
         /// Compares two instances for equality.
@@ -395,7 +415,10 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Vector
         /// <param name="left">The first instance.</param>
         /// <param name="right">The second instance.</param>
         /// <returns>True, if left equals right; false otherwise.</returns>
-        public static bool operator ==(Vector3H left, Vector3H right) => left.Equals(right);
+        public static bool operator ==(Vector3H left, Vector3H right)
+        {
+            return left.Equals(right);
+        }
 
         /// <summary>
         /// Compares two instances for inequality.
@@ -403,7 +426,10 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Vector
         /// <param name="left">The first instance.</param>
         /// <param name="right">The second instance.</param>
         /// <returns>True, if left does not equal right; false otherwise.</returns>
-        public static bool operator !=(Vector3H left, Vector3H right) => !(left == right);
+        public static bool operator !=(Vector3H left, Vector3H right)
+        {
+            return !(left == right);
+        }
 
         /// <summary>
         /// The size in bytes for an instance of the Half3 struct is 6.
@@ -421,9 +447,9 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Vector
             var yValue = info.GetValue("Y", typeof(Half)) ?? throw new ArgumentOutOfRangeException(nameof(info), null, "Y must be not null");
             var zValue = info.GetValue("Z", typeof(Half)) ?? throw new ArgumentOutOfRangeException(nameof(info), null, "Z must be not null");
 
-            X = (Half)xValue;
-            Y = (Half)yValue;
-            Z = (Half)zValue;
+            X = (Half) xValue;
+            Y = (Half) yValue;
+            Z = (Half) zValue;
         }
 
         /// <inheritdoc/>
@@ -457,13 +483,22 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Vector
         }
 
         /// <inheritdoc/>
-        public override readonly string ToString() => ToString(null, null);
+        public readonly override string ToString()
+        {
+            return ToString(null, null);
+        }
 
         /// <inheritdoc cref="ToString(string, IFormatProvider)"/>
-        public readonly string ToString(string format) => ToString(format, null);
+        public readonly string ToString(string format)
+        {
+            return ToString(format, null);
+        }
 
         /// <inheritdoc cref="ToString(string, IFormatProvider)"/>
-        public readonly string ToString(IFormatProvider formatProvider) => ToString(null, formatProvider);
+        public readonly string ToString(IFormatProvider formatProvider)
+        {
+            return ToString(null, formatProvider);
+        }
 
         /// <inheritdoc />
         public readonly string ToString(string? format, IFormatProvider? formatProvider)
@@ -477,17 +512,24 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Vector
         }
 
         /// <inheritdoc/>
-        public override readonly bool Equals(object? obj) => obj is Vector3H vector && Equals(vector);
+        public readonly override bool Equals(object? obj)
+        {
+            return obj is Vector3H vector && Equals(vector);
+        }
 
         /// <inheritdoc/>
-        public readonly bool Equals(Vector3H other) => X.Equals(other.X) &&
+        public readonly bool Equals(Vector3H other)
+        {
+            return X.Equals(other.X) &&
                    Y.Equals(other.Y) &&
                    Z.Equals(other.Z);
+        }
 
         /// <inheritdoc/>
-#pragma warning disable S2328 // "GetHashCode" should not reference mutable fields
-        public override readonly int GetHashCode() => HashCode.Combine(X, Y, Z);
-#pragma warning restore S2328 // "GetHashCode" should not reference mutable fields
+        public readonly override int GetHashCode()
+        {
+            return HashCode.Combine(X, Y, Z);
+        }
 
         /// <summary>
         /// Returns the Half3 as an array of bytes.
@@ -497,9 +539,9 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Vector
         [Pure]
         public static byte[] GetBytes(Vector3H h)
         {
-            byte[] result = new byte[SizeInBytes];
+            var result = new byte[SizeInBytes];
 
-            byte[] temp = Half.GetBytes(h.X);
+            var temp = Half.GetBytes(h.X);
             result[0] = temp[0];
             result[1] = temp[1];
             temp = Half.GetBytes(h.Y);

@@ -1,6 +1,10 @@
 ﻿using SatisfactorySaveNet.Abstracts;
 using SatisfactorySaveNet.Abstracts.Exceptions;
 using SatisfactorySaveNet.Abstracts.Model;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 
 namespace SatisfactorySaveNet;
 
@@ -86,7 +90,7 @@ public class ObjectSerializer : IObjectSerializer
         if (value > int.MaxValue)
             throw new ArgumentOutOfRangeException(nameof(value), value, null);
 
-        return (int)value;
+        return (int) value;
     }
 
     private ComponentObject DeserializeComponent(BinaryReader reader, Header header, ComponentObject componentObject)

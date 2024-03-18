@@ -1,4 +1,5 @@
 ﻿using SatisfactorySaveNet.Abstracts;
+using System.IO;
 using System.Text;
 
 namespace SatisfactorySaveNet;
