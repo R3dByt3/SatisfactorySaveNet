@@ -1,6 +1,6 @@
-﻿namespace SatisfactorySaveNet.Abstracts.Model.Properties;
+namespace SatisfactorySaveNet.Abstracts.Model.Properties;
 
-public class FloatProperty : Property
+public class DoubleProperty : Property
 {
-    public float Value { get; set; }
+    public double Value { get; set; }
 }

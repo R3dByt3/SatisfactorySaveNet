@@ -1,4 +1,4 @@
-﻿using SatisfactorySaveNet.Abstracts;
+using SatisfactorySaveNet.Abstracts;
 using SatisfactorySaveNet.Abstracts.Maths.Data;
 using SatisfactorySaveNet.Abstracts.Maths.Vector;
 using System.IO;
@@ -26,6 +26,15 @@ public class VectorSerializer : IVectorSerializer
         var z = reader.ReadSingle();
 
         return new Vector3(x, y, z);
+    }
+
+    public Vector3D DeserializeVec3D(BinaryReader reader)
+    {
+        var x = reader.ReadDouble();
+        var y = reader.ReadDouble();
+        var z = reader.ReadDouble();
+
+        return new Vector3D(x, y, z);
     }
 
     public Vector2 DeserializeVec2(BinaryReader reader)

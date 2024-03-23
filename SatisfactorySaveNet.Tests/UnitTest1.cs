@@ -1,5 +1,6 @@
 using SatisfactorySaveNet.Abstracts;
 using SatisfactorySaveNet.Abstracts.Maths.Vector;
+using SatisfactorySaveNet.Abstracts.Model.Union;
 using System;
 using System.Reflection;
 using System.Runtime.InteropServices;

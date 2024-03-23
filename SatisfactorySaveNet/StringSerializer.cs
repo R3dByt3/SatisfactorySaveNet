@@ -1,4 +1,6 @@
-﻿using SatisfactorySaveNet.Abstracts;
+using CommunityToolkit.HighPerformance.Buffers;
+using SatisfactorySaveNet.Abstracts;
+using System;
 using System.IO;
 using System.Text;
 
@@ -10,7 +12,8 @@ public class StringSerializer : IStringSerializer
 
     public string Deserialize(BinaryReader reader)
     {
-        return new string(ReadCharArray(reader)).TrimEnd('\0');
+        Span<char> chars = ReadCharArray(reader);
+        return StringPool.Shared.GetOrAdd(chars.TrimEnd('\0'));
     }
 
     private static char[] ReadCharArray(BinaryReader reader)

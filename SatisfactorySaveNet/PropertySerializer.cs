@@ -1,5 +1,4 @@
-﻿using SatisfactorySaveNet.Abstracts;
-using SatisfactorySaveNet.Abstracts.Maths.Vector;
+using SatisfactorySaveNet.Abstracts;
 using SatisfactorySaveNet.Abstracts.Model;
 using SatisfactorySaveNet.Abstracts.Model.Properties;
 using SatisfactorySaveNet.Abstracts.Model.TypedData;
@@ -8,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.Linq;
 
 namespace SatisfactorySaveNet;
 
@@ -36,10 +36,10 @@ public class PropertySerializer : IPropertySerializer
         _hexSerializer = hexSerializer;
     }
 
-    public IEnumerable<Property> DeserializeProperties(BinaryReader reader, Header? header = null)
+    public IEnumerable<Property> DeserializeProperties(BinaryReader reader, Header? header = null, string? type = null)
     {
         Property? property;
-        while ((property = DeserializeProperty(reader, header)) != null)
+        while ((property = DeserializeProperty(reader, header, type)) != null)
             yield return property;
     }
 
@@ -60,7 +60,7 @@ public class PropertySerializer : IPropertySerializer
 
         return type switch
         {
-            nameof(ArrayProperty) => DeserializeArrayProperty(reader),
+            nameof(ArrayProperty) => header == null ? throw new ArgumentNullException(nameof(header)) : DeserializeArrayProperty(reader, header),
             nameof(BoolProperty) => DeserializeBoolProperty(reader),
             nameof(ByteProperty) => DeserializeByteProperty(reader),
             nameof(EnumProperty) => DeserializeEnumProperty(reader),
@@ -72,19 +72,19 @@ public class PropertySerializer : IPropertySerializer
             nameof(ObjectProperty) => DeserializeObjectProperty(reader),
             nameof(SetProperty) => DeserializeSetProperty(reader),
             nameof(StrProperty) => DeserializeStrProperty(reader),
-            nameof(StructProperty) => DeserializeStructProperty(reader),
+            nameof(StructProperty) => header == null ? throw new ArgumentNullException(nameof(header)) : DeserializeStructProperty(reader, header),
             nameof(TextProperty) => DeserializeTextProperty(reader),
             nameof(UInt32Property) => DeserializeUInt32Property(reader),
             _ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
         };
     }
 
-    private IArrayProperty DeserializeArrayProperty(BinaryReader reader, string type, int count)
+    private IArrayProperty DeserializeArrayProperty(BinaryReader reader, Header header, string type, int count)
     {
         return type switch
         {
             //nameof(ArrayProperty) => DeserializeArrayProperty(reader, count),
-            nameof(StructProperty) => DeserializeArrayStructProperty(reader, count),
+            nameof(StructProperty) => DeserializeArrayStructProperty(reader, header, count),
             nameof(BoolProperty) => DeserializeBoolArrayProperty(reader, count),
             nameof(ByteProperty) => DeserializeArrayByteProperty(reader, count),
             nameof(EnumProperty) => DeserializeArrayEnumProperty(reader, count),
@@ -260,7 +260,7 @@ public class PropertySerializer : IPropertySerializer
         };
     }
 
-    private ArrayProperty DeserializeArrayProperty(BinaryReader reader)
+    private ArrayProperty DeserializeArrayProperty(BinaryReader reader, Header header)
     {
         var binarySize = reader.ReadInt32();
         var index = reader.ReadInt32();
@@ -268,7 +268,7 @@ public class PropertySerializer : IPropertySerializer
         var padding = reader.ReadSByte();
         var length = reader.ReadInt32();
 
-        var property = DeserializeArrayProperty(reader, type, length);
+        var property = DeserializeArrayProperty(reader, header, type, length);
 
         return new ArrayProperty(property)
         {
@@ -297,7 +297,7 @@ public class PropertySerializer : IPropertySerializer
         };
     }
 
-    private ArrayStructProperty DeserializeArrayStructProperty(BinaryReader reader, int length)
+    private ArrayStructProperty DeserializeArrayStructProperty(BinaryReader reader, Header header, int length)
     {
         var propertyName = _stringSerializer.Deserialize(reader);
         var propertyType = _stringSerializer.Deserialize(reader);
@@ -318,7 +318,7 @@ public class PropertySerializer : IPropertySerializer
 
         for (var x = 0; x < length; x++)
         {
-            values[x] = _typedDataSerializer.Deserialize(reader, elementType, endPosition);
+            values[x] = _typedDataSerializer.Deserialize(reader, header, elementType, endPosition);
         }
 
         var property = new ArrayStructProperty
@@ -480,7 +480,7 @@ public class PropertySerializer : IPropertySerializer
 
         var count = reader.ReadInt32();
 
-        var property = new MapProperty(new Dictionary<Property, Property>(count))
+        var property = new MapProperty(new Dictionary<UnionBase, UnionBase?>(count))
         {
             Index = index,
             KeyType = keyType,
@@ -488,38 +488,104 @@ public class PropertySerializer : IPropertySerializer
             ModeType = modeType
         };
 
-        var dict = new Dictionary<Union, Union>(count);
-        object key = null!;
+        UnionBase key;
+        UnionBase? value;
 
         for (var i = 0; i < count; i++)
         {
             switch (property.KeyType)
             {
+                case nameof(IntProperty):
+                    key = new IntUnion { Value = reader.ReadInt32() };
+                    break;
+                case nameof(Int64Property):
+                    key = new Int64Union { Value = reader.ReadInt64() };
+                    break;
+                case nameof(NameProperty):
+                    key = new NameUnion { Value = _stringSerializer.Deserialize(reader) };
+                    break;
+                case nameof(StrProperty):
+                    key = new StrUnion { Value = _stringSerializer.Deserialize(reader) };
+                    break;
+                case nameof(ObjectProperty):
+                    key = new ObjectReferenceUnion { Value = _objectReferenceSerializer.Deserialize(reader) };
+                    break;
+                case nameof(EnumProperty):
+                    key = new EnumUnion { Value = _stringSerializer.Deserialize(reader) };
+                    break;
                 case nameof(StructProperty):
                     if (string.Equals(propertyName, "Destroyed_Foliage_Transform", StringComparison.Ordinal))
                     {
                         key = header.SaveVersion >= 41
-                            ? new Vector3D(reader.ReadDouble(), reader.ReadDouble(), reader.ReadDouble())
-                            : new Vector3(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle());
+                            ? new Vector3DUnion { Value = new(reader.ReadDouble(), reader.ReadDouble(), reader.ReadDouble()) }
+                            : new Vector3Union { Value = new(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle()) };
                         break;
                     }
-                    else if (string.Equals(type, "/BuildGunUtilities/BGU_Subsystem.BGU_Subsystem_C", StringComparison.Ordinal))
+                    if (string.Equals(type, "/BuildGunUtilities/BGU_Subsystem.BGU_Subsystem_C", StringComparison.Ordinal)) //ToDo: Debug?
                     {
-                        key = new Vector3(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle());
+                        key = new Vector3Union { Value = new(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle()) };
+                        break;
                     }
-                    else if (string.Equals(propertyName, "mSaveData", StringComparison.Ordinal) || string.Equals(propertyName, "mUnresolvedSaveData", StringComparison.Ordinal))
+                    if (string.Equals(propertyName, "mSaveData", StringComparison.Ordinal) || string.Equals(propertyName, "mUnresolvedSaveData", StringComparison.Ordinal))
                     {
-                        key = new Vector3I(reader.ReadInt32(), reader.ReadInt32(), reader.ReadInt32());
+                        key = new Vector3IUnion { Value = new(reader.ReadInt32(), reader.ReadInt32(), reader.ReadInt32()) };
+                        break;
                     }
+                    key = new PropertiesUnion { Value = DeserializeProperties(reader, header).ToArray() };
                     break;
+                default:
+                    throw new InvalidDataException("Unknown dictionary property key type");
             }
-            //var key = DeserializeProperty(reader, keyType);
-            //var value = DeserializeProperty(reader, valueType);
+            switch (property.ValueType)
+            {
+                case nameof(ByteProperty):
+                    value = new ByteUnion { Value = property.KeyType == nameof(StrProperty) ? Convert.ToSByte(_stringSerializer.Deserialize(reader)) : reader.ReadSByte() };
+                    break;
+                case nameof(BoolProperty):
+                    value = new BoolUnion { Value = reader.ReadSByte() != 0 };
+                    break;
+                case nameof(IntProperty):
+                    value = new IntUnion { Value = reader.ReadInt32() };
+                    break;
+                case nameof(DoubleProperty):
+                    value = new DoubleUnion { Value = reader.ReadDouble() };
+                    break;
+                case nameof(FloatProperty):
+                    value = new FloatUnion { Value = reader.ReadSingle() };
+                    break;
+                case nameof(StrProperty):
+                    value = string.Equals(type, "/BuildGunUtilities/BGU_Subsystem.BGU_Subsystem_C", StringComparison.Ordinal)
+                        ? new StrUnion { Unknown1 = reader.ReadSingle(), Unknown2 = reader.ReadSingle(), Unknown3 = reader.ReadSingle(), Value = _stringSerializer.Deserialize(reader) }
+                        : null;
+                    break;
+                case nameof(ObjectProperty):
+                    value = string.Equals(type, "/BuildGunUtilities/BGU_Subsystem.BGU_Subsystem_C", StringComparison.Ordinal)
+                        ? new ObjectReferenceUnion { Unknown1 = reader.ReadSingle(), Unknown2 = reader.ReadSingle(), Unknown3 = reader.ReadSingle(), Unknown4 = reader.ReadSingle(), Unknown5 = _stringSerializer.Deserialize(reader) }
+                        : new ObjectReferenceUnion { Value = _objectReferenceSerializer.Deserialize(reader) };
+                    break;
+                case nameof(TextProperty):
+                    value = new TextUnion { Value = DeserializeTextProperty(reader) };
+                    break;
+                case nameof(StructProperty):
+                    if (string.Equals(type, "LBBalancerData", StringComparison.Ordinal))
+                    {
+                        value = new LBBalancerUnion { NormalIndex = reader.ReadInt32(), OverflowIndex = reader.ReadInt32(), FilterIndex = reader.ReadInt32() };
+                        break;
+                    }
+                    if (string.Equals(type, "/StorageStatsRoom/Sub_SR.Sub_SR_C", StringComparison.Ordinal) || string.Equals(type, "/CentralStorage/Subsystem_SC.Subsystem_SC_C", StringComparison.Ordinal))
+                    {
+                        value = header.SaveVersion >= 41
+                            ? new StorageDoubleUnion { Unknown1 = reader.ReadDouble(), Unknown2 = reader.ReadDouble(), Unknown3 = reader.ReadDouble() }
+                            : new StorageSingleUnion { Unknown1 = reader.ReadSingle(), Unknown2 = reader.ReadSingle(), Unknown3 = reader.ReadSingle() };
+                        break;
+                    }
+                    value = new PropertiesUnion { Value = DeserializeProperties(reader, header).ToArray() };
+                    break;
+                default:
+                    throw new InvalidDataException("Unknown dictionary property value type");
+            }
 
-            //if (value == null)
-            //    continue;
-            //
-            //property.Elements.Add(key, value);
+            property.Elements.Add(key, value);
         }
 
         return property;
@@ -556,6 +622,7 @@ public class PropertySerializer : IPropertySerializer
         return property;
     }
 
+    //ToDo: Benötigt propertyName?
     private SetProperty DeserializeSetProperty(BinaryReader reader)
     {
         var binarySize = reader.ReadInt32();
@@ -574,6 +641,7 @@ public class PropertySerializer : IPropertySerializer
 
         for (var i = 0; i < count; i++)
         {
+            //ToDo: Das hier ist falsch
             var value = DeserializeProperty(reader);
 
             if (value == null)
@@ -601,7 +669,7 @@ public class PropertySerializer : IPropertySerializer
         return property;
     }
 
-    private StructProperty DeserializeStructProperty(BinaryReader reader)
+    private StructProperty DeserializeStructProperty(BinaryReader reader, Header header)
     {
         var binarySize = reader.ReadInt32();
         var startPosition = reader.BaseStream.Position;
@@ -610,7 +678,7 @@ public class PropertySerializer : IPropertySerializer
         var padding1 = reader.ReadInt64();
         var padding2 = reader.ReadInt64();
         var padding3 = reader.ReadSByte();
-        var typedData = _typedDataSerializer.Deserialize(reader, type, startPosition + binarySize);
+        var typedData = _typedDataSerializer.Deserialize(reader, header, type, startPosition + binarySize);
 
         var property = new StructProperty(typedData)
         {

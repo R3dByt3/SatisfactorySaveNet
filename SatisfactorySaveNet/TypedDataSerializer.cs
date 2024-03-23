@@ -1,4 +1,5 @@
-﻿using SatisfactorySaveNet.Abstracts;
+using SatisfactorySaveNet.Abstracts;
+using SatisfactorySaveNet.Abstracts.Model;
 using SatisfactorySaveNet.Abstracts.Model.Properties;
 using SatisfactorySaveNet.Abstracts.Model.TypedData;
 using System;
@@ -29,7 +30,7 @@ public class TypedDataSerializer : ITypedDataSerializer
         _propertySerializer = new PropertySerializer(stringSerializer, objectReferenceSerializer, this, hexSerializer);
     }
 
-    public ITypedData Deserialize(BinaryReader reader, string type, long endPosition)
+    public ITypedData Deserialize(BinaryReader reader, Header header, string type, long endPosition)
     {
         return type switch
         {
@@ -37,12 +38,12 @@ public class TypedDataSerializer : ITypedDataSerializer
             nameof(FactoryCustomizationColorSlot) => DeserializeFactoryCustomizationColorSlot(reader, endPosition),
             nameof(FluidBox) => DeserializeFluidBox(reader),
             nameof(InventoryItem) => DeserializeInventoryItem(reader, endPosition),
-            nameof(InventoryStack) => DeserializeInventoryStack(reader),
+            nameof(InventoryStack) => DeserializeInventoryStack(reader, header),
             nameof(LinearColor) => DeserializeLinearColor(reader),
             nameof(Quat) => DeserializeQuat(reader),
             nameof(RailroadTrackPosition) => DeserializeRailroadTrackPosition(reader),
             nameof(SpawnData) => DeserializeSpawnData(reader),
-            nameof(Vector) => DeserializeVector(reader),
+            nameof(Vector) => DeserializeVector(reader, header),
             //"" => DeserializeProperty(reader),
             _ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
         };
@@ -59,14 +60,11 @@ public class TypedDataSerializer : ITypedDataSerializer
     //    };
     //}
 
-    private Vector DeserializeVector(BinaryReader reader)
+    private ITypedData DeserializeVector(BinaryReader reader, Header header)
     {
-        var value = _vectorSerializer.DeserializeVec3(reader);
-
-        return new Vector
-        {
-            Value = value
-        };
+        return header.SaveVersion >= 41
+            ? new VectorD { Value = _vectorSerializer.DeserializeVec3D(reader) }
+            : new Vector { Value = _vectorSerializer.DeserializeVec3(reader) };
     }
 
     private SpawnData DeserializeSpawnData(BinaryReader reader)
@@ -115,9 +113,9 @@ public class TypedDataSerializer : ITypedDataSerializer
         };
     }
 
-    private InventoryStack DeserializeInventoryStack(BinaryReader reader)
+    private InventoryStack DeserializeInventoryStack(BinaryReader reader, Header header)
     {
-        var properties = _propertySerializer.DeserializeProperties(reader).ToArray();
+        var properties = _propertySerializer.DeserializeProperties(reader, header).ToArray();
 
         return new InventoryStack
         {

@@ -1,4 +1,4 @@
-﻿using SatisfactorySaveNet.Abstracts;
+using SatisfactorySaveNet.Abstracts;
 using SatisfactorySaveNet.Abstracts.Exceptions;
 using SatisfactorySaveNet.Abstracts.Model;
 using System.Collections.Generic;
@@ -27,7 +27,7 @@ public class BodySerializer : IBodySerializer
     {
         if (header.SaveVersion >= 41)
         {
-            var x1 = reader.ReadInt32();
+            var x1 = reader.ReadInt32(); //ToDo: PowerGridData
             var x2 = _stringSerializer.Deserialize(reader);
             var x3 = reader.ReadInt64();
             var x4 = reader.ReadInt32();
