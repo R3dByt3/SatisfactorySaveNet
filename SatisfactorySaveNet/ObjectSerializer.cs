@@ -75,7 +75,6 @@ public class ObjectSerializer : IObjectSerializer
 
         if (missingBytes > 4)
         {
-            Console.WriteLine(actorObject.TypePath);
             var binary = reader.ReadBytes(Cast(missingBytes));
             //var hex = new string(binary.Select(Convert.ToChar).ToArray());
         }
@@ -113,7 +112,6 @@ public class ObjectSerializer : IObjectSerializer
 
         if (missingBytes > 4)
         {
-            Console.WriteLine(componentObject.TypePath);
             var binary = reader.ReadBytes(Cast(missingBytes));
             //var hex = new string(binary.Select(Convert.ToChar).ToArray());
         }

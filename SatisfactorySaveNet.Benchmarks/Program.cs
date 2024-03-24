@@ -1,7 +1,5 @@
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Running;
-using OneOf;
-using OneOf.Types;
 using SatisfactorySaveNet.Abstracts.Maths.Matrix;
 using SatisfactorySaveNet.Abstracts.Model.Union;
 using Half = SatisfactorySaveNet.Abstracts.Maths.Data.Half;
@@ -17,15 +15,15 @@ public class Unions
     //private readonly UnionBase _unionMatrix4D = new();
     private object _boxHalf;
     private object _boxMatrix4D;
-    private OneOf<Half, None> _oneOfHalf;
-    private OneOf<Matrix4D, None> _oneOfMatrix4D;
+    //private OneOf<Half, None> _oneOfHalf;
+    //private OneOf<Matrix4D, None> _oneOfMatrix4D;
 
     public Unions()
     {
         _boxHalf = _half;
         _boxMatrix4D = _matrix4D;
-        _oneOfHalf = _half;
-        _oneOfMatrix4D = _matrix4D;
+        //_oneOfHalf = _half;
+        //_oneOfMatrix4D = _matrix4D;
         //_unionHalf.AsHalf = _half;
         //_unionMatrix4D.AsMatrix4D = _matrix4D;
     }
@@ -48,11 +46,11 @@ public class Unions
     //    _unionStrHalf.AsHalf = _half;
     //}
 
-    [Benchmark]
-    public void OneOfHalf()
-    {
-        _oneOfHalf = _half;
-    }
+    //[Benchmark]
+    //public void OneOfHalf()
+    //{
+    //    _oneOfHalf = _half;
+    //}
 
     [Benchmark]
     public void UnboxingHalf()
@@ -72,11 +70,11 @@ public class Unions
     //    _half = _unionStrHalf.AsHalf;
     //}
 
-    [Benchmark]
-    public void UnoneOfHalf()
-    {
-        _half = _oneOfHalf.AsT0;
-    }
+    //[Benchmark]
+    //public void UnoneOfHalf()
+    //{
+    //    _half = _oneOfHalf.AsT0;
+    //}
 
     ///////////////////////
 
@@ -98,11 +96,11 @@ public class Unions
     //    _unionStrMatrix4D.AsMatrix4D = _matrix4D;
     //}
 
-    [Benchmark]
-    public void OneOfMatrix4D()
-    {
-        _oneOfMatrix4D = _matrix4D;
-    }
+    //[Benchmark]
+    //public void OneOfMatrix4D()
+    //{
+    //    _oneOfMatrix4D = _matrix4D;
+    //}
 
     [Benchmark]
     public void UnboxingMatrix4D()
@@ -122,11 +120,11 @@ public class Unions
     //    _matrix4D = _unionStrMatrix4D.AsMatrix4D;
     //}
 
-    [Benchmark]
-    public void UnoneOfMatrix4D()
-    {
-        _matrix4D = _oneOfMatrix4D.AsT0;
-    }
+    //[Benchmark]
+    //public void UnoneOfMatrix4D()
+    //{
+    //    _matrix4D = _oneOfMatrix4D.AsT0;
+    //}
 }
 
 public class Program

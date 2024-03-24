@@ -13,7 +13,6 @@ public class Tests
     {
         //var test = _serializer.Deserialize(@"D:\_Downloads\5CDA4312000000000000000000000000.sav");
         var test = _serializer.Deserialize(@"C:\Users\marvi\AppData\Local\FactoryGame\Saved\SaveGames\5d66aaf3a97b48968049b2531bb6e6f8\Gen 5_autosave_0.sav");
-        Console.WriteLine("TEST");
         //var test = _serializer.Deserialize(@"C:\Users\marvi\AppData\Local\FactoryGame\Saved\SaveGames\5d66aaf3a97b48968049b2531bb6e6f8\Gen 5_autosave_0_CALCULATOR.sav");
     }
 }
