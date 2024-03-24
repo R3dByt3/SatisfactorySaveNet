@@ -16,27 +16,27 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         /// <summary>
         /// First row of the matrix.
         /// </summary>
-        public Vector3 Row0;
+        public Vector.Vector3 Row0;
 
         /// <summary>
         /// Second row of the matrix.
         /// </summary>
-        public Vector3 Row1;
+        public Vector.Vector3 Row1;
 
         /// <summary>
         /// Third row of the matrix.
         /// </summary>
-        public Vector3 Row2;
+        public Vector.Vector3 Row2;
 
         /// <summary>
         /// The identity matrix.
         /// </summary>
-        public static readonly Matrix3 Identity = new(Vector3.UnitX, Vector3.UnitY, Vector3.UnitZ);
+        public static readonly Matrix3 Identity = new(Vector.Vector3.UnitX, Vector.Vector3.UnitY, Vector.Vector3.UnitZ);
 
         /// <summary>
         /// The zero matrix.
         /// </summary>
-        public static readonly Matrix3 Zero = new(Vector3.Zero, Vector3.Zero, Vector3.Zero);
+        public static readonly Matrix3 Zero = new(Vector.Vector3.Zero, Vector.Vector3.Zero, Vector.Vector3.Zero);
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Matrix3"/> struct.
@@ -44,7 +44,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         /// <param name="row0">Top row of the matrix.</param>
         /// <param name="row1">Second row of the matrix.</param>
         /// <param name="row2">Bottom row of the matrix.</param>
-        public Matrix3(Vector3 row0, Vector3 row1, Vector3 row2)
+        public Matrix3(Vector.Vector3 row0, Vector.Vector3 row1, Vector.Vector3 row2)
         {
             Row0 = row0;
             Row1 = row1;
@@ -70,9 +70,9 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
             float m20, float m21, float m22
         )
         {
-            Row0 = new Vector3(m00, m01, m02);
-            Row1 = new Vector3(m10, m11, m12);
-            Row2 = new Vector3(m20, m21, m22);
+            Row0 = new Vector.Vector3(m00, m01, m02);
+            Row1 = new Vector.Vector3(m10, m11, m12);
+            Row2 = new Vector.Vector3(m20, m21, m22);
         }
 
         /// <summary>
@@ -111,17 +111,17 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         /// <summary>
         /// Gets the first column of this matrix.
         /// </summary>
-        public readonly Vector3 Column0 => new(Row0.X, Row1.X, Row2.X);
+        public readonly Vector.Vector3 Column0 => new(Row0.X, Row1.X, Row2.X);
 
         /// <summary>
         /// Gets the second column of this matrix.
         /// </summary>
-        public readonly Vector3 Column1 => new(Row0.Y, Row1.Y, Row2.Y);
+        public readonly Vector.Vector3 Column1 => new(Row0.Y, Row1.Y, Row2.Y);
 
         /// <summary>
         /// Gets the third column of this matrix.
         /// </summary>
-        public readonly Vector3 Column2 => new(Row0.Z, Row1.Z, Row2.Z);
+        public readonly Vector.Vector3 Column2 => new(Row0.Z, Row1.Z, Row2.Z);
 
         /// <summary>
         /// Gets or sets the value at row 1, column 1 of this instance.
@@ -207,7 +207,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         /// <summary>
         /// Gets or sets the values along the main diagonal of the matrix.
         /// </summary>
-        public Vector3 Diagonal
+        public Vector.Vector3 Diagonal
         {
             readonly get => new(Row0.X, Row1.Y, Row2.Z);
             set
@@ -340,9 +340,9 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         public readonly Matrix3 ClearRotation()
         {
             var m = this;
-            m.Row0 = new Vector3(m.Row0.Length, 0, 0);
-            m.Row1 = new Vector3(0, m.Row1.Length, 0);
-            m.Row2 = new Vector3(0, 0, m.Row2.Length);
+            m.Row0 = new Vector.Vector3(m.Row0.Length, 0, 0);
+            m.Row1 = new Vector.Vector3(0, m.Row1.Length, 0);
+            m.Row2 = new Vector.Vector3(0, 0, m.Row2.Length);
             return m;
         }
 
@@ -350,7 +350,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         /// Returns the scale component of this instance.
         /// </summary>
         /// <returns>The scale components.</returns>
-        public readonly Vector3 ExtractScale()
+        public readonly Vector.Vector3 ExtractScale()
         {
             return new(Row0.Length, Row1.Length, Row2.Length);
         }
@@ -431,7 +431,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         /// <param name="axis">The axis to rotate about.</param>
         /// <param name="angle">Angle in radians to rotate counter-clockwise (looking in the direction of the given axis).</param>
         /// <param name="result">A matrix instance.</param>
-        public static void CreateFromAxisAngle(Vector3 axis, float angle, out Matrix3 result)
+        public static void CreateFromAxisAngle(Vector.Vector3 axis, float angle, out Matrix3 result)
         {
             // normalize and create a local copy of the vector.
             axis.Normalize();
@@ -472,7 +472,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         /// <param name="angle">Angle in radians to rotate counter-clockwise (looking in the direction of the given axis).</param>
         /// <returns>A matrix instance.</returns>
         [Pure]
-        public static Matrix3 CreateFromAxisAngle(Vector3 axis, float angle)
+        public static Matrix3 CreateFromAxisAngle(Vector.Vector3 axis, float angle)
         {
             CreateFromAxisAngle(axis, angle, out var result);
             return result;
@@ -634,7 +634,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         /// <param name="scale">Scale factors for the x, y, and z axes.</param>
         /// <returns>A scale matrix.</returns>
         [Pure]
-        public static Matrix3 CreateScale(Vector3 scale)
+        public static Matrix3 CreateScale(Vector.Vector3 scale)
         {
             CreateScale(in scale, out var result);
             return result;
@@ -672,7 +672,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         /// </summary>
         /// <param name="scale">Scale factors for the x, y, and z axes.</param>
         /// <param name="result">A scale matrix.</param>
-        public static void CreateScale(in Vector3 scale, out Matrix3 result)
+        public static void CreateScale(in Vector.Vector3 scale, out Matrix3 result)
         {
             result = Identity;
             result.Row0.X = scale.X;
@@ -716,9 +716,9 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         /// <param name="result">A new instance that is the result of the addition.</param>
         public static void Add(in Matrix3 left, in Matrix3 right, out Matrix3 result)
         {
-            Vector3.Add(in left.Row0, in right.Row0, out result.Row0);
-            Vector3.Add(in left.Row1, in right.Row1, out result.Row1);
-            Vector3.Add(in left.Row2, in right.Row2, out result.Row2);
+            Vector.Vector3.Add(in left.Row0, in right.Row0, out result.Row0);
+            Vector.Vector3.Add(in left.Row1, in right.Row1, out result.Row1);
+            Vector.Vector3.Add(in left.Row2, in right.Row2, out result.Row2);
         }
 
         /// <summary>

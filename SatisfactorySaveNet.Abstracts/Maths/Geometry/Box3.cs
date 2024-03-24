@@ -13,12 +13,12 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Geometry
     [Serializable]
     public struct Box3 : IEquatable<Box3>, IFormattable
     {
-        private Vector3 _min;
+        private Vector.Vector3 _min;
 
         /// <summary>
         /// Gets or sets the minimum boundary of the structure.
         /// </summary>
-        public Vector3 Min
+        public Vector.Vector3 Min
         {
             readonly get => _min;
             set
@@ -40,12 +40,12 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Geometry
             }
         }
 
-        private Vector3 _max;
+        private Vector.Vector3 _max;
 
         /// <summary>
         /// Gets or sets the maximum boundary of the structure.
         /// </summary>
-        public Vector3 Max
+        public Vector.Vector3 Max
         {
             readonly get => _max;
             set
@@ -72,10 +72,10 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Geometry
         /// </summary>
         /// <param name="min">The minimum point in 3D space this box encloses.</param>
         /// <param name="max">The maximum point in 3D space this box encloses.</param>
-        public Box3(Vector3 min, Vector3 max)
+        public Box3(Vector.Vector3 min, Vector.Vector3 max)
         {
-            _min = Vector3.ComponentMin(min, max);
-            _max = Vector3.ComponentMax(min, max);
+            _min = Vector.Vector3.ComponentMin(min, max);
+            _max = Vector.Vector3.ComponentMax(min, max);
         }
 
         /// <summary>
@@ -88,7 +88,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Geometry
         /// <param name="maxY">The maximum Y value to be enclosed.</param>
         /// <param name="maxZ">The maximum Z value to be enclosed.</param>
         public Box3(float minX, float minY, float minZ, float maxX, float maxY, float maxZ)
-            : this(new Vector3(minX, minY, minZ), new Vector3(maxX, maxY, maxZ))
+            : this(new Vector.Vector3(minX, minY, minZ), new Vector.Vector3(maxX, maxY, maxZ))
         {
         }
 
@@ -96,7 +96,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Geometry
         /// Gets or sets a vector describing the size of the Box3 structure.
         /// </summary>
         [XmlIgnore]
-        public Vector3 Size
+        public Vector.Vector3 Size
         {
             readonly get => Max - Min;
             set
@@ -111,7 +111,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Geometry
         /// Gets or sets a vector describing half the size of the box.
         /// </summary>
         [XmlIgnore]
-        public Vector3 HalfSize
+        public Vector.Vector3 HalfSize
         {
             readonly get => Size / 2;
             set => Size = value * 2;
@@ -121,7 +121,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Geometry
         /// Gets or sets a vector describing the center of the box.
         /// </summary>
         [XmlIgnore]
-        public Vector3 Center
+        public Vector.Vector3 Center
         {
             readonly get => HalfSize + _min;
             set => Translate(value - Center);
@@ -133,7 +133,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Geometry
         /// <param name="point">The point to query.</param>
         /// <returns>Whether this box contains the point.</returns>
         [Pure]
-        public readonly bool ContainsInclusive(Vector3 point)
+        public readonly bool ContainsInclusive(Vector.Vector3 point)
         {
             return _min.X <= point.X && point.X <= _max.X &&
                    _min.Y <= point.Y && point.Y <= _max.Y &&
@@ -146,7 +146,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Geometry
         /// <param name="point">The point to query.</param>
         /// <returns>Whether this box contains the point.</returns>
         [Pure]
-        public readonly bool ContainsExclusive(Vector3 point)
+        public readonly bool ContainsExclusive(Vector.Vector3 point)
         {
             return _min.X < point.X && point.X < _max.X &&
                    _min.Y < point.Y && point.Y < _max.Y &&
@@ -162,7 +162,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Geometry
         /// </param>
         /// <returns>Whether this box contains the point.</returns>
         [Pure]
-        public readonly bool Contains(Vector3 point, bool boundaryInclusive)
+        public readonly bool Contains(Vector.Vector3 point, bool boundaryInclusive)
         {
             return boundaryInclusive ? ContainsInclusive(point) : ContainsExclusive(point);
         }
@@ -187,7 +187,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Geometry
         /// <returns>Whether this box contains the point.</returns>
         [Pure]
         [Obsolete("This function excludes borders even though it's documentation says otherwise. Use ContainsInclusive and ContainsExclusive for the desired behaviour.")]
-        public readonly bool Contains(Vector3 point)
+        public readonly bool Contains(Vector.Vector3 point)
         {
             return _min.X < point.X && point.X < _max.X &&
                    _min.Y < point.Y && point.Y < _max.Y &&
@@ -200,9 +200,9 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Geometry
         /// <param name="point">The point to find distance for.</param>
         /// <returns>The distance between the specified point and the nearest edge.</returns>
         [Pure]
-        public readonly float DistanceToNearestEdge(Vector3 point)
+        public readonly float DistanceToNearestEdge(Vector.Vector3 point)
         {
-            Vector3 distX = new(
+            Vector.Vector3 distX = new(
                 Math.Max(0f, Math.Max(_min.X - point.X, point.X - _max.X)),
                 Math.Max(0f, Math.Max(_min.Y - point.Y, point.Y - _max.Y)),
                 Math.Max(0f, Math.Max(_min.Z - point.Z, point.Z - _max.Z)));
@@ -213,7 +213,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Geometry
         /// Translates this Box3 by the given amount.
         /// </summary>
         /// <param name="distance">The distance to translate the box.</param>
-        public void Translate(Vector3 distance)
+        public void Translate(Vector.Vector3 distance)
         {
             _min += distance;
             _max += distance;
@@ -225,7 +225,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Geometry
         /// <param name="distance">The distance to translate the box.</param>
         /// <returns>The translated box.</returns>
         [Pure]
-        public readonly Box3 Translated(Vector3 distance)
+        public readonly Box3 Translated(Vector.Vector3 distance)
         {
             // create a local copy of this box
             var box = this;
@@ -238,7 +238,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Geometry
         /// </summary>
         /// <param name="scale">The scale to scale the box.</param>
         /// <param name="anchor">The anchor to scale the box from.</param>
-        public void Scale(Vector3 scale, Vector3 anchor)
+        public void Scale(Vector.Vector3 scale, Vector.Vector3 anchor)
         {
             _min = anchor + ((_min - anchor) * scale);
             _max = anchor + ((_max - anchor) * scale);
@@ -251,7 +251,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Geometry
         /// <param name="anchor">The anchor to scale the box from.</param>
         /// <returns>The scaled box.</returns>
         [Pure]
-        public readonly Box3 Scaled(Vector3 scale, Vector3 anchor)
+        public readonly Box3 Scaled(Vector.Vector3 scale, Vector.Vector3 anchor)
         {
             // create a local copy of this box
             var box = this;
@@ -264,13 +264,13 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Geometry
         /// Use the <see cref="Extend"/> method for the point-encapsulation functionality in SatisfactorySaveNet version 4.8.1 and earlier.
         /// </summary>
         /// <param name="size">The size to inflate by.</param>
-        public void Inflate(Vector3 size)
+        public void Inflate(Vector.Vector3 size)
         {
-            size = Vector3.ComponentMax(size, -HalfSize);
+            size = Vector.Vector3.ComponentMax(size, -HalfSize);
             var newMin = _min - size;
             var newMax = _max + size;
-            _min = Vector3.ComponentMin(newMin, newMax);
-            _max = Vector3.ComponentMax(newMin, newMax);
+            _min = Vector.Vector3.ComponentMin(newMin, newMax);
+            _max = Vector.Vector3.ComponentMax(newMin, newMax);
         }
 
         /// <summary>
@@ -280,7 +280,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Geometry
         /// <param name="size">The size to inflate by.</param>
         /// <returns>The inflated box.</returns>
         [Pure]
-        public readonly Box3 Inflated(Vector3 size)
+        public readonly Box3 Inflated(Vector.Vector3 size)
         {
             // create a local copy of this box
             var box = this;
@@ -292,10 +292,10 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Geometry
         /// Extend this Box3 to encapsulate a given point.
         /// </summary>
         /// <param name="point">The point to contain.</param>
-        public void Extend(Vector3 point)
+        public void Extend(Vector.Vector3 point)
         {
-            _min = Vector3.ComponentMin(_min, point);
-            _max = Vector3.ComponentMax(_max, point);
+            _min = Vector.Vector3.ComponentMin(_min, point);
+            _max = Vector.Vector3.ComponentMax(_max, point);
         }
 
         /// <summary>
@@ -304,7 +304,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Geometry
         /// <param name="point">The point to contain.</param>
         /// <returns>The inflated box.</returns>
         [Pure]
-        public readonly Box3 Extended(Vector3 point)
+        public readonly Box3 Extended(Vector.Vector3 point)
         {
             // create a local copy of this box
             var box = this;

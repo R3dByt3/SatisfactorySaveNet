@@ -22,5 +22,7 @@ public enum UnionConstraint
     Text,
     LBBalancer,
     StorageSingle,
-    StorageDouble
+    StorageDouble,
+    FINNetwork,
+    UInt32
 }

@@ -1,6 +1,8 @@
-﻿namespace SatisfactorySaveNet.Abstracts.Model.TypedData;
+namespace SatisfactorySaveNet.Abstracts.Model.TypedData;
 
-public class FluidBox : ITypedData
+public class FluidBox : TypedData
 {
+    public override TypedDataConstraint Type => TypedDataConstraint.FluidBox;
+
     public float Value { get; set; }
 }

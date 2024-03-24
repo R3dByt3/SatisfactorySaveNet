@@ -99,7 +99,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Geometry
         /// </summary>
         /// to avoid annoying off-by-one errors in box placement, no setter is provided for this property
         [XmlIgnore]
-        public readonly Vector3 Center => _min + ((_max - _min).ToVector3() * 0.5f);
+        public readonly Vector.Vector3 Center => _min + ((_max - _min).ToVector3() * 0.5f);
 
         /// <summary>
         /// Returns whether the box contains the specified point (borders inclusive).
@@ -176,7 +176,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Geometry
         [Pure]
         public readonly float DistanceToNearestEdge(Vector3I point)
         {
-            Vector3 dist = new(
+            Vector.Vector3 dist = new(
                 Math.Max(0f, Math.Max(_min.X - point.X, point.X - _max.X)),
                 Math.Max(0f, Math.Max(_min.Y - point.Y, point.Y - _max.Y)),
                 Math.Max(0f, Math.Max(_min.Z - point.Z, point.Z - _max.Z)));

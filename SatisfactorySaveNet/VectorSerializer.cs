@@ -18,6 +18,15 @@ public class VectorSerializer : IVectorSerializer
 
         return new Vector4(x, y, z, w);
     }
+    public Vector4D DeserializeVec4D(BinaryReader reader)
+    {
+        var x = reader.ReadDouble();
+        var y = reader.ReadDouble();
+        var z = reader.ReadDouble();
+        var w = reader.ReadDouble();
+
+        return new Vector4D(x, y, z, w);
+    }
 
     public Vector3 DeserializeVec3(BinaryReader reader)
     {
@@ -45,6 +54,22 @@ public class VectorSerializer : IVectorSerializer
         return new Vector2(x, y);
     }
 
+    public Vector2I DeserializeVec2I(BinaryReader reader)
+    {
+        var x = reader.ReadInt32();
+        var y = reader.ReadInt32();
+
+        return new Vector2I(x, y);
+    }
+
+    public Vector2D DeserializeVec2D(BinaryReader reader)
+    {
+        var x = reader.ReadDouble();
+        var y = reader.ReadDouble();
+
+        return new Vector2D(x, y);
+    }
+
     public Quaternion DeserializeQuaternion(BinaryReader reader)
     {
         var x = reader.ReadSingle();
@@ -53,5 +78,24 @@ public class VectorSerializer : IVectorSerializer
         var w = reader.ReadSingle();
 
         return new Quaternion(x, y, z, w);
+    }
+
+    public Vector3I DeserializeVec3I(BinaryReader reader)
+    {
+        var x = reader.ReadInt32();
+        var y = reader.ReadInt32();
+        var z = reader.ReadInt32();
+
+        return new Vector3I(x, y, z);
+    }
+
+    public Vector4I DeserializeVec4B(BinaryReader reader)
+    {
+        var x = reader.ReadSByte();
+        var y = reader.ReadSByte();
+        var z = reader.ReadSByte();
+        var w = reader.ReadSByte();
+
+        return new Vector4I(x, y, z, w);
     }
 }

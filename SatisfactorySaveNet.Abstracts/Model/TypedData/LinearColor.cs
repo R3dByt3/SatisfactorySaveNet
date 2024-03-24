@@ -1,11 +1,11 @@
-﻿using SatisfactorySaveNet.Abstracts.Maths.Vector;
-
 namespace SatisfactorySaveNet.Abstracts.Model.TypedData;
 
-public class LinearColor : ITypedData
+public class LinearColor : TypedData
 {
+    public override TypedDataConstraint Type => TypedDataConstraint.LinearColor;
+
     /// <summary>
     /// R, G, B, A
     /// </summary>
-    public Vector4 Color { get; set; }
+    public Maths.Vector.Vector4 Color { get; set; }
 }

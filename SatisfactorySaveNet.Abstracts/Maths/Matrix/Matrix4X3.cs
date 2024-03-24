@@ -16,27 +16,27 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         /// <summary>
         /// Top row of the matrix.
         /// </summary>
-        public Vector3 Row0;
+        public Vector.Vector3 Row0;
 
         /// <summary>
         /// 2nd row of the matrix.
         /// </summary>
-        public Vector3 Row1;
+        public Vector.Vector3 Row1;
 
         /// <summary>
         /// 3rd row of the matrix.
         /// </summary>
-        public Vector3 Row2;
+        public Vector.Vector3 Row2;
 
         /// <summary>
         /// Bottom row of the matrix.
         /// </summary>
-        public Vector3 Row3;
+        public Vector.Vector3 Row3;
 
         /// <summary>
         /// The zero matrix.
         /// </summary>
-        public static readonly Matrix4X3 Zero = new(Vector3.Zero, Vector3.Zero, Vector3.Zero, Vector3.Zero);
+        public static readonly Matrix4X3 Zero = new(Vector.Vector3.Zero, Vector.Vector3.Zero, Vector.Vector3.Zero, Vector.Vector3.Zero);
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Matrix4X3"/> struct.
@@ -45,7 +45,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         /// <param name="row1">Second row of the matrix.</param>
         /// <param name="row2">Third row of the matrix.</param>
         /// <param name="row3">Bottom row of the matrix.</param>
-        public Matrix4X3(Vector3 row0, Vector3 row1, Vector3 row2, Vector3 row3)
+        public Matrix4X3(Vector.Vector3 row0, Vector.Vector3 row1, Vector.Vector3 row2, Vector.Vector3 row3)
         {
             Row0 = row0;
             Row1 = row1;
@@ -76,10 +76,10 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
             float m30, float m31, float m32
         )
         {
-            Row0 = new Vector3(m00, m01, m02);
-            Row1 = new Vector3(m10, m11, m12);
-            Row2 = new Vector3(m20, m21, m22);
-            Row3 = new Vector3(m30, m31, m32);
+            Row0 = new Vector.Vector3(m00, m01, m02);
+            Row1 = new Vector.Vector3(m10, m11, m12);
+            Row2 = new Vector.Vector3(m20, m21, m22);
+            Row3 = new Vector.Vector3(m30, m31, m32);
         }
 
         /// <summary>
@@ -208,7 +208,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         /// <summary>
         /// Gets or sets the values along the main diagonal of the matrix.
         /// </summary>
-        public Vector3 Diagonal
+        public Vector.Vector3 Diagonal
         {
             readonly get => new(Row0.X, Row1.Y, Row2.Z);
             set
@@ -290,7 +290,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         /// <param name="axis">The axis to rotate about.</param>
         /// <param name="angle">Angle in radians to rotate counter-clockwise (looking in the direction of the given axis).</param>
         /// <param name="result">A matrix instance.</param>
-        public static void CreateFromAxisAngle(Vector3 axis, float angle, out Matrix4X3 result)
+        public static void CreateFromAxisAngle(Vector.Vector3 axis, float angle, out Matrix4X3 result)
         {
             axis.Normalize();
             float axisX = axis.X, axisY = axis.Y, axisZ = axis.Z;
@@ -331,7 +331,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         /// <param name="angle">Angle in radians to rotate counter-clockwise (looking in the direction of the given axis).</param>
         /// <returns>A matrix instance.</returns>
         [Pure]
-        public static Matrix4X3 CreateFromAxisAngle(Vector3 axis, float angle)
+        public static Matrix4X3 CreateFromAxisAngle(Vector.Vector3 axis, float angle)
         {
             CreateFromAxisAngle(axis, angle, out var result);
             return result;
@@ -523,7 +523,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         /// </summary>
         /// <param name="vector">The translation vector.</param>
         /// <param name="result">The resulting Matrix4 instance.</param>
-        public static void CreateTranslation(in Vector3 vector, out Matrix4X3 result)
+        public static void CreateTranslation(in Vector.Vector3 vector, out Matrix4X3 result)
         {
             result.Row0.X = 1;
             result.Row0.Y = 0;
@@ -559,7 +559,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         /// <param name="vector">The translation vector.</param>
         /// <returns>The resulting Matrix4 instance.</returns>
         [Pure]
-        public static Matrix4X3 CreateTranslation(Vector3 vector)
+        public static Matrix4X3 CreateTranslation(Vector.Vector3 vector)
         {
             CreateTranslation(vector.X, vector.Y, vector.Z, out var result);
             return result;
@@ -582,7 +582,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         /// <param name="scale">Scale factors for x,y and z axes.</param>
         /// <returns>A scaling matrix.</returns>
         [Pure]
-        public static Matrix4X3 CreateScale(Vector3 scale)
+        public static Matrix4X3 CreateScale(Vector.Vector3 scale)
         {
             return CreateScale(scale.X, scale.Y, scale.Z);
         }
@@ -852,11 +852,11 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
             result.Row0 = inverseRotation.Row0;
             result.Row1 = inverseRotation.Row1;
             result.Row2 = inverseRotation.Row2;
-            result.Row3 = new Vector3
+            result.Row3 = new Vector.Vector3
             (
-                -Vector3.Dot(inverseRotation.Row0, translation),
-                -Vector3.Dot(inverseRotation.Row1, translation),
-                -Vector3.Dot(inverseRotation.Row2, translation)
+                -Vector.Vector3.Dot(inverseRotation.Row0, translation),
+                -Vector.Vector3.Dot(inverseRotation.Row1, translation),
+                -Vector.Vector3.Dot(inverseRotation.Row2, translation)
             );
         }
 

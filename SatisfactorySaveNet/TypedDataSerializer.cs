@@ -5,6 +5,8 @@ using SatisfactorySaveNet.Abstracts.Model.TypedData;
 using System;
 using System.IO;
 using System.Linq;
+using DateTime = SatisfactorySaveNet.Abstracts.Model.TypedData.DateTime;
+using Guid = SatisfactorySaveNet.Abstracts.Model.TypedData.Guid;
 
 namespace SatisfactorySaveNet;
 
@@ -15,37 +17,59 @@ public class TypedDataSerializer : ITypedDataSerializer
     private readonly IVectorSerializer _vectorSerializer;
     private readonly IStringSerializer _stringSerializer;
     private readonly IPropertySerializer _propertySerializer;
+    private readonly IHexSerializer _hexSerializer;
+    private readonly IObjectReferenceSerializer _objectReferenceSerializer;
 
-    internal TypedDataSerializer(IVectorSerializer vectorSerializer, IStringSerializer stringSerializer, IPropertySerializer propertySerializer)
+    internal TypedDataSerializer(IVectorSerializer vectorSerializer, IStringSerializer stringSerializer, IPropertySerializer propertySerializer, IHexSerializer hexSerializer, IObjectReferenceSerializer objectReferenceSerializer)
     {
         _vectorSerializer = vectorSerializer;
         _stringSerializer = stringSerializer;
         _propertySerializer = propertySerializer;
+        _hexSerializer = hexSerializer;
+        _objectReferenceSerializer = objectReferenceSerializer;
     }
 
     public TypedDataSerializer(IVectorSerializer vectorSerializer, IStringSerializer stringSerializer, IObjectReferenceSerializer objectReferenceSerializer, IHexSerializer hexSerializer)
     {
         _vectorSerializer = vectorSerializer;
         _stringSerializer = stringSerializer;
-        _propertySerializer = new PropertySerializer(stringSerializer, objectReferenceSerializer, this, hexSerializer);
+        _propertySerializer = new PropertySerializer(stringSerializer, objectReferenceSerializer, this, hexSerializer, vectorSerializer);
+        _hexSerializer = hexSerializer;
+        _objectReferenceSerializer = objectReferenceSerializer;
     }
 
-    public ITypedData Deserialize(BinaryReader reader, Header header, string type, long endPosition)
+    public TypedData Deserialize(BinaryReader reader, Header header, string type, long endPosition)
     {
         return type switch
         {
-            nameof(Box) => DeserializeBox(reader),
-            nameof(FactoryCustomizationColorSlot) => DeserializeFactoryCustomizationColorSlot(reader, endPosition),
-            nameof(FluidBox) => DeserializeFluidBox(reader),
-            nameof(InventoryItem) => DeserializeInventoryItem(reader, endPosition),
-            nameof(InventoryStack) => DeserializeInventoryStack(reader, header),
+            nameof(Color) => DeserializeColor(reader),
             nameof(LinearColor) => DeserializeLinearColor(reader),
-            nameof(Quat) => DeserializeQuat(reader),
-            nameof(RailroadTrackPosition) => DeserializeRailroadTrackPosition(reader),
-            nameof(SpawnData) => DeserializeSpawnData(reader),
             nameof(Vector) => DeserializeVector(reader, header),
+            nameof(Rotator) => DeserializeRotator(reader, header, type),
+            nameof(Vector2D) => DeserializeVector2D(reader, header),
+            nameof(Quat) => DeserializeQuat(reader),
+            nameof(Vector4) => DeserializeVector4(reader, header),
+            nameof(Box) => DeserializeBox(reader),
+            nameof(RailroadTrackPosition) => DeserializeRailroadTrackPosition(reader),
+            nameof(TimerHandle) => DeserializeTimerHandle(reader),
+            nameof(Guid) => DeserializeGuid(reader),
+            nameof(InventoryItem) => DeserializeInventoryItem(reader, endPosition),
+            nameof(FluidBox) => DeserializeFluidBox(reader),
+            nameof(SlateBrush) => DeserializeSlateBrush(reader),
+            nameof(DateTime) => DeserializeDateTime(reader),
+            nameof(FINNetworkTrace) => DeserializeFINNetworkTrace(reader),
+            nameof(FINLuaProcessorStateStorage) => DeserializeFINLuaProcessorStateStorage(reader, header),
+            nameof(FICFrameRange) => DeserializeFICFrameRange(reader),
+            nameof(IntPoint) => DeserializeIntPoint(reader),
+            nameof(FINGPUT1BufferPixel) => DeserializeFINGPUT1BufferPixel(reader),
+
+            //nameof(InventoryStack) => DeserializeInventoryStack(reader, header), False?
+            //nameof(SpawnData) => DeserializeSpawnData(reader), False?
+            //nameof(FactoryCustomizationColorSlot) => DeserializeFactoryCustomizationColorSlot(reader, header, endPosition), False?
+
+            //nameof(PhaseCost) => DeserializePhaseCost(reader),
             //"" => DeserializeProperty(reader),
-            _ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
+            _ => DeserializeArrayProperties(reader, header, type)
         };
     }
 
@@ -60,11 +84,238 @@ public class TypedDataSerializer : ITypedDataSerializer
     //    };
     //}
 
-    private ITypedData DeserializeVector(BinaryReader reader, Header header)
+    private ArrayProperties DeserializeArrayProperties(BinaryReader reader, Header header, string type)
+    {
+        var values = _propertySerializer.DeserializeProperties(reader, header).ToArray();
+
+        return new ArrayProperties
+        {
+            TypeName = type,
+            Values = values
+        };
+    }
+
+    private FINGPUT1BufferPixel DeserializeFINGPUT1BufferPixel(BinaryReader reader)
+    {
+        var character = _hexSerializer.Deserialize(reader, 2);
+        var foregroundColor = _vectorSerializer.DeserializeVec4(reader);
+        var backgroundColor = _vectorSerializer.DeserializeVec4(reader);
+
+        return new FINGPUT1BufferPixel
+        {
+            Character = character,
+            ForegroundColor = foregroundColor,
+            BackgroundColor = backgroundColor
+        };
+    }
+
+    private IntPoint DeserializeIntPoint(BinaryReader reader)
+    {
+        var value = _vectorSerializer.DeserializeVec2I(reader);
+
+        return new IntPoint
+        {
+            Value = value
+        };
+    }
+
+    private static FICFrameRange DeserializeFICFrameRange(BinaryReader reader)
+    {
+        var begin = reader.ReadInt64();
+        var end = reader.ReadInt64();
+
+        return new FICFrameRange
+        {
+            Begin = begin,
+            End = end
+        };
+    }
+
+    private FINLuaProcessorStateStorage DeserializeFINLuaProcessorStateStorage(BinaryReader reader, Header header)
+    {
+        var nrTraces = reader.ReadInt32();
+        var traces = new FINNetworkTrace[nrTraces];
+        
+        for (var x = 0; x < nrTraces; x++)
+            traces[x] = DeserializeFINNetworkTrace(reader);
+
+        var nrObjectReferences = reader.ReadInt32();
+        var objectReferences = new ObjectReference[nrObjectReferences];
+
+        for (var x = 0; x < nrObjectReferences; x++)
+            objectReferences[x] = _objectReferenceSerializer.Deserialize(reader);
+
+        var thread = _stringSerializer.Deserialize(reader);
+        var globals = _stringSerializer.Deserialize(reader);
+
+        var nrTypedData = reader.ReadInt32();
+        var typedData = new TypedData[nrTypedData];
+        for (var x = 0; x < nrTypedData; x++)
+        {
+            var unknown1 = reader.ReadInt32();
+            var objectPath = _stringSerializer.Deserialize(reader);
+
+            TypedData data;
+            switch (objectPath) {
+                case "/Script/CoreUObject.Vector":
+                    data = DeserializeVector(reader);
+                    break;
+                case "/Script/CoreUObject.LinearColor":
+                    data = DeserializeLinearColor(reader);
+                    break;
+                case "/Script/FactoryGame.InventoryStack":
+                    data = DeserializeInventoryStack(reader, header);
+                    break;
+                case "/Script/FactoryGame.ItemAmount":
+                    data = DeserializeItemAmount(reader);
+                    break;
+                case "/Script/FicsItNetworks.FINTrackGraph":
+                    data = DeserializeFINNetworkTrace(reader);
+                    break;
+                case "/Script/FactoryGame.PrefabSignData":
+                case "/Script/FicsItNetworks.FINInternetCardHttpRequestFuture":
+                case "/Script/FactoryGame.InventoryItem":
+                case "/Script/FicsItNetworks.FINRailroadSignalBlock":
+                    continue;
+                case "/Script/FicsItNetworks.FINGPUT1Buffer":
+                    data = DeserializeFINGPUT1Buffer(reader);
+                    break;
+                default:
+                    throw new InvalidDataException($"Unknown object path for {nameof(FINLuaProcessorStateStorage)}");
+            }
+            typedData[x] = data;
+        }
+
+        return new FINLuaProcessorStateStorage
+        {
+            Traces = traces,
+            ObjectReferences = objectReferences,
+            Thread = thread,
+            Globals = globals,
+            TypedData = typedData
+        };
+    }
+
+    private FINGPUT1Buffer DeserializeFINGPUT1Buffer(BinaryReader reader)
+    {
+        var vector = _vectorSerializer.DeserializeVec2I(reader);
+        var size = reader.ReadInt32();
+        var name = _stringSerializer.Deserialize(reader);
+        var typeName = _stringSerializer.Deserialize(reader);
+        var length = reader.ReadInt32();
+        var buffer = new FINGPUT1BufferPixel[size];
+
+        for (var x = 0; x < size; x++)
+            buffer[x] = DeserializeFINGPUT1BufferPixel(reader);
+
+        var uknown = _hexSerializer.Deserialize(reader, 45);
+
+        return new FINGPUT1Buffer
+        {
+            Vector = vector,
+            Name = name,
+            TypeName = typeName,
+            Length = length,
+            Buffer = buffer,
+            Uknown = uknown
+        };
+    }
+
+    private ItemAmount DeserializeItemAmount(BinaryReader reader)
+    {
+        var unknown1 = reader.ReadInt32();
+        var unknown2 = _stringSerializer.Deserialize(reader);
+        var unknown3 = reader.ReadInt32();
+
+        return new ItemAmount
+        {
+            Unknown1 = unknown1,
+            Unknown2 = unknown2,
+            Unknown3 = unknown3
+        };
+    }
+
+    private FINNetworkTrace DeserializeFINNetworkTrace(BinaryReader reader)
+    {
+        var values = _propertySerializer.DeserializeProperties(reader, type: nameof(FINNetworkProperty)).OfType<FINNetworkProperty>().ToArray();
+
+        return new FINNetworkTrace
+        {
+            Values = values
+        };
+    }
+
+    private static DateTime DeserializeDateTime(BinaryReader reader)
+    {
+        var value = reader.ReadInt64();
+
+        return new DateTime
+        {
+            Value = new System.DateTime(value)
+        };
+    }
+
+    private SlateBrush DeserializeSlateBrush(BinaryReader reader)
+    {
+        var value = _stringSerializer.Deserialize(reader);
+
+        return new SlateBrush
+        {
+            Unknown = value
+        };
+    }
+
+    private Guid DeserializeGuid(BinaryReader reader)
+    {
+        var value = _hexSerializer.Deserialize(reader, 16);
+
+        return new Guid
+        {
+            Value = value
+        };
+    }
+
+    private TimerHandle DeserializeTimerHandle(BinaryReader reader)
+    {
+        var value = _stringSerializer.Deserialize(reader);
+
+        return new TimerHandle
+        {
+            Value = value
+        };
+    }
+
+    private TypedData DeserializeVector2D(BinaryReader reader, Header header)
+    {
+        return header.SaveVersion >= 41
+            ? new Vector2D { Value = _vectorSerializer.DeserializeVec2D(reader) }
+            : new Vector2 { Value = _vectorSerializer.DeserializeVec2(reader) };
+    }
+    
+    private TypedData DeserializeVector4(BinaryReader reader, Header header)
+    {
+        return header.SaveVersion >= 41
+            ? new Vector4D { Value = _vectorSerializer.DeserializeVec4D(reader) }
+            : new Vector4 { Value = _vectorSerializer.DeserializeVec4(reader) };
+    }
+
+    private Vector DeserializeVector(BinaryReader reader)
+    {
+        return new Vector { Value = _vectorSerializer.DeserializeVec3(reader) };
+    }
+
+    private TypedData DeserializeVector(BinaryReader reader, Header header)
     {
         return header.SaveVersion >= 41
             ? new VectorD { Value = _vectorSerializer.DeserializeVec3D(reader) }
             : new Vector { Value = _vectorSerializer.DeserializeVec3(reader) };
+    }
+
+    private TypedData DeserializeRotator(BinaryReader reader, Header header, string typeName)
+    {
+        return header.SaveVersion >= 41 && !typeName.Equals("SpawnData", StringComparison.Ordinal)
+            ? new RotatorD { Value = _vectorSerializer.DeserializeVec3D(reader) }
+            : new Rotator { Value = _vectorSerializer.DeserializeVec3(reader) };
     }
 
     private SpawnData DeserializeSpawnData(BinaryReader reader)
@@ -100,6 +351,16 @@ public class TypedDataSerializer : ITypedDataSerializer
         return new Quat
         {
             Value = value
+        };
+    }
+
+    private Color DeserializeColor(BinaryReader reader)
+    {
+        var color = _vectorSerializer.DeserializeVec4B(reader);
+
+        return new Color
+        {
+            Value = color
         };
     }
 
@@ -153,9 +414,9 @@ public class TypedDataSerializer : ITypedDataSerializer
         };
     }
 
-    private FactoryCustomizationColorSlot DeserializeFactoryCustomizationColorSlot(BinaryReader reader, long endPosition)
+    private FactoryCustomizationColorSlot DeserializeFactoryCustomizationColorSlot(BinaryReader reader, Header header, long endPosition)
     {
-        var properties = _propertySerializer.DeserializeProperties(reader).ToArray();
+        var properties = _propertySerializer.DeserializeProperties(reader, header).ToArray();
 
         return new FactoryCustomizationColorSlot
         {

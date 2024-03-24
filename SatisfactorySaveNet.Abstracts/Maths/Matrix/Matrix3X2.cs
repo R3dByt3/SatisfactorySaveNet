@@ -69,7 +69,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         /// <summary>
         /// Gets or sets the first column of this matrix.
         /// </summary>
-        public Vector3 Column0
+        public Vector.Vector3 Column0
         {
             readonly get => new(Row0.X, Row1.X, Row2.X);
             set
@@ -83,7 +83,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         /// <summary>
         /// Gets or sets the second column of this matrix.
         /// </summary>
-        public Vector3 Column1
+        public Vector.Vector3 Column1
         {
             readonly get => new(Row0.Y, Row1.Y, Row2.Y);
             set

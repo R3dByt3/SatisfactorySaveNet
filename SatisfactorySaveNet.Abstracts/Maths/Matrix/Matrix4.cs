@@ -529,7 +529,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         public readonly Matrix4 ClearTranslation()
         {
             var m = this;
-            m.Row3.Xyz = Vector3.Zero;
+            m.Row3.Xyz = Vector.Vector3.Zero;
             return m;
         }
 
@@ -553,9 +553,9 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         public readonly Matrix4 ClearRotation()
         {
             var m = this;
-            m.Row0.Xyz = new Vector3(m.Row0.Xyz.Length, 0, 0);
-            m.Row1.Xyz = new Vector3(0, m.Row1.Xyz.Length, 0);
-            m.Row2.Xyz = new Vector3(0, 0, m.Row2.Xyz.Length);
+            m.Row0.Xyz = new Vector.Vector3(m.Row0.Xyz.Length, 0, 0);
+            m.Row1.Xyz = new Vector.Vector3(0, m.Row1.Xyz.Length, 0);
+            m.Row2.Xyz = new Vector.Vector3(0, 0, m.Row2.Xyz.Length);
             return m;
         }
 
@@ -574,7 +574,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         /// Returns the translation component of this instance.
         /// </summary>
         /// <returns>The translation.</returns>
-        public Vector3 ExtractTranslation()
+        public Vector.Vector3 ExtractTranslation()
         {
             return Row3.Xyz;
         }
@@ -583,9 +583,9 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         /// Returns the scale component of this instance.
         /// </summary>
         /// <returns>The scale.</returns>
-        public Vector3 ExtractScale()
+        public Vector.Vector3 ExtractScale()
         {
-            return new Vector3(Row0.Xyz.Length, Row1.Xyz.Length, Row2.Xyz.Length);
+            return new Vector.Vector3(Row0.Xyz.Length, Row1.Xyz.Length, Row2.Xyz.Length);
         }
 
         /// <summary>
@@ -674,7 +674,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         /// <param name="axis">The axis to rotate about.</param>
         /// <param name="angle">Angle in radians to rotate counter-clockwise (looking in the direction of the given axis).</param>
         /// <param name="result">A matrix instance.</param>
-        public static void CreateFromAxisAngle(Vector3 axis, float angle, out Matrix4 result)
+        public static void CreateFromAxisAngle(Vector.Vector3 axis, float angle, out Matrix4 result)
         {
             // normalize and create a local copy of the vector.
             axis.Normalize();
@@ -719,7 +719,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         /// <param name="angle">Angle in radians to rotate counter-clockwise (looking in the direction of the given axis).</param>
         /// <returns>A matrix instance.</returns>
         [Pure]
-        public static Matrix4 CreateFromAxisAngle(Vector3 axis, float angle)
+        public static Matrix4 CreateFromAxisAngle(Vector.Vector3 axis, float angle)
         {
             CreateFromAxisAngle(axis, angle, out var result);
             return result;
@@ -888,7 +888,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         /// </summary>
         /// <param name="vector">The translation vector.</param>
         /// <param name="result">The resulting Matrix4 instance.</param>
-        public static void CreateTranslation(in Vector3 vector, out Matrix4 result)
+        public static void CreateTranslation(in Vector.Vector3 vector, out Matrix4 result)
         {
             result = Identity;
             result.Row3.X = vector.X;
@@ -916,7 +916,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         /// <param name="vector">The translation vector.</param>
         /// <returns>The resulting Matrix4 instance.</returns>
         [Pure]
-        public static Matrix4 CreateTranslation(Vector3 vector)
+        public static Matrix4 CreateTranslation(Vector.Vector3 vector)
         {
             CreateTranslation(vector.X, vector.Y, vector.Z, out var result);
             return result;
@@ -940,7 +940,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         /// <param name="scale">Scale factors for the x, y, and z axes.</param>
         /// <returns>A scale matrix.</returns>
         [Pure]
-        public static Matrix4 CreateScale(Vector3 scale)
+        public static Matrix4 CreateScale(Vector.Vector3 scale)
         {
             CreateScale(in scale, out var result);
             return result;
@@ -978,7 +978,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         /// </summary>
         /// <param name="scale">Scale factors for the x, y, and z axes.</param>
         /// <param name="result">A scale matrix.</param>
-        public static void CreateScale(in Vector3 scale, out Matrix4 result)
+        public static void CreateScale(in Vector.Vector3 scale, out Matrix4 result)
         {
             result = Identity;
             result.Row0.X = scale.X;
@@ -1258,11 +1258,11 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         /// <param name="up">Up vector in world space (should not be parallel to the camera direction, that is target - eye).</param>
         /// <returns>A Matrix4 that transforms world space to camera space.</returns>
         [Pure]
-        public static Matrix4 LookAt(Vector3 eye, Vector3 target, Vector3 up)
+        public static Matrix4 LookAt(Vector.Vector3 eye, Vector.Vector3 target, Vector.Vector3 up)
         {
-            var z = Vector3.Normalize(eye - target);
-            var x = Vector3.Normalize(Vector3.Cross(up, z));
-            var y = Vector3.Normalize(Vector3.Cross(z, x));
+            var z = Vector.Vector3.Normalize(eye - target);
+            var x = Vector.Vector3.Normalize(Vector.Vector3.Cross(up, z));
+            var y = Vector.Vector3.Normalize(Vector.Vector3.Cross(z, x));
 
             Matrix4 result;
 
@@ -1321,9 +1321,9 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         {
             return LookAt
             (
-                new Vector3(eyeX, eyeY, eyeZ),
-                new Vector3(targetX, targetY, targetZ),
-                new Vector3(upX, upY, upZ)
+                new Vector.Vector3(eyeX, eyeY, eyeZ),
+                new Vector.Vector3(targetX, targetY, targetZ),
+                new Vector.Vector3(upX, upY, upZ)
             );
         }
 

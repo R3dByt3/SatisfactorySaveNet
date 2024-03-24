@@ -15,24 +15,24 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         /// <summary>
         /// Top row of the matrix.
         /// </summary>
-        public Vector3 Row0;
+        public Vector.Vector3 Row0;
 
         /// <summary>
         /// Bottom row of the matrix.
         /// </summary>
-        public Vector3 Row1;
+        public Vector.Vector3 Row1;
 
         /// <summary>
         /// The zero matrix.
         /// </summary>
-        public static readonly Matrix2X3 Zero = new(Vector3.Zero, Vector3.Zero);
+        public static readonly Matrix2X3 Zero = new(Vector.Vector3.Zero, Vector.Vector3.Zero);
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Matrix2X3"/> struct.
         /// </summary>
         /// <param name="row0">Top row of the matrix.</param>
         /// <param name="row1">Bottom row of the matrix.</param>
-        public Matrix2X3(Vector3 row0, Vector3 row1)
+        public Matrix2X3(Vector.Vector3 row0, Vector.Vector3 row1)
         {
             Row0 = row0;
             Row1 = row1;
@@ -53,8 +53,8 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
             float m10, float m11, float m12
         )
         {
-            Row0 = new Vector3(m00, m01, m02);
-            Row1 = new Vector3(m10, m11, m12);
+            Row0 = new Vector.Vector3(m00, m01, m02);
+            Row1 = new Vector.Vector3(m10, m11, m12);
         }
 
         /// <summary>

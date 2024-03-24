@@ -76,22 +76,22 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         /// <summary>
         /// Gets the first column of this matrix.
         /// </summary>
-        public readonly Vector3 Column0 => new(Row0.X, Row1.X, Row2.X);
+        public readonly Vector.Vector3 Column0 => new(Row0.X, Row1.X, Row2.X);
 
         /// <summary>
         /// Gets the second column of this matrix.
         /// </summary>
-        public readonly Vector3 Column1 => new(Row0.Y, Row1.Y, Row2.Y);
+        public readonly Vector.Vector3 Column1 => new(Row0.Y, Row1.Y, Row2.Y);
 
         /// <summary>
         /// Gets the third column of this matrix.
         /// </summary>
-        public readonly Vector3 Column2 => new(Row0.Z, Row1.Z, Row2.Z);
+        public readonly Vector.Vector3 Column2 => new(Row0.Z, Row1.Z, Row2.Z);
 
         /// <summary>
         /// Gets the fourth column of this matrix.
         /// </summary>
-        public readonly Vector3 Column3 => new(Row0.W, Row1.W, Row2.W);
+        public readonly Vector.Vector3 Column3 => new(Row0.W, Row1.W, Row2.W);
 
         /// <summary>
         /// Gets or sets the value at row 1, column 1 of this instance.
@@ -204,7 +204,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         /// <summary>
         /// Gets or sets the values along the main diagonal of the matrix.
         /// </summary>
-        public Vector3 Diagonal
+        public Vector.Vector3 Diagonal
         {
             readonly get => new(Row0.X, Row1.Y, Row2.Z);
             set
@@ -277,7 +277,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         /// <param name="axis">The axis to rotate about.</param>
         /// <param name="angle">Angle in radians to rotate counter-clockwise (looking in the direction of the given axis).</param>
         /// <param name="result">A matrix instance.</param>
-        public static void CreateFromAxisAngle(Vector3 axis, float angle, out Matrix3X4 result)
+        public static void CreateFromAxisAngle(Vector.Vector3 axis, float angle, out Matrix3X4 result)
         {
             axis.Normalize();
             float axisX = axis.X, axisY = axis.Y, axisZ = axis.Z;
@@ -318,7 +318,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         /// <param name="angle">Angle in radians to rotate counter-clockwise (looking in the direction of the given axis).</param>
         /// <returns>A matrix instance.</returns>
         [Pure]
-        public static Matrix3X4 CreateFromAxisAngle(Vector3 axis, float angle)
+        public static Matrix3X4 CreateFromAxisAngle(Vector.Vector3 axis, float angle)
         {
             CreateFromAxisAngle(axis, angle, out var result);
             return result;
@@ -510,7 +510,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         /// </summary>
         /// <param name="vector">The translation vector.</param>
         /// <param name="result">The resulting Matrix4 instance.</param>
-        public static void CreateTranslation(in Vector3 vector, out Matrix3X4 result)
+        public static void CreateTranslation(in Vector.Vector3 vector, out Matrix3X4 result)
         {
             result.Row0.X = 1;
             result.Row0.Y = 0;
@@ -546,7 +546,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         /// <param name="vector">The translation vector.</param>
         /// <returns>The resulting Matrix4 instance.</returns>
         [Pure]
-        public static Matrix3X4 CreateTranslation(Vector3 vector)
+        public static Matrix3X4 CreateTranslation(Vector.Vector3 vector)
         {
             CreateTranslation(vector.X, vector.Y, vector.Z, out var result);
             return result;
@@ -569,7 +569,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
         /// <param name="scale">Scale factors for x,y and z axes.</param>
         /// <returns>A scaling matrix.</returns>
         [Pure]
-        public static Matrix3X4 CreateScale(Vector3 scale)
+        public static Matrix3X4 CreateScale(Vector.Vector3 scale)
         {
             return CreateScale(scale.X, scale.Y, scale.Z);
         }
@@ -821,11 +821,11 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Matrix
             inverseRotation.Row1 /= inverseRotation.Row1.LengthSquared;
             inverseRotation.Row2 /= inverseRotation.Row2.LengthSquared;
 
-            Vector3 translation = new(mat.Row0.W, mat.Row1.W, mat.Row2.W);
+            Vector.Vector3 translation = new(mat.Row0.W, mat.Row1.W, mat.Row2.W);
 
-            result.Row0 = new Vector4(inverseRotation.Row0, -Vector3.Dot(inverseRotation.Row0, translation));
-            result.Row1 = new Vector4(inverseRotation.Row1, -Vector3.Dot(inverseRotation.Row1, translation));
-            result.Row2 = new Vector4(inverseRotation.Row2, -Vector3.Dot(inverseRotation.Row2, translation));
+            result.Row0 = new Vector4(inverseRotation.Row0, -Vector.Vector3.Dot(inverseRotation.Row0, translation));
+            result.Row1 = new Vector4(inverseRotation.Row1, -Vector.Vector3.Dot(inverseRotation.Row1, translation));
+            result.Row2 = new Vector4(inverseRotation.Row2, -Vector.Vector3.Dot(inverseRotation.Row2, translation));
         }
 
         /// <summary>

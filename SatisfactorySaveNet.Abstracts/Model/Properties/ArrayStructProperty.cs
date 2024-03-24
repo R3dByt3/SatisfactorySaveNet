@@ -9,5 +9,5 @@ public class ArrayStructProperty : IArrayProperty
     public string PropertyType { get; set; } = string.Empty;
     public (int, int, int, int) UUID { get; set; } = new(0, 0, 0, 0);
     public string ElementType { get; set; } = string.Empty;
-    public IList<ITypedData> Values { get; set; } = [];
+    public IList<TypedData.TypedData> Values { get; set; } = [];
 }
