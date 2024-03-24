@@ -132,7 +132,6 @@ public class Program
     public static void Main(string[] args)
     {
         //ToDo: Benchmark MemoryManager
-        //ToDo: Boxing vs Generic union vs Unsafe union
         var summary = BenchmarkRunner.Run<Unions>();
     }
 }

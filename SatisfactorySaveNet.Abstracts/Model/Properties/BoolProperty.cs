@@ -1,6 +1,9 @@
-﻿namespace SatisfactorySaveNet.Abstracts.Model.Properties;
+namespace SatisfactorySaveNet.Abstracts.Model.Properties;
 
 public class BoolProperty : Property
 {
-    public bool Value { get; set; }
+    /// <summary>
+    /// Value != 0 <=> True
+    /// </summary>
+    public sbyte Value { get; set; }
 }

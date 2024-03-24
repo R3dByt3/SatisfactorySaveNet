@@ -49,12 +49,12 @@ public class Header
     /// <summary>
     /// This is "private" visibility, 1 would be "friends only" 
     /// </summary>
-    public sbyte SessionVisibility { get; set; }
+    public sbyte? SessionVisibility { get; set; }
 
     /// <summary>
     /// Depends on the <see href="https://docs.unrealengine.com/4.26/en-US/ProgrammingAndScripting/ProgrammingWithCPP/UnrealArchitecture/VersioningAssetsAndPackages/">unreal engine</see> version used 
     /// </summary>
-    public int EditorObjectVersion { get; set; }
+    public int? EditorObjectVersion { get; set; }
 
     /// <summary>
     /// Empty if no mods where used 
@@ -62,19 +62,21 @@ public class Header
     public string ModMetadata { get; set; } = string.Empty;
 
     /// <summary>
-    /// False if no mods where used 
+    /// False if no mods where used
+    /// IsModdedSave != 0 <=> True
     /// </summary>
-    public bool IsModdedSave { get; set; }
+    public int? IsModdedSave { get; set; }
 
     /// <summary>
     /// A unique identifier (<see href="https://en.wikipedia.org/wiki/Universally_unique_identifier">GUID</see>) for this save, for analytics purposes 
     /// </summary>
-    public string SaveIdentifier { get; set; } = string.Empty;
+    public string? SaveIdentifier { get; set; }
 
     /// <summary>
     /// Unknown yet
+    /// IsPartitionedWorld != 0 <=> True
     /// </summary>
-    public bool IsPartitionedWorld { get; set; }
+    public int? IsPartitionedWorld { get; set; }
 
     /// <summary>
     /// Propably some hash for the savegame
@@ -83,6 +85,7 @@ public class Header
 
     /// <summary>
     /// Is creative enabled
+    /// IsCreativeModeEnabled != 0 <=> True
     /// </summary>
-    public bool IsCreativeModeEnabled { get; set; }
+    public int? IsCreativeModeEnabled { get; set; }
 }

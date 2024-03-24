@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 
 namespace SatisfactorySaveNet;
 
@@ -76,10 +77,11 @@ public class PropertySerializer : IPropertySerializer
             nameof(SetProperty) => DeserializeSetProperty(reader, propertyName),
             nameof(StrProperty) => DeserializeStrProperty(reader),
             nameof(StructProperty) => header == null ? throw new ArgumentNullException(nameof(header)) : DeserializeStructProperty(reader, header),
-            nameof(TextProperty) => DeserializeTextProperty(reader),
+            nameof(TextProperty) => header == null ? throw new ArgumentNullException(nameof(header)) : DeserializeTextProperty(reader, header),
             nameof(UInt32Property) => DeserializeUInt32Property(reader),
             nameof(Int8Property) => DeserializeInt8Property(reader),
             nameof(FINNetworkProperty) => DeserializeFINNetworkProperty(reader),
+            //ToDo: All implemented?
 
             _ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
         };
@@ -97,49 +99,28 @@ public class PropertySerializer : IPropertySerializer
             nameof(FloatProperty) => DeserializeArrayFloatProperty(reader, count),
             nameof(EnumProperty) => DeserializeArrayEnumProperty(reader, count),
             nameof(StrProperty) => DeserializeArrayStrProperty(reader, count),
-            nameof(TextProperty) => DeserializeArrayTextProperty(reader, count),
+            nameof(TextProperty) => DeserializeArrayTextProperty(reader, header, count),
             nameof(ObjectProperty) => DeserializeArrayObjectProperty(reader, count),
             nameof(InterfaceProperty) => DeserializeArrayInterfaceProperty(reader, count),
             nameof(StructProperty) => DeserializeArrayStructProperty(reader, header, count),
+            //ToDo: All implemented?
+
             _ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
         };
     }
 
-    private ArrayTextProperty DeserializeArrayTextProperty(BinaryReader reader, int count)
+    private ArrayTextProperty DeserializeArrayTextProperty(BinaryReader reader, Header header, int count)
     {
-        var flags = reader.ReadInt32();
-        var historyType = reader.ReadSByte();
-
-        string? nameSpace = null;
-        string? key = null;
-        string? value = null;
-        TextProperty? sourceFmt = null;
-
-        switch (historyType)
-        {
-            case 0:
-                nameSpace = _stringSerializer.Deserialize(reader);
-                key = _stringSerializer.Deserialize(reader);
-                value = _stringSerializer.Deserialize(reader);
-                break;
-            case 1:
-            case 3:
-                sourceFmt = DeserializeTextProperty(reader);
-                var argumentsCount = reader.ReadInt32();
-
-                for (var x = 0; x < argumentsCount; x++)
-                {
-
-                }
-                break;
-        }
+        var values = new TextProperty[count];
 
         for (var x = 0; x < count; x++)
         {
+            values[x] = DeserializeTextProperty(reader, header);
         }
 
         return new ArrayTextProperty
         {
+            Values = values
         };
     }
 
@@ -250,11 +231,11 @@ public class PropertySerializer : IPropertySerializer
 
     private static ArrayBoolProperty DeserializeBoolArrayProperty(BinaryReader reader, int count)
     {
-        var values = new bool[count];
+        var values = new sbyte[count];
 
         for (var x = 0; x < count; x++)
         {
-            values[x] = reader.ReadSByte() != 0;
+            values[x] = reader.ReadSByte();
         }
 
         return new ArrayBoolProperty
@@ -326,15 +307,87 @@ public class PropertySerializer : IPropertySerializer
         };
     }
 
-    private TextProperty DeserializeTextProperty(BinaryReader reader)
+    private TextProperty DeserializeTextProperty(BinaryReader reader, Header header)
     {
+        //var binarySize = reader.ReadInt32();
+        //var index = reader.ReadInt32();
+        //var padding = reader.ReadSByte();
+        //var flags = reader.ReadInt32();
+        //var historyType = reader.ReadSByte();
+        //var isCultureInvariant = reader.ReadInt32() != 0;
+        //var value = _stringSerializer.Deserialize(reader);
+        //
+        //return new TextProperty
+        //{
+        //    Index = index,
+        //    Flags = flags,
+        //    HistoryType = historyType,
+        //    IsCultureInvariant = isCultureInvariant,
+        //    Value = value,
+        //};
+
         var binarySize = reader.ReadInt32();
         var index = reader.ReadInt32();
         var padding = reader.ReadSByte();
         var flags = reader.ReadInt32();
-        var historyType = reader.ReadSByte();
-        var isCultureInvariant = reader.ReadInt32() != 0;
-        var value = _stringSerializer.Deserialize(reader);
+        var historyType = reader.ReadByte();
+
+        string? nameSpace = null;
+        string? key = null;
+        string? value = null;
+        TextProperty? sourceFmt = null;
+        TextProperty? sourceText = null;
+        byte? transformType = null;
+        string? tableId = null;
+        string? textKey = null;
+        int? isCultureInvariant = null;
+        TextArgument[]? arguments = null;
+
+        switch (historyType)
+        {
+            case 0:
+                nameSpace = _stringSerializer.Deserialize(reader);
+                key = _stringSerializer.Deserialize(reader);
+                value = _stringSerializer.Deserialize(reader);
+                break;
+            case 1:
+            case 3:
+                sourceFmt = DeserializeTextProperty(reader, header);
+                var argumentsCount = reader.ReadInt32();
+                arguments = new TextArgument[argumentsCount];
+
+                for (var x = 0; x < argumentsCount; x++)
+                {
+                    var name = _stringSerializer.Deserialize(reader);
+                    var valueType = reader.ReadByte();
+                    TextArgument textArgument = valueType switch
+                    {
+                        0 => new TextArgumentV0(name, reader.ReadInt32(), reader.ReadInt32()),
+                        4 => new TextArgumentV4(name, DeserializeTextProperty(reader, header)),
+                        _ => throw new InvalidDataException("Unknown valueType type in array text property"),
+                    };
+                    arguments[x] = textArgument;
+                }
+                break;
+            case 10:
+                sourceText = DeserializeTextProperty(reader, header);
+                transformType = reader.ReadByte();
+                break;
+            case 11:
+                tableId = _stringSerializer.Deserialize(reader);
+                textKey = _stringSerializer.Deserialize(reader);
+                break;
+            case 255:
+                if (header.BuildVersion < 140822)
+                    break;
+                isCultureInvariant = reader.ReadInt32();
+                if (isCultureInvariant != 1)
+                    break;
+                value = _stringSerializer.Deserialize(reader);
+                break;
+            default:
+                throw new InvalidDataException("Unknown history type in array text property");
+        }
 
         return new TextProperty
         {
@@ -343,6 +396,14 @@ public class PropertySerializer : IPropertySerializer
             HistoryType = historyType,
             IsCultureInvariant = isCultureInvariant,
             Value = value,
+            NameSpace = nameSpace,
+            Key = key,
+            SourceFmt = sourceFmt,
+            SourceText = sourceText,
+            TransformType = transformType,
+            TableId = tableId,
+            TextKey = textKey,
+            Arguments = arguments
         };
     }
 
@@ -387,7 +448,7 @@ public class PropertySerializer : IPropertySerializer
     {
         var padding = reader.ReadInt32();
         var index = reader.ReadInt32();
-        var value = reader.ReadSByte() != 0;
+        var value = reader.ReadSByte();
         var padding2 = reader.ReadSByte();
 
         var property = new BoolProperty
@@ -608,7 +669,7 @@ public class PropertySerializer : IPropertySerializer
                     value = new ByteUnion { Value = property.KeyType == nameof(StrProperty) ? Convert.ToSByte(_stringSerializer.Deserialize(reader)) : reader.ReadSByte() };
                     break;
                 case nameof(BoolProperty):
-                    value = new BoolUnion { Value = reader.ReadSByte() != 0 };
+                    value = new BoolUnion { Value = reader.ReadSByte() };
                     break;
                 case nameof(IntProperty):
                     value = new IntUnion { Value = reader.ReadInt32() };
@@ -630,7 +691,7 @@ public class PropertySerializer : IPropertySerializer
                         : new ObjectReferenceUnion { Value = _objectReferenceSerializer.Deserialize(reader) };
                     break;
                 case nameof(TextProperty):
-                    value = new TextUnion { Value = DeserializeTextProperty(reader) };
+                    value = new TextUnion { Value = DeserializeTextProperty(reader, header) };
                     break;
                 case nameof(StructProperty):
                     if (string.Equals(type, "LBBalancerData", StringComparison.Ordinal))

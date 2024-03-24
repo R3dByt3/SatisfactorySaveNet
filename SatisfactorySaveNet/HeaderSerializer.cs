@@ -48,7 +48,7 @@ public class HeaderSerializer : IHeaderSerializer
         if (header.HeaderVersion >= 8)
         {
             header.ModMetadata = _stringSerializer.Deserialize(reader);
-            header.IsModdedSave = reader.ReadInt32() != 0;
+            header.IsModdedSave = reader.ReadInt32();
         }
 
         if (header.HeaderVersion >= 10)
@@ -56,9 +56,9 @@ public class HeaderSerializer : IHeaderSerializer
 
         if (header.HeaderVersion >= 13)
         {
-            header.IsPartitionedWorld = reader.ReadInt32() != 0;
+            header.IsPartitionedWorld = reader.ReadInt32();
             header.SaveDataHash = _hexSerializer.Deserialize(reader, 20);
-            header.IsCreativeModeEnabled = reader.ReadInt32() != 0;
+            header.IsCreativeModeEnabled = reader.ReadInt32();
         }
 
         return header;

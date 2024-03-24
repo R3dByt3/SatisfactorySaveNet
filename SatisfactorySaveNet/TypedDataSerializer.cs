@@ -63,6 +63,7 @@ public class TypedDataSerializer : ITypedDataSerializer
             nameof(FICFrameRange) => DeserializeFICFrameRange(reader),
             nameof(IntPoint) => DeserializeIntPoint(reader),
             nameof(FINGPUT1BufferPixel) => DeserializeFINGPUT1BufferPixel(reader),
+            //ToDo: All implemented?
 
             //nameof(InventoryStack) => DeserializeInventoryStack(reader, header), False?
             //nameof(SpawnData) => DeserializeSpawnData(reader), False?
@@ -76,7 +77,6 @@ public class TypedDataSerializer : ITypedDataSerializer
 
     //private ITypedData DeserializeProperty(BinaryReader reader)
     //{
-    //    //ToDo: Das hier ist evtl. BS
     //    var value = _propertySerializer.DeserializeProperty(reader);
     //
     //    return new PropertyData
@@ -443,7 +443,7 @@ public class TypedDataSerializer : ITypedDataSerializer
         {
             var min = _vectorSerializer.DeserializeVec3D(reader);
             var max = _vectorSerializer.DeserializeVec3D(reader);
-            var isValid = reader.ReadSByte() != 0;
+            var isValid = reader.ReadSByte();
 
             return new BoxD
             {
@@ -456,7 +456,7 @@ public class TypedDataSerializer : ITypedDataSerializer
         {
             var min = _vectorSerializer.DeserializeVec3(reader);
             var max = _vectorSerializer.DeserializeVec3(reader);
-            var isValid = reader.ReadSByte() != 0;
+            var isValid = reader.ReadSByte();
 
             return new Box
             {

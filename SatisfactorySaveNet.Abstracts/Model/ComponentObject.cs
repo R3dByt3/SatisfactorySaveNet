@@ -16,6 +16,6 @@ public class ComponentObject
     public string ParentActorName { get; set; } = string.Empty;
 
     public IList<Property> Properties { get; set; } = [];
-    public IExtraData? ExtraData { get; set; }
+    public ExtraData.ExtraData? ExtraData { get; set; }
     public int? EntitySaveVersion { get; set; }
 }

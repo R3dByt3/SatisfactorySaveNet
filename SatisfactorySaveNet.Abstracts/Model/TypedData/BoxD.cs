@@ -8,5 +8,8 @@ public class BoxD : TypedData
 
     public Vector3D Min { get; set; }
     public Vector3D Max { get; set; }
-    public bool IsValid { get; set; }
+    /// <summary>
+    /// IsValid != 0 <=> True
+    /// </summary>
+    public sbyte IsValid { get; set; }
 }

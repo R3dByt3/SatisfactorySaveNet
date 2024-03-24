@@ -34,11 +34,11 @@ public class ObjectHeaderSerializer : IObjectHeaderSerializer
         var typePath = _stringSerializer.Deserialize(reader);
         var rootObject = _stringSerializer.Deserialize(reader);
         var instanceName = _stringSerializer.Deserialize(reader);
-        var needTransform = reader.ReadInt32() != 0;
+        var needTransform = reader.ReadInt32();
         var rotation = _vectorSerializer.DeserializeVec4(reader);
         var position = _vectorSerializer.DeserializeVec3(reader);
         var scale = _vectorSerializer.DeserializeVec3(reader);
-        var wasPlacedInLevel = reader.ReadInt32() != 0;
+        var wasPlacedInLevel = reader.ReadInt32();
 
         return new ActorObject
         {
