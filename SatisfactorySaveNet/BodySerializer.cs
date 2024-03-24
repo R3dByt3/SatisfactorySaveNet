@@ -25,26 +25,57 @@ public class BodySerializer : IBodySerializer
 
     public Body? Deserialize(BinaryReader reader, Header header)
     {
+        Grid? powerGrid = null;
         if (header.SaveVersion >= 41)
         {
-            var x1 = reader.ReadInt32(); //ToDo: PowerGridData
-            var x2 = _stringSerializer.Deserialize(reader);
-            var x3 = reader.ReadInt64();
-            var x4 = reader.ReadInt32();
-            var x5 = _stringSerializer.Deserialize(reader);
-            var x6 = reader.ReadInt32();
-            for (var x = 1; x < x1; x++)
+            var nrData = reader.ReadInt32();
+            var unknown1 = _stringSerializer.Deserialize(reader);
+            var unknown2 = reader.ReadInt64();
+            var unknown3 = reader.ReadInt32();
+            var unknown4 = _stringSerializer.Deserialize(reader);
+            var unknown5 = reader.ReadInt32();
+
+            var data = new GridData[nrData - 1];
+
+            for (var x = 1; x < nrData; x++)
             {
-                var s = _stringSerializer.Deserialize(reader);
-                var y1 = reader.ReadInt32();
-                var y2 = reader.ReadInt32();
-                var y3 = reader.ReadInt32();
-                for (var y = 0; y < y3; y++)
+                var unknown6 = _stringSerializer.Deserialize(reader);
+                var unknown7 = reader.ReadInt32();
+                var unknown8 = reader.ReadInt32();
+                var nrLevels = reader.ReadInt32();
+
+                var levels = new GridLevel[nrLevels];
+
+                for (var y = 0; y < nrLevels; y++)
                 {
-                    var ss = _stringSerializer.Deserialize(reader);
-                    var u = reader.ReadUInt32();
+                    var unknown9 = _stringSerializer.Deserialize(reader);
+                    var unknown10 = reader.ReadUInt32();
+
+                    levels[y] = new GridLevel
+                    {
+                        Unknown1 = unknown9,
+                        Unknown2 = unknown10
+                    };
                 }
+
+                data[x - 1] = new GridData
+                {
+                    Unknown1 = unknown6,
+                    Unknown2 = unknown7,
+                    Unknown3 = unknown8,
+                    Levels = levels
+                };
             }
+
+            powerGrid = new Grid
+            {
+                Unknown1 = unknown1,
+                Unknown2 = unknown2,
+                Unknown3 = unknown3,
+                Unknown4 = unknown4,
+                Unknown5 = unknown5,
+                Data = data
+            };
         }
         if (header.SaveVersion >= 29)
         {
@@ -127,10 +158,19 @@ public class BodySerializer : IBodySerializer
 #pragma warning restore CS0618 // Type or member is obsolete
             }
 
+            var nrObjectReferences = reader.ReadInt32();
+            var objectReferences = new ObjectReference[nrObjectReferences];
+
+            for (var i = 0; i < nrObjectReferences; i++)
+            {
+                objectReferences[i] = _objectReferenceSerializer.Deserialize(reader);
+            }
+
             return new Body
             {
                 Levels = levels,
-                //ObjectReferences =
+                Grid = powerGrid,
+                ObjectReferences = objectReferences
             };
         }
 

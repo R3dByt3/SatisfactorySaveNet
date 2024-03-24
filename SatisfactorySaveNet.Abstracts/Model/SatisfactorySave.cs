@@ -1,4 +1,4 @@
-﻿namespace SatisfactorySaveNet.Abstracts.Model;
+namespace SatisfactorySaveNet.Abstracts.Model;
 
 /// <summary>
 /// SatisfactorySave is the main class for parsing a savegame
@@ -13,9 +13,9 @@ public class SatisfactorySave
     /// <summary>
     /// Body part of the save containing things like subLevels
     /// </summary>
-    public Body Body { get; set; }
+    public Body? Body { get; set; }
 
-    public SatisfactorySave(Header header, Body body)
+    public SatisfactorySave(Header header, Body? body)
     {
         Header = header;
         Body = body;

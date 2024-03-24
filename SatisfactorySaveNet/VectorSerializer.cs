@@ -80,6 +80,16 @@ public class VectorSerializer : IVectorSerializer
         return new Quaternion(x, y, z, w);
     }
 
+    public QuaternionD DeserializeQuaternionD(BinaryReader reader)
+    {
+        var x = reader.ReadDouble();
+        var y = reader.ReadDouble();
+        var z = reader.ReadDouble();
+        var w = reader.ReadDouble();
+
+        return new QuaternionD(x, y, z, w);
+    }
+
     public Vector3I DeserializeVec3I(BinaryReader reader)
     {
         var x = reader.ReadInt32();

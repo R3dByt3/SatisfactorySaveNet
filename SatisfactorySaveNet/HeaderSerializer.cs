@@ -1,4 +1,4 @@
-﻿using SatisfactorySaveNet.Abstracts;
+using SatisfactorySaveNet.Abstracts;
 using SatisfactorySaveNet.Abstracts.Model;
 using System;
 using System.IO;
@@ -7,13 +7,15 @@ namespace SatisfactorySaveNet;
 
 public class HeaderSerializer : IHeaderSerializer
 {
-    public static readonly IHeaderSerializer Instance = new HeaderSerializer(StringSerializer.Instance);
+    public static readonly IHeaderSerializer Instance = new HeaderSerializer(StringSerializer.Instance, HexSerializer.Instance);
 
     private readonly IStringSerializer _stringSerializer;
+    private readonly IHexSerializer _hexSerializer;
 
-    public HeaderSerializer(IStringSerializer stringSerializer)
+    public HeaderSerializer(IStringSerializer stringSerializer, IHexSerializer hexSerializer)
     {
         _stringSerializer = stringSerializer;
+        _hexSerializer = hexSerializer;
     }
 
     public Header Deserialize(BinaryReader reader)
@@ -46,7 +48,7 @@ public class HeaderSerializer : IHeaderSerializer
         if (header.HeaderVersion >= 8)
         {
             header.ModMetadata = _stringSerializer.Deserialize(reader);
-            header.IsModdedSave = reader.ReadInt32() > 0;
+            header.IsModdedSave = reader.ReadInt32() != 0;
         }
 
         if (header.HeaderVersion >= 10)
@@ -54,30 +56,9 @@ public class HeaderSerializer : IHeaderSerializer
 
         if (header.HeaderVersion >= 13)
         {
-            reader.BaseStream.Seek(28, SeekOrigin.Current);
-            //byte[][] slices;
-            //var pos = reader.BaseStream.Position;
-            //var magicMatch = false;
-            //var chunkMatch = false;
-            //var compressedMatch = false;
-            //var uncompressedMatch = false;
-            //
-            //do
-            //{
-            //    var bytes = reader.ReadBytes(sizeof(int) * 12);
-            //    reader.BaseStream.Seek(-((sizeof(int) * 12) - 1), SeekOrigin.Current);
-            //    slices = bytes.Chunk(sizeof(int)).ToArray();
-            //    magicMatch = BitConverter.ToInt32(slices[0]) == ChunkInfo.MagicValue;
-            //    chunkMatch = BitConverter.ToInt32(slices[2]) == ChunkInfo.ChunkSize;
-            //    //compressedMatch = BitConverter.ToInt32(slices[4]) == BitConverter.ToInt32(slices[8]);
-            //    //uncompressedMatch = BitConverter.ToInt32(slices[6]) == BitConverter.ToInt32(slices[10]);
-            //} while (!(magicMatch && chunkMatch));
-            //
-            //reader.BaseStream.Seek(-1, SeekOrigin.Current);
-            //
-            //var count = reader.BaseStream.Position - pos;
-            //
-            //Console.WriteLine(count);
+            header.IsPartitionedWorld = reader.ReadInt32() != 0;
+            header.SaveDataHash = _hexSerializer.Deserialize(reader, 20);
+            header.IsCreativeModeEnabled = reader.ReadInt32() != 0;
         }
 
         return header;

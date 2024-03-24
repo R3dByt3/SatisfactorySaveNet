@@ -78,7 +78,7 @@ public class PropertySerializer : IPropertySerializer
             nameof(StructProperty) => header == null ? throw new ArgumentNullException(nameof(header)) : DeserializeStructProperty(reader, header),
             nameof(TextProperty) => DeserializeTextProperty(reader),
             nameof(UInt32Property) => DeserializeUInt32Property(reader),
-
+            nameof(Int8Property) => DeserializeInt8Property(reader),
             nameof(FINNetworkProperty) => DeserializeFINNetworkProperty(reader),
 
             _ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
@@ -467,6 +467,22 @@ public class PropertySerializer : IPropertySerializer
         var value = reader.ReadInt32();
 
         var property = new IntProperty
+        {
+            Index = index,
+            Value = value
+        };
+
+        return property;
+    }
+
+    private static Int8Property DeserializeInt8Property(BinaryReader reader)
+    {
+        var binarySize = reader.ReadInt32();
+        var index = reader.ReadInt32();
+        var padding = reader.ReadSByte();
+        var value = reader.ReadSByte();
+
+        var property = new Int8Property
         {
             Index = index,
             Value = value

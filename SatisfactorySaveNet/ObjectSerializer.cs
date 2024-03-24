@@ -1,4 +1,4 @@
-﻿using SatisfactorySaveNet.Abstracts;
+using SatisfactorySaveNet.Abstracts;
 using SatisfactorySaveNet.Abstracts.Exceptions;
 using SatisfactorySaveNet.Abstracts.Model;
 using System;
@@ -105,7 +105,7 @@ public class ObjectSerializer : IObjectSerializer
         var binarySize = reader.ReadInt32();
         var positionStart = reader.BaseStream.Position;
 
-        var properties = _propertySerializer.DeserializeProperties(reader).ToList();
+        var properties = _propertySerializer.DeserializeProperties(reader, header).ToList();
         componentObject.Properties = properties;
 
         var expectedPosition = positionStart + binarySize;

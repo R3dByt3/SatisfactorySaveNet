@@ -32,5 +32,7 @@ public enum TypedDataConstraint
     Vector2D,
     Vector4,
     Vector4D,
-    Vector2
+    Vector2,
+    QuatD,
+    BoxD
 }

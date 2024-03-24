@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 namespace SatisfactorySaveNet.Abstracts.Model;
 
@@ -70,4 +70,19 @@ public class Header
     /// A unique identifier (<see href="https://en.wikipedia.org/wiki/Universally_unique_identifier">GUID</see>) for this save, for analytics purposes 
     /// </summary>
     public string SaveIdentifier { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Unknown yet
+    /// </summary>
+    public bool IsPartitionedWorld { get; set; }
+
+    /// <summary>
+    /// Propably some hash for the savegame
+    /// </summary>
+    public string? SaveDataHash { get; set; }
+
+    /// <summary>
+    /// Is creative enabled
+    /// </summary>
+    public bool IsCreativeModeEnabled { get; set; }
 }

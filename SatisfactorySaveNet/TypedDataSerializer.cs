@@ -5,6 +5,7 @@ using SatisfactorySaveNet.Abstracts.Model.TypedData;
 using System;
 using System.IO;
 using System.Linq;
+using System.Reflection.PortableExecutable;
 using DateTime = SatisfactorySaveNet.Abstracts.Model.TypedData.DateTime;
 using Guid = SatisfactorySaveNet.Abstracts.Model.TypedData.Guid;
 
@@ -47,9 +48,9 @@ public class TypedDataSerializer : ITypedDataSerializer
             nameof(Vector) => DeserializeVector(reader, header),
             nameof(Rotator) => DeserializeRotator(reader, header, type),
             nameof(Vector2D) => DeserializeVector2D(reader, header),
-            nameof(Quat) => DeserializeQuat(reader),
+            nameof(Quat) => DeserializeQuat(reader, header),
             nameof(Vector4) => DeserializeVector4(reader, header),
-            nameof(Box) => DeserializeBox(reader),
+            nameof(Box) => DeserializeBox(reader, header),
             nameof(RailroadTrackPosition) => DeserializeRailroadTrackPosition(reader),
             nameof(TimerHandle) => DeserializeTimerHandle(reader),
             nameof(Guid) => DeserializeGuid(reader),
@@ -344,14 +345,26 @@ public class TypedDataSerializer : ITypedDataSerializer
         };
     }
 
-    private Quat DeserializeQuat(BinaryReader reader)
+    private TypedData DeserializeQuat(BinaryReader reader, Header header)
     {
-        var value = _vectorSerializer.DeserializeQuaternion(reader);
-
-        return new Quat
+        if (header.SaveVersion >= 41)
         {
-            Value = value
-        };
+            var value = _vectorSerializer.DeserializeQuaternionD(reader);
+
+            return new QuatD
+            {
+                Value = value
+            };
+        }
+        else
+        {
+            var value = _vectorSerializer.DeserializeQuaternion(reader);
+
+            return new Quat
+            {
+                Value = value
+            };
+        }
     }
 
     private Color DeserializeColor(BinaryReader reader)
@@ -414,27 +427,43 @@ public class TypedDataSerializer : ITypedDataSerializer
         };
     }
 
-    private FactoryCustomizationColorSlot DeserializeFactoryCustomizationColorSlot(BinaryReader reader, Header header, long endPosition)
+    //private FactoryCustomizationColorSlot DeserializeFactoryCustomizationColorSlot(BinaryReader reader, Header header, long endPosition)
+    //{
+    //    var properties = _propertySerializer.DeserializeProperties(reader, header).ToArray();
+    //
+    //    return new FactoryCustomizationColorSlot
+    //    {
+    //        Properties = properties
+    //    };
+    //}
+
+    private TypedData DeserializeBox(BinaryReader reader, Header header)
     {
-        var properties = _propertySerializer.DeserializeProperties(reader, header).ToArray();
-
-        return new FactoryCustomizationColorSlot
+        if (header.SaveVersion >= 41)
         {
-            Properties = properties
-        };
-    }
+            var min = _vectorSerializer.DeserializeVec3D(reader);
+            var max = _vectorSerializer.DeserializeVec3D(reader);
+            var isValid = reader.ReadSByte() != 0;
 
-    private Box DeserializeBox(BinaryReader reader)
-    {
-        var min = _vectorSerializer.DeserializeVec3(reader);
-        var max = _vectorSerializer.DeserializeVec3(reader);
-        var isValid = reader.ReadSByte() != 0;
-
-        return new Box
+            return new BoxD
+            {
+                Min = min,
+                Max = max,
+                IsValid = isValid
+            };
+        }
+        else
         {
-            Min = min,
-            Max = max,
-            IsValid = isValid
-        };
+            var min = _vectorSerializer.DeserializeVec3(reader);
+            var max = _vectorSerializer.DeserializeVec3(reader);
+            var isValid = reader.ReadSByte() != 0;
+
+            return new Box
+            {
+                Min = min,
+                Max = max,
+                IsValid = isValid
+            };
+        }
     }
 }

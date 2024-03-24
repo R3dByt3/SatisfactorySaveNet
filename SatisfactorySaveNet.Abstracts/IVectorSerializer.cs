@@ -16,4 +16,5 @@ public interface IVectorSerializer
     public Quaternion DeserializeQuaternion(BinaryReader reader);
     public Vector3I DeserializeVec3I(BinaryReader reader);
     public Vector4I DeserializeVec4B(BinaryReader reader);
+    public QuaternionD DeserializeQuaternionD(BinaryReader reader);
 }

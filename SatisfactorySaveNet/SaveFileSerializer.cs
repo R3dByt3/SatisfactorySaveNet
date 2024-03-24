@@ -1,4 +1,4 @@
-﻿using Microsoft.IO;
+using Microsoft.IO;
 using SatisfactorySaveNet.Abstracts;
 using SatisfactorySaveNet.Abstracts.Exceptions;
 using SatisfactorySaveNet.Abstracts.Model;
@@ -59,7 +59,7 @@ public class SaveFileSerializer : ISaveFileSerializer
 
         var header = _headerSerializer.Deserialize(reader);
 
-        Body body;
+        Body? body;
 
         if (header.SaveVersion < 21)
         {
