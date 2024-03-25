@@ -3,6 +3,7 @@ using SatisfactorySaveNet.Abstracts.Exceptions;
 using SatisfactorySaveNet.Abstracts.Model;
 using System.Collections.Generic;
 using System.IO;
+using System.Runtime.Serialization;
 
 namespace SatisfactorySaveNet;
 
@@ -158,6 +159,15 @@ public class BodySerializer : IBodySerializer
 #pragma warning restore CS0618 // Type or member is obsolete
             }
 
+            if (reader.BaseStream.Position == reader.BaseStream.Length)
+            {
+                return new Body
+                {
+                    Levels = levels,
+                    Grid = grid
+                };
+            }
+
             var nrObjectReferences = reader.ReadInt32();
             var objectReferences = new ObjectReference[nrObjectReferences];
 
@@ -173,7 +183,58 @@ public class BodySerializer : IBodySerializer
                 ObjectReferences = objectReferences
             };
         }
+        else
+        {
+            var nrObjectHeaders = reader.ReadInt32();
+            var objects = new List<ComponentObject>(nrObjectHeaders);
 
-        return null;
+            for (var j = 0; j < nrObjectHeaders; j++)
+            {
+                objects.Add(_objectHeaderSerializer.Deserialize(reader));
+            }
+
+            //List<ObjectReference> collectables;
+            //
+            //var nrCollectables = reader.ReadInt32();
+            //collectables = new List<ObjectReference>(nrCollectables);
+            //
+            //for (var j = 0; j < nrCollectables; j++)
+            //{
+            //    collectables.Add(_objectReferenceSerializer.Deserialize(reader));
+            //}
+
+            //var binarySizeObjects = reader.ReadInt32();
+            var nrObjects = reader.ReadInt32();
+            
+            if (nrObjects != nrObjectHeaders)
+                throw new CorruptedSatisFactorySaveFileException("NrObjects does not match nrObjectHeaders");
+            
+            for (var j = 0; j < nrObjects; j++)
+            {
+                objects[j] = _objectSerializer.Deserialize(reader, header, objects[j]);
+            }
+            
+            var nrSecondCollectables = reader.ReadInt32();
+            var secondCollectables = new List<ObjectReference>(nrSecondCollectables);
+            
+            for (var j = 0; j < nrSecondCollectables; j++)
+            {
+                secondCollectables.Add(_objectReferenceSerializer.Deserialize(reader));
+            }
+            return new Body
+            {
+                Levels = 
+                [
+                    new Level
+                    {
+                        Collectables = null!,//collectables,
+                        SecondCollectables = secondCollectables,
+                        Objects = objects,
+                    }
+                ],
+                Grid = null!,
+                ObjectReferences = null!
+            };
+        }
     }
 }

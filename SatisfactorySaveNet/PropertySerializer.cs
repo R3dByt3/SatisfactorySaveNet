@@ -59,6 +59,8 @@ public class PropertySerializer : IPropertySerializer
             if (string.Equals(propertyName, "None", StringComparison.Ordinal))
                 return null;
 
+            //if (reader.ReadByte() != 0) reader.BaseStream.Seek(-1, SeekOrigin.Current); //ToDo: Dead code?
+
             type = _stringSerializer.Deserialize(reader);
         }
 
@@ -421,7 +423,7 @@ public class PropertySerializer : IPropertySerializer
         var uuid2 = reader.ReadInt32();
         var uuid3 = reader.ReadInt32();
         var uuid4 = reader.ReadInt32();
-        var padding2 = reader.ReadSByte(); //ToDo: Does not always skip 1 byte?
+        var padding2 = reader.ReadSByte();
 
         var endPosition = startPosition + binarySize;
 
@@ -774,7 +776,8 @@ public class PropertySerializer : IPropertySerializer
                     value = new ObjectReferenceUnion { Value = _objectReferenceSerializer.Deserialize(reader) };
                     break;
                 case nameof(StructProperty):
-                    if (propertyName.Equals("/Script/FactoryGame.FGFoliageRemoval", StringComparison.Ordinal))
+                    if (propertyName.Equals("/Script/FactoryGame.FGFoliageRemoval", StringComparison.Ordinal) ||
+                        propertyName.Equals("mRemovalLocations", StringComparison.Ordinal))
                     {
                         value = new Vector3Union { Value = _vectorSerializer.DeserializeVec3(reader) };
                         break;

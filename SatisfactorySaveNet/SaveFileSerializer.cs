@@ -119,6 +119,9 @@ public class SaveFileSerializer : ISaveFileSerializer
                 throw new CorruptedSatisFactorySaveFileException("Umcompressed size mismatch detected");
 
             body = _bodySerializer.Deserialize(bufferReader, header);
+
+            if (bufferReader.BaseStream.Position != bufferReader.BaseStream.Length)
+                throw new CorruptedSatisFactorySaveFileException("The full body has not been read yet");
         }
 
         return new SatisfactorySave(header, body);

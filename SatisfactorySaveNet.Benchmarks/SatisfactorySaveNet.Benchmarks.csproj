@@ -5,11 +5,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="BenchmarkDotNet"/>
+    <PackageReference Include="BenchmarkDotNet" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\SatisfactorySaveNet.Abstracts\SatisfactorySaveNet.Abstracts.csproj" />
+    <ProjectReference Include="..\SatisfactorySaveNet\SatisfactorySaveNet.csproj" />
   </ItemGroup>
 
 </Project>

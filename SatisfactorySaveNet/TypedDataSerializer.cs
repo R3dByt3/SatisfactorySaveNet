@@ -405,7 +405,7 @@ public class TypedDataSerializer : ITypedDataSerializer
         var pathName = _stringSerializer.Deserialize(reader);
         Property? property = null;
 
-        if (reader.BaseStream.Position != endPosition)
+        if (reader.BaseStream.Position < endPosition)
             property = _propertySerializer.DeserializeProperty(reader);
 
         return new InventoryItem
