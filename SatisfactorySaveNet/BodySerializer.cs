@@ -25,7 +25,7 @@ public class BodySerializer : IBodySerializer
 
     public Body? Deserialize(BinaryReader reader, Header header)
     {
-        Grid? powerGrid = null;
+        Grid? grid = null;
         if (header.SaveVersion >= 41)
         {
             var nrData = reader.ReadInt32();
@@ -67,7 +67,7 @@ public class BodySerializer : IBodySerializer
                 };
             }
 
-            powerGrid = new Grid
+            grid = new Grid
             {
                 Unknown1 = unknown1,
                 Unknown2 = unknown2,
@@ -169,7 +169,7 @@ public class BodySerializer : IBodySerializer
             return new Body
             {
                 Levels = levels,
-                Grid = powerGrid,
+                Grid = grid,
                 ObjectReferences = objectReferences
             };
         }
