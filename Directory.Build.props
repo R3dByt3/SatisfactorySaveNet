@@ -11,7 +11,7 @@
         <IsPackable>false</IsPackable>
         <IsPublishable>false</IsPublishable>
 
-        <VersionPrefix>0.0.9</VersionPrefix>
+        <VersionPrefix>0.0.10</VersionPrefix>
         <Version Condition=" '$(VersionSuffix)' != '' ">$(VersionPrefix)-$(VersionSuffix)</Version>
         <Version Condition=" '$(VersionSuffix)' == '' ">$(VersionPrefix)</Version>
 

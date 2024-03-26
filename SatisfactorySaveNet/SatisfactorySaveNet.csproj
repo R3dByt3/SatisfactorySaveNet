@@ -5,7 +5,8 @@
     <IsPackable>true</IsPackable>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageId>SatisfactorySaveNet</PackageId>
-    <PackageTags>Satisfactory save file reader (and soon TM writer)</PackageTags>
+    <PackageTags>satisfactory serializier</PackageTags>
+    <Description>Satisfactory save file reader (and soon TM writer)</Description>
     <PackageProjectUrl>https://github.com/R3dByt3/SatisfactorySaveNet</PackageProjectUrl>
     <PackageReleaseNotes>https://github.com/R3dByt3/SatisfactorySaveNet/releases</PackageReleaseNotes>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
