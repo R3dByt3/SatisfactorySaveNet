@@ -19,14 +19,27 @@ jobs:
     - name: Restore dependencies
       run: |
        dotnet restore ./SatisfactorySaveNet/SatisfactorySaveNet.csproj
+       dotnet restore ./SatisfactorySaveNet.Abstracts/SatisfactorySaveNet.Abstracts.csproj
        #dotnet restore ./SatisfactorySaveNet.Tests/SatisfactorySaveNet.Tests.csproj
     - name: Build
       run: |
        dotnet build --no-restore --configuration Release ./SatisfactorySaveNet/SatisfactorySaveNet.csproj
+       dotnet build --no-restore --configuration Release ./SatisfactorySaveNet.Abstracts/SatisfactorySaveNet.Abstracts.csproj
        #dotnet build --no-restore --configuration Debug ./SatisfactorySaveNet.Tests/SatisfactorySaveNet.Tests.csproj
     #- name: Test
     #  run: dotnet test --no-build --verbosity normal ./SatisfactorySaveNet.Tests/SatisfactorySaveNet.Tests.csproj
-    - name: publish on nuget.org
+    - name: publish SatisfactorySaveNet.Abstracts on nuget.org
+      id: publish_nuget
+      uses: alirezanet/publish-nuget@v3.1.0
+      with:
+        PROJECT_FILE_PATH: ./SatisfactorySaveNet.Abstracts/SatisfactorySaveNet.Abstracts.csproj
+        PACKAGE_NAME: SatisfactorySaveNet
+        VERSION_STATIC: 0.0.9
+        TAG_COMMIT: false
+        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+        NUGET_SOURCE: https://api.nuget.org
+        INCLUDE_SYMBOLS: false
+    - name: publish SatisfactorySaveNet on nuget.org
       id: publish_nuget
       uses: alirezanet/publish-nuget@v3.1.0
       with:

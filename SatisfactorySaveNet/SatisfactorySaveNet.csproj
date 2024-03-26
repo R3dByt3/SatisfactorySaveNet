@@ -1,7 +1,20 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <IsPublishable>true</IsPublishable>
+    <IsPackable>true</IsPackable>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageId>SatisfactorySaveNet</PackageId>
+    <PackageTags>Satisfactory save file reader (and soon TM writer)</PackageTags>
+    <PackageProjectUrl>https://github.com/R3dByt3/SatisfactorySaveNet</PackageProjectUrl>
+    <PackageReleaseNotes>https://github.com/R3dByt3/SatisfactorySaveNet/releases</PackageReleaseNotes>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>embedded</DebugType>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
+    <EmbedAllSources>true</EmbedAllSources>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
 
   <ItemGroup>
