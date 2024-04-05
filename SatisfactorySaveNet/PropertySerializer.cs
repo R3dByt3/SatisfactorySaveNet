@@ -82,6 +82,7 @@ public class PropertySerializer : IPropertySerializer
             nameof(TextProperty) => header == null ? throw new ArgumentNullException(nameof(header)) : DeserializeTextProperty(reader, header),
             nameof(UInt32Property) => DeserializeUInt32Property(reader),
             nameof(Int8Property) => DeserializeInt8Property(reader),
+            nameof(DoubleProperty) => DeserializeDoubleProperty(reader),
             nameof(FINNetworkProperty) => DeserializeFINNetworkProperty(reader),
             //ToDo: All implemented?
 
@@ -522,6 +523,22 @@ public class PropertySerializer : IPropertySerializer
         return property;
     }
 
+    private static DoubleProperty DeserializeDoubleProperty(BinaryReader reader)
+    {
+        var binarySize = reader.ReadInt32();
+        var index = reader.ReadInt32();
+        var padding = reader.ReadSByte();
+        var value = reader.ReadDouble();
+
+        var property = new DoubleProperty
+        {
+            Index = index,
+            Value = value
+        };
+
+        return property;
+    }
+
     private static IntProperty DeserializeIntProperty(BinaryReader reader)
     {
         var binarySize = reader.ReadInt32();
@@ -808,7 +825,7 @@ public class PropertySerializer : IPropertySerializer
 
     private FINNetworkProperty DeserializeFINNetworkProperty(BinaryReader reader)
     {
-        var levelName = _stringSerializer.Deserialize(reader);
+        var levelName = _stringSerializer.Deserialize(reader); //ToDo: ObjectReference
         var pathName = _stringSerializer.Deserialize(reader);
         FINNetworkProperty? previous = null;
         string? step = null;

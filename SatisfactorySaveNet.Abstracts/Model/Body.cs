@@ -11,7 +11,7 @@ public class Body
     public IList<Level> Levels { get; set; } = [];
 
     /// <summary>
-    /// Uknown grid related data
+    /// Unknown grid related data
     /// </summary>
     public Grid? Grid { get; set; }
 

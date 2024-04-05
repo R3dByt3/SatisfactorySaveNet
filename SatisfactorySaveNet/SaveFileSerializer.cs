@@ -124,6 +124,6 @@ public class SaveFileSerializer : ISaveFileSerializer
                 throw new CorruptedSatisFactorySaveFileException("The full body has not been read yet");
         }
 
-        return new SatisfactorySave(header, body);
+        return new SatisfactorySave(header, body); //ToDo: Versioned models && include discarded reads
     }
 }

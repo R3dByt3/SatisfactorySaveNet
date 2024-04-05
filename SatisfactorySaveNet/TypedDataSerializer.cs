@@ -209,7 +209,7 @@ public class TypedDataSerializer : ITypedDataSerializer
         for (var x = 0; x < size; x++)
             buffer[x] = DeserializeFINGPUT1BufferPixel(reader);
 
-        var uknown = _hexSerializer.Deserialize(reader, 45);
+        var unknown = _hexSerializer.Deserialize(reader, 45);
 
         return new FINGPUT1Buffer
         {
@@ -218,7 +218,7 @@ public class TypedDataSerializer : ITypedDataSerializer
             TypeName = typeName,
             Length = length,
             Buffer = buffer,
-            Uknown = uknown
+            Unknown = unknown
         };
     }
 
@@ -331,7 +331,7 @@ public class TypedDataSerializer : ITypedDataSerializer
 
     private RailroadTrackPosition DeserializeRailroadTrackPosition(BinaryReader reader)
     {
-        var levelName = _stringSerializer.Deserialize(reader);
+        var levelName = _stringSerializer.Deserialize(reader); //ToDo: ObjectReference
         var pathName = _stringSerializer.Deserialize(reader);
         var offset = reader.ReadSingle();
         var forward = reader.ReadSingle();

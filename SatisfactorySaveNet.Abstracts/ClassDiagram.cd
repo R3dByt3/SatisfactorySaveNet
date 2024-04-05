@@ -1,0 +1,800 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="SatisfactorySaveNet.Abstracts.Model.ExtraData.BlueprintData">
+    <Position X="2.5" Y="17.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAQAAAAAAAAA=</HashCode>
+      <FileName>Model\ExtraData\BlueprintData.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SatisfactorySaveNet.Abstracts.Model.ExtraData.ConveyorData">
+    <Position X="4.75" Y="17.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAAQAAAAAAAAA=</HashCode>
+      <FileName>Model\ExtraData\ConveyorData.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SatisfactorySaveNet.Abstracts.Model.ExtraData.ExtraData">
+    <Position X="4.75" Y="15.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAA=</HashCode>
+      <FileName>Model\ExtraData\ExtraData.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SatisfactorySaveNet.Abstracts.Model.ExtraData.PlayerData">
+    <Position X="7" Y="17.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAIAAAAAAAAAAAAEIAAAACAAAAAQAACAAAAAA=</HashCode>
+      <FileName>Model\ExtraData\PlayerData.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SatisfactorySaveNet.Abstracts.Model.Properties.ArrayBoolProperty" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="80.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAA=</HashCode>
+      <FileName>Model\Properties\ArrayBoolProperty.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="SatisfactorySaveNet.Abstracts.Model.Properties.ArrayByteProperty" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="82" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAA=</HashCode>
+      <FileName>Model\Properties\ArrayByteProperty.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="SatisfactorySaveNet.Abstracts.Model.Properties.ArrayDoubleProperty" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="83.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAA=</HashCode>
+      <FileName>Model\Properties\ArrayDoubleProperty.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="SatisfactorySaveNet.Abstracts.Model.Properties.ArrayEnumProperty" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="85.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAA=</HashCode>
+      <FileName>Model\Properties\ArrayEnumProperty.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="SatisfactorySaveNet.Abstracts.Model.Properties.ArrayFloatProperty" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="87.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAA=</HashCode>
+      <FileName>Model\Properties\ArrayFloatProperty.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="SatisfactorySaveNet.Abstracts.Model.Properties.ArrayInt64Property" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="80.25" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAA=</HashCode>
+      <FileName>Model\Properties\ArrayInt64Property.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="SatisfactorySaveNet.Abstracts.Model.Properties.ArrayInterfaceProperty" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="82" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAA=</HashCode>
+      <FileName>Model\Properties\ArrayInterfaceProperty.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="SatisfactorySaveNet.Abstracts.Model.Properties.ArrayIntProperty" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="83.75" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAA=</HashCode>
+      <FileName>Model\Properties\ArrayIntProperty.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="SatisfactorySaveNet.Abstracts.Model.Properties.ArrayObjectProperty" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="85.5" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAA=</HashCode>
+      <FileName>Model\Properties\ArrayObjectProperty.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="SatisfactorySaveNet.Abstracts.Model.Properties.ArrayProperty">
+    <Position X="15.5" Y="12.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAQAAAAA=</HashCode>
+      <FileName>Model\Properties\ArrayProperty.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SatisfactorySaveNet.Abstracts.Model.Properties.ArrayStrProperty" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="87.25" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAA=</HashCode>
+      <FileName>Model\Properties\ArrayStrProperty.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="SatisfactorySaveNet.Abstracts.Model.Properties.ArrayStructProperty" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="80.25" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAABAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAiAABAAAA=</HashCode>
+      <FileName>Model\Properties\ArrayStructProperty.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="SatisfactorySaveNet.Abstracts.Model.Properties.ArrayTextProperty" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="82" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAA=</HashCode>
+      <FileName>Model\Properties\ArrayTextProperty.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="SatisfactorySaveNet.Abstracts.Model.Properties.BoolProperty">
+    <Position X="31.25" Y="12.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAA=</HashCode>
+      <FileName>Model\Properties\BoolProperty.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SatisfactorySaveNet.Abstracts.Model.Properties.ByteProperty">
+    <Position X="35.75" Y="12.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAQAAAAAAAQA=</HashCode>
+      <FileName>Model\Properties\ByteProperty.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SatisfactorySaveNet.Abstracts.Model.Properties.FloatProperty">
+    <Position X="40.25" Y="12.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAA=</HashCode>
+      <FileName>Model\Properties\DoubleProperty.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SatisfactorySaveNet.Abstracts.Model.Properties.EnumProperty">
+    <Position X="44.75" Y="12.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAgAAAAAAA=</HashCode>
+      <FileName>Model\Properties\EnumProperty.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SatisfactorySaveNet.Abstracts.Model.Properties.FINNetworkProperty">
+    <Position X="4.25" Y="12.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAgAAAAAACAAAAAAAAAAAIEAAAAAAAAA=</HashCode>
+      <FileName>Model\Properties\FINNetworkProperty.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SatisfactorySaveNet.Abstracts.Model.Properties.DoubleProperty">
+    <Position X="8.75" Y="12.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAA=</HashCode>
+      <FileName>Model\Properties\FloatProperty.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SatisfactorySaveNet.Abstracts.Model.Properties.Int64Property">
+    <Position X="17.75" Y="12.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAA=</HashCode>
+      <FileName>Model\Properties\Int64Property.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SatisfactorySaveNet.Abstracts.Model.Properties.Int8Property">
+    <Position X="22.25" Y="12.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAA=</HashCode>
+      <FileName>Model\Properties\Int8Property.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SatisfactorySaveNet.Abstracts.Model.Properties.InterfaceProperty">
+    <Position X="26.75" Y="12.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAA=</HashCode>
+      <FileName>Model\Properties\InterfaceProperty.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SatisfactorySaveNet.Abstracts.Model.Properties.IntProperty">
+    <Position X="29" Y="12.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAA=</HashCode>
+      <FileName>Model\Properties\IntProperty.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SatisfactorySaveNet.Abstracts.Model.Properties.MapProperty">
+    <Position X="33.5" Y="12.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAQAAAAAAAQAAAAAAAAABAAEAA=</HashCode>
+      <FileName>Model\Properties\MapProperty.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SatisfactorySaveNet.Abstracts.Model.Properties.NameProperty">
+    <Position X="38" Y="12.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAA=</HashCode>
+      <FileName>Model\Properties\NameProperty.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SatisfactorySaveNet.Abstracts.Model.Properties.ObjectProperty">
+    <Position X="42.5" Y="12.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAA=</HashCode>
+      <FileName>Model\Properties\ObjectProperty.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SatisfactorySaveNet.Abstracts.Model.Properties.Property">
+    <Position X="24.5" Y="10.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAA=</HashCode>
+      <FileName>Model\Properties\Property.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SatisfactorySaveNet.Abstracts.Model.Properties.SetProperty">
+    <Position X="6.5" Y="12.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAQAAAAAAAAA=</HashCode>
+      <FileName>Model\Properties\SetProperty.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SatisfactorySaveNet.Abstracts.Model.Properties.StrProperty">
+    <Position X="11" Y="12.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AABABAAAAAIAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAA=</HashCode>
+      <FileName>Model\Properties\StrProperty.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SatisfactorySaveNet.Abstracts.Model.Properties.StructProperty">
+    <Position X="13.25" Y="12.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAgAAAAAAA=</HashCode>
+      <FileName>Model\Properties\StructProperty.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SatisfactorySaveNet.Abstracts.Model.Properties.TextProperty">
+    <Position X="20" Y="12.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AARQBAAAAAIAAAQAAAAAAAUAAAAAIAAAIAAgAAAACAA=</HashCode>
+      <FileName>Model\Properties\TextProperty.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SatisfactorySaveNet.Abstracts.Model.Properties.UInt32Property">
+    <Position X="24.5" Y="12.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAA=</HashCode>
+      <FileName>Model\Properties\UInt32Property.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SatisfactorySaveNet.Abstracts.Model.TypedData.ArrayProperties">
+    <Position X="37.25" Y="2.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAQAgAAAAAAA=</HashCode>
+      <FileName>Model\TypedData\ArrayProperties.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SatisfactorySaveNet.Abstracts.Model.TypedData.Box">
+    <Position X="46.25" Y="2.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAABAAAAAAEAgAAAAAAAAAAAAAAQAAAAAAAAA=</HashCode>
+      <FileName>Model\TypedData\Box.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SatisfactorySaveNet.Abstracts.Model.TypedData.BoxD">
+    <Position X="55.25" Y="2.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAABAAAAAAEAgAAAAAAAAAAAAAAQAAAAAAAAA=</HashCode>
+      <FileName>Model\TypedData\BoxD.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SatisfactorySaveNet.Abstracts.Model.TypedData.Color">
+    <Position X="62" Y="2.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAgAAAAAAA=</HashCode>
+      <FileName>Model\TypedData\Color.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SatisfactorySaveNet.Abstracts.Model.TypedData.DateTime">
+    <Position X="68.75" Y="2.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAgAAAAAAA=</HashCode>
+      <FileName>Model\TypedData\DateTime.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SatisfactorySaveNet.Abstracts.Model.TypedData.FactoryCustomizationColorSlot">
+    <Position X="75.5" Y="2.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAACAAA=</HashCode>
+      <FileName>Model\TypedData\FactoryCustomizationColorSlot.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SatisfactorySaveNet.Abstracts.Model.TypedData.FICFrameRange">
+    <Position X="5.75" Y="2.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAIAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAQAAAAAAAAA=</HashCode>
+      <FileName>Model\TypedData\FICFrameRange.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SatisfactorySaveNet.Abstracts.Model.TypedData.FINGPUT1Buffer">
+    <Position X="10.25" Y="2.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAABAAAAAAAAAAAAAAAARAAAAAABAAAUAAAAAAQAA=</HashCode>
+      <FileName>Model\TypedData\FINGPUT1Buffer.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SatisfactorySaveNet.Abstracts.Model.TypedData.FINGPUT1BufferPixel">
+    <Position X="17" Y="2.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAgAAAAAAAAAAAACAAAAAAAAQAAAAAACAA=</HashCode>
+      <FileName>Model\TypedData\FINGPUT1BufferPixel.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SatisfactorySaveNet.Abstracts.Model.TypedData.FINLuaProcessorStateStorage">
+    <Position X="23.75" Y="2.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAQAAAAAAAAAAAAAAAgAACBAAAQAACAAAAAA=</HashCode>
+      <FileName>Model\TypedData\FINLuaProcessorStateStorage.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SatisfactorySaveNet.Abstracts.Model.TypedData.FINNetworkTrace">
+    <Position X="30.5" Y="2.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAgAAAAAAA=</HashCode>
+      <FileName>Model\TypedData\FINNetworkTrace.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SatisfactorySaveNet.Abstracts.Model.TypedData.FluidBox">
+    <Position X="39.5" Y="2.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAgAAAAAAA=</HashCode>
+      <FileName>Model\TypedData\FluidBox.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SatisfactorySaveNet.Abstracts.Model.TypedData.Guid">
+    <Position X="48.5" Y="2.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAgAAAAAAA=</HashCode>
+      <FileName>Model\TypedData\Guid.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SatisfactorySaveNet.Abstracts.Model.TypedData.IntPoint">
+    <Position X="57.5" Y="2.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAgAAAAAAA=</HashCode>
+      <FileName>Model\TypedData\IntPoint.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SatisfactorySaveNet.Abstracts.Model.TypedData.InventoryItem">
+    <Position X="64.25" Y="2.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAIAAAAAAAAAAAAACAAAAAAAAAAAAUAAAAAAAgA=</HashCode>
+      <FileName>Model\TypedData\InventoryItem.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SatisfactorySaveNet.Abstracts.Model.TypedData.InventoryStack">
+    <Position X="71" Y="2.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAACAAA=</HashCode>
+      <FileName>Model\TypedData\InventoryStack.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SatisfactorySaveNet.Abstracts.Model.TypedData.ItemAmount">
+    <Position X="77.75" Y="2.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAABQAAAgAAAAA=</HashCode>
+      <FileName>Model\TypedData\ItemAmount.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SatisfactorySaveNet.Abstracts.Model.TypedData.LinearColor">
+    <Position X="8" Y="2.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAgAAAAAA=</HashCode>
+      <FileName>Model\TypedData\LinearColor.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SatisfactorySaveNet.Abstracts.Model.TypedData.PropertyData">
+    <Position X="12.5" Y="2.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAgAAAAAAA=</HashCode>
+      <FileName>Model\TypedData\PropertyData.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SatisfactorySaveNet.Abstracts.Model.TypedData.Quat">
+    <Position X="19.25" Y="2.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAgAAAAAAA=</HashCode>
+      <FileName>Model\TypedData\Quat.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SatisfactorySaveNet.Abstracts.Model.TypedData.QuatD">
+    <Position X="26" Y="2.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAgAAAAAAA=</HashCode>
+      <FileName>Model\TypedData\QuatD.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SatisfactorySaveNet.Abstracts.Model.TypedData.RailroadTrackPosition">
+    <Position X="32.75" Y="2.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAUAAAAAAgAI=</HashCode>
+      <FileName>Model\TypedData\RailroadTrackPosition.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SatisfactorySaveNet.Abstracts.Model.TypedData.Rotator">
+    <Position X="41.75" Y="2.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAgAAAAAAA=</HashCode>
+      <FileName>Model\TypedData\Rotator.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SatisfactorySaveNet.Abstracts.Model.TypedData.RotatorD">
+    <Position X="50.75" Y="2.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAgAAAAAAA=</HashCode>
+      <FileName>Model\TypedData\RotatorD.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SatisfactorySaveNet.Abstracts.Model.TypedData.SlateBrush">
+    <Position X="59.75" Y="2.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAABA=</HashCode>
+      <FileName>Model\TypedData\SlateBrush.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SatisfactorySaveNet.Abstracts.Model.TypedData.SpawnData">
+    <Position X="66.5" Y="2.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAACAAA=</HashCode>
+      <FileName>Model\TypedData\SpawnData.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SatisfactorySaveNet.Abstracts.Model.TypedData.TimerHandle">
+    <Position X="73.25" Y="2.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAgAAAAAAA=</HashCode>
+      <FileName>Model\TypedData\TimerHandle.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SatisfactorySaveNet.Abstracts.Model.TypedData.TypedData">
+    <Position X="41.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAA=</HashCode>
+      <FileName>Model\TypedData\TypedData.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SatisfactorySaveNet.Abstracts.Model.TypedData.Vector">
+    <Position X="14.75" Y="2.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAgAAAAAAA=</HashCode>
+      <FileName>Model\TypedData\Vector.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SatisfactorySaveNet.Abstracts.Model.TypedData.Vector2">
+    <Position X="21.5" Y="2.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAgAAAAAAA=</HashCode>
+      <FileName>Model\TypedData\Vector2.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SatisfactorySaveNet.Abstracts.Model.TypedData.Vector2D">
+    <Position X="28.25" Y="2.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAgAAAAAAA=</HashCode>
+      <FileName>Model\TypedData\Vector2D.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SatisfactorySaveNet.Abstracts.Model.TypedData.Vector4">
+    <Position X="35" Y="2.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAgAAAAAAA=</HashCode>
+      <FileName>Model\TypedData\Vector4.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SatisfactorySaveNet.Abstracts.Model.TypedData.Vector4D">
+    <Position X="44" Y="2.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAgAAAAAAA=</HashCode>
+      <FileName>Model\TypedData\Vector4D.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SatisfactorySaveNet.Abstracts.Model.TypedData.VectorD">
+    <Position X="53" Y="2.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAgAAAAAAA=</HashCode>
+      <FileName>Model\TypedData\VectorD.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SatisfactorySaveNet.Abstracts.Model.Union.BoolUnion">
+    <Position X="31.5" Y="7.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAgAAAAAAA=</HashCode>
+      <FileName>Model\Union\BoolUnion.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SatisfactorySaveNet.Abstracts.Model.Union.ByteUnion">
+    <Position X="38.25" Y="7.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAgAAAAAAA=</HashCode>
+      <FileName>Model\Union\ByteUnion.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SatisfactorySaveNet.Abstracts.Model.Union.DoubleUnion">
+    <Position X="45" Y="7.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAgAAAAAAA=</HashCode>
+      <FileName>Model\Union\DoubleUnion.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SatisfactorySaveNet.Abstracts.Model.Union.EnumUnion">
+    <Position X="49.5" Y="7.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAgAAAAAAA=</HashCode>
+      <FileName>Model\Union\EnumUnion.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SatisfactorySaveNet.Abstracts.Model.Union.FINNetworkUnion">
+    <Position X="4.5" Y="7.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAgAAAAAAA=</HashCode>
+      <FileName>Model\Union\FINNetworkUnion.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SatisfactorySaveNet.Abstracts.Model.Union.FloatUnion">
+    <Position X="9" Y="7.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAgAAAAAAA=</HashCode>
+      <FileName>Model\Union\FloatUnion.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SatisfactorySaveNet.Abstracts.Model.Union.HalfUnion">
+    <Position X="13.5" Y="7.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAgAAAAAAA=</HashCode>
+      <FileName>Model\Union\HalfUnion.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SatisfactorySaveNet.Abstracts.Model.Union.Int64Union">
+    <Position X="18" Y="7.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAgAAAAAAA=</HashCode>
+      <FileName>Model\Union\Int64Union.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SatisfactorySaveNet.Abstracts.Model.Union.IntUnion">
+    <Position X="22.5" Y="7.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAgAAAAAAA=</HashCode>
+      <FileName>Model\Union\IntUnion.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SatisfactorySaveNet.Abstracts.Model.Union.LBBalancerUnion">
+    <Position X="24.75" Y="7.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAQAACAAAAAQAAAAAAAAg=</HashCode>
+      <FileName>Model\Union\LBBalancerUnion.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SatisfactorySaveNet.Abstracts.Model.Union.Matrix4DUnion">
+    <Position X="27" Y="7.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAgAAAAAAA=</HashCode>
+      <FileName>Model\Union\Matrix4DUnion.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SatisfactorySaveNet.Abstracts.Model.Union.NameUnion">
+    <Position X="33.75" Y="7.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAgAAAAAAA=</HashCode>
+      <FileName>Model\Union\NameUnion.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SatisfactorySaveNet.Abstracts.Model.Union.ObjectReferenceUnion">
+    <Position X="40.5" Y="7.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAIBQAgAgEAAAA=</HashCode>
+      <FileName>Model\Union\ObjectReferenceUnion.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SatisfactorySaveNet.Abstracts.Model.Union.PropertiesUnion">
+    <Position X="47.25" Y="7.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAgAAAAAAA=</HashCode>
+      <FileName>Model\Union\PropertiesUnion.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SatisfactorySaveNet.Abstracts.Model.Union.StorageDoubleUnion">
+    <Position X="51.75" Y="7.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAABQAAAgAAAAA=</HashCode>
+      <FileName>Model\Union\StorageDoubleUnion.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SatisfactorySaveNet.Abstracts.Model.Union.StorageSingleUnion">
+    <Position X="6.75" Y="7.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAABQAAAgAAAAA=</HashCode>
+      <FileName>Model\Union\StorageSingleUnion.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SatisfactorySaveNet.Abstracts.Model.Union.StrUnion">
+    <Position X="11.25" Y="7.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAABQAgAgAAAAA=</HashCode>
+      <FileName>Model\Union\StrUnion.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SatisfactorySaveNet.Abstracts.Model.Union.TextUnion">
+    <Position X="15.75" Y="7.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAgAAAAAAA=</HashCode>
+      <FileName>Model\Union\TextUnion.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SatisfactorySaveNet.Abstracts.Model.Union.UInt32Union">
+    <Position X="20.25" Y="7.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAgAAAAAAA=</HashCode>
+      <FileName>Model\Union\UInt32Union.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SatisfactorySaveNet.Abstracts.Model.Union.UnionBase">
+    <Position X="28.25" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAA=</HashCode>
+      <FileName>Model\Union\UnionBase.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SatisfactorySaveNet.Abstracts.Model.Union.Vector3DUnion">
+    <Position X="29.25" Y="7.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAgAAAAAAA=</HashCode>
+      <FileName>Model\Union\Vector3DUnion.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SatisfactorySaveNet.Abstracts.Model.Union.Vector3IUnion">
+    <Position X="36" Y="7.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAgAAAAAAA=</HashCode>
+      <FileName>Model\Union\Vector3IUnion.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SatisfactorySaveNet.Abstracts.Model.Union.Vector3Union">
+    <Position X="42.75" Y="7.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAgAAAAAAA=</HashCode>
+      <FileName>Model\Union\Vector3Union.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SatisfactorySaveNet.Abstracts.Model.ActorObject">
+    <Position X="15.25" Y="19.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAABAAAQAAIAgAAIAAAAAAAAAAAAgAQABAAAAAAA=</HashCode>
+      <FileName>Model\ActorObject.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SatisfactorySaveNet.Abstracts.Model.Body" Collapsed="true">
+    <Position X="83.75" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAgAAAAAAAAAAAAAAAAAAAAAACAABAAAAAAAAAAA=</HashCode>
+      <FileName>Model\Body.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SatisfactorySaveNet.Abstracts.Model.ChunkInfo" Collapsed="true">
+    <Position X="85.5" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>QCAAABAQCAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Model\ChunkInfo.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SatisfactorySaveNet.Abstracts.Model.ComponentObject">
+    <Position X="15.25" Y="15.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAIAAAAAAAAAAAAIAAwAAAQAAAgIQAAAAACAAA=</HashCode>
+      <FileName>Model\ComponentObject.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SatisfactorySaveNet.Abstracts.Model.Grid" Collapsed="true">
+    <Position X="87.25" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAIABAIBAAAAgEAAAA=</HashCode>
+      <FileName>Model\Grid.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SatisfactorySaveNet.Abstracts.Model.GridData" Collapsed="true">
+    <Position X="80.25" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAIAAABBAAAAgAAAAA=</HashCode>
+      <FileName>Model\GridData.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SatisfactorySaveNet.Abstracts.Model.GridLevel" Collapsed="true">
+    <Position X="82" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAgAAAAA=</HashCode>
+      <FileName>Model\GridLevel.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SatisfactorySaveNet.Abstracts.Model.Header" Collapsed="true">
+    <Position X="83.75" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAEQAAAARAgAAgIAAAJAAEBIAABAAACABAAAEAAA=</HashCode>
+      <FileName>Model\Header.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SatisfactorySaveNet.Abstracts.Model.Item" Collapsed="true">
+    <Position X="85.5" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAgAAAACAQAAAAAAAAAAEAAAAAAAAA=</HashCode>
+      <FileName>Model\Item.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SatisfactorySaveNet.Abstracts.Model.Level" Collapsed="true">
+    <Position X="87.25" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAACAAAAAAAAAAAAAAQAAAAAQAEAAAAAAAAAAAA=</HashCode>
+      <FileName>Model\Level.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SatisfactorySaveNet.Abstracts.Model.ObjectReference" Collapsed="true">
+    <Position X="80.25" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAEAAAAAAAAA=</HashCode>
+      <FileName>Model\ObjectReference.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SatisfactorySaveNet.Abstracts.Model.SatisfactorySave" Collapsed="true">
+    <Position X="82" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>BAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Model\SatisfactorySave.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SatisfactorySaveNet.Abstracts.Model.TextArgument">
+    <Position X="11.5" Y="15.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAEAA=</HashCode>
+      <FileName>Model\TextArgument.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SatisfactorySaveNet.Abstracts.Model.TextArgumentV0">
+    <Position X="10.25" Y="18" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAEAAAACAAAAAAAAAAAAAAAAAAAEAA=</HashCode>
+      <FileName>Model\TextArgumentV0.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SatisfactorySaveNet.Abstracts.Model.TextArgumentV4">
+    <Position X="12.5" Y="18" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAA=</HashCode>
+      <FileName>Model\TextArgumentV4.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Interface Name="SatisfactorySaveNet.Abstracts.Model.Properties.IArrayProperty" Collapsed="true">
+    <Position X="80.25" Y="5.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Model\Properties\IArrayProperty.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Enum Name="SatisfactorySaveNet.Abstracts.Model.ExtraData.ExtraDataConstraint" Collapsed="true">
+    <Position X="80.25" Y="6.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAABAAQAAAAAAAAAAAAAAAAAAABAAAAAAA=</HashCode>
+      <FileName>Model\ExtraData\ExtraDataConstraint.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="SatisfactorySaveNet.Abstracts.Model.TypedData.TypedDataConstraint" Collapsed="true">
+    <Position X="82" Y="6.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>IEAAAEAIKEBNVAEAAAgAAADAABIBBIRAAEgAgAAEAUA=</HashCode>
+      <FileName>Model\TypedData\TypedDataConstraint.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="SatisfactorySaveNet.Abstracts.Model.Union.UnionConstraint" Collapsed="true">
+    <Position X="83.75" Y="6.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AoAAgAAAAIAACAQwAAAAAAQAJAACAAAQRAAACAEiACg=</HashCode>
+      <FileName>Model\Union\UnionConstraint.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>
