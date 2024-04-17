@@ -1,5 +1,4 @@
-﻿using SatisfactorySaveNet.Abstracts.Model.TypedData;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace SatisfactorySaveNet.Abstracts.Model.Properties;
 

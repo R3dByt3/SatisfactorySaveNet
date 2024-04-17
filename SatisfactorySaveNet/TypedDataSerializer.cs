@@ -5,7 +5,6 @@ using SatisfactorySaveNet.Abstracts.Model.TypedData;
 using System;
 using System.IO;
 using System.Linq;
-using System.Reflection.PortableExecutable;
 using DateTime = SatisfactorySaveNet.Abstracts.Model.TypedData.DateTime;
 using Guid = SatisfactorySaveNet.Abstracts.Model.TypedData.Guid;
 
@@ -13,7 +12,7 @@ namespace SatisfactorySaveNet;
 
 public class TypedDataSerializer : ITypedDataSerializer
 {
-    public static readonly ITypedDataSerializer Instance = new TypedDataSerializer(VectorSerializer.Instance, StringSerializer.Instance, ObjectReferenceSerializer.Instance, HexSerializer.Instance);
+    public static readonly ITypedDataSerializer Instance = new TypedDataSerializer(VectorSerializer.Instance, StringSerializer.Instance, ObjectReferenceSerializer.Instance, HexSerializer.Instance, SoftObjectReferenceSerializer.Instance);
 
     private readonly IVectorSerializer _vectorSerializer;
     private readonly IStringSerializer _stringSerializer;
@@ -30,11 +29,11 @@ public class TypedDataSerializer : ITypedDataSerializer
         _objectReferenceSerializer = objectReferenceSerializer;
     }
 
-    public TypedDataSerializer(IVectorSerializer vectorSerializer, IStringSerializer stringSerializer, IObjectReferenceSerializer objectReferenceSerializer, IHexSerializer hexSerializer)
+    public TypedDataSerializer(IVectorSerializer vectorSerializer, IStringSerializer stringSerializer, IObjectReferenceSerializer objectReferenceSerializer, IHexSerializer hexSerializer, ISoftObjectReferenceSerializer softObjectReferenceSerializer)
     {
         _vectorSerializer = vectorSerializer;
         _stringSerializer = stringSerializer;
-        _propertySerializer = new PropertySerializer(stringSerializer, objectReferenceSerializer, this, hexSerializer, vectorSerializer);
+        _propertySerializer = new PropertySerializer(stringSerializer, objectReferenceSerializer, this, hexSerializer, vectorSerializer, softObjectReferenceSerializer);
         _hexSerializer = hexSerializer;
         _objectReferenceSerializer = objectReferenceSerializer;
     }
@@ -54,7 +53,7 @@ public class TypedDataSerializer : ITypedDataSerializer
             nameof(RailroadTrackPosition) => DeserializeRailroadTrackPosition(reader),
             nameof(TimerHandle) => DeserializeTimerHandle(reader),
             nameof(Guid) => DeserializeGuid(reader),
-            nameof(InventoryItem) => DeserializeInventoryItem(reader, endPosition),
+            nameof(InventoryItem) => DeserializeInventoryItem(reader, header),
             nameof(FluidBox) => DeserializeFluidBox(reader),
             nameof(SlateBrush) => DeserializeSlateBrush(reader),
             nameof(DateTime) => DeserializeDateTime(reader),
@@ -65,7 +64,7 @@ public class TypedDataSerializer : ITypedDataSerializer
             nameof(FINGPUT1BufferPixel) => DeserializeFINGPUT1BufferPixel(reader),
             //ToDo: All implemented?
 
-            //nameof(InventoryStack) => DeserializeInventoryStack(reader, header), False?
+            nameof(InventoryStackV0) => DeserializeInventoryStack(reader, header),
             //nameof(SpawnData) => DeserializeSpawnData(reader), False?
             //nameof(FactoryCustomizationColorSlot) => DeserializeFactoryCustomizationColorSlot(reader, header, endPosition), False?
 
@@ -387,33 +386,65 @@ public class TypedDataSerializer : ITypedDataSerializer
         };
     }
 
-    private InventoryStack DeserializeInventoryStack(BinaryReader reader, Header header)
+    private TypedData DeserializeInventoryStack(BinaryReader reader, Header header)
     {
-        var properties = _propertySerializer.DeserializeProperties(reader, header).ToArray();
-
-        return new InventoryStack
+        if (header.SaveVersion >= 42)
         {
-            Properties = properties
-        };
+            var unknown1 = _stringSerializer.Deserialize(reader);
+            var unknown2 = _stringSerializer.Deserialize(reader);
+            var unknown3 = reader.ReadInt32();
+            var unknown4 = reader.ReadInt32();
+            var unknown5 = _propertySerializer.DeserializeProperty(reader, header, unknown2);
+            var unknown6 = _stringSerializer.Deserialize(reader);
+
+            return new InventoryStackV1
+            {
+                Unknown1 = unknown1,
+                Unknown2 = unknown2,
+                Unknown3 = unknown3,
+                Unknown4 = unknown4,
+                Unknown5 = unknown5,
+                Unknown6 = unknown6,
+            };
+        }
+        else
+        {
+            var unknown1 = reader.ReadInt32();
+            var unknown2 = _stringSerializer.Deserialize(reader);
+            var unknown3 = reader.ReadInt32();
+            var unknown4 = reader.ReadInt32();
+            var unknown5 = reader.ReadInt32();
+
+            return new InventoryStackV0
+            {
+                Unknown1 = unknown1,
+                Unknown2 = unknown2,
+                Unknown3 = unknown3,
+                Unknown4 = unknown4,
+                Unknown5 = unknown5,
+            };
+        }
     }
 
-    private InventoryItem DeserializeInventoryItem(BinaryReader reader, long endPosition)
+    private InventoryItem DeserializeInventoryItem(BinaryReader reader, Header header)
     {
         var padding = reader.ReadInt32();
         var itemType = _stringSerializer.Deserialize(reader);
-        var levelName = _stringSerializer.Deserialize(reader);
-        var pathName = _stringSerializer.Deserialize(reader);
-        Property? property = null;
+        ObjectReference? objectReference = null;
+        string? unknown1 = null;
+        if (header.SaveVersion < 44)
+            objectReference = _objectReferenceSerializer.Deserialize(reader);
+        else
+            _ = _stringSerializer.Deserialize(reader); //ToDo: Store
 
-        if (reader.BaseStream.Position < endPosition)
-            property = _propertySerializer.DeserializeProperty(reader);
+        var property = _propertySerializer.DeserializeProperty(reader, header);
 
         return new InventoryItem
         {
             ItemType = itemType,
-            LevelName = levelName,
-            PathName = pathName,
-            ExtraProperty = property
+            ObjectReference = objectReference,
+            ExtraProperty = property,
+            Unknown1 = unknown1
         };
     }
 

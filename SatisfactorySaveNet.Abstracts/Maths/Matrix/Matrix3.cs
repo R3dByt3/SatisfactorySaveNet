@@ -1,5 +1,4 @@
 using SatisfactorySaveNet.Abstracts.Maths.Data;
-using SatisfactorySaveNet.Abstracts.Maths.Vector;
 using System;
 using System.Diagnostics.Contracts;
 using System.Runtime.InteropServices;

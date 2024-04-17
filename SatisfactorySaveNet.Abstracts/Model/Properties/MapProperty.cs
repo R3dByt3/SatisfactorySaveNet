@@ -8,10 +8,5 @@ public class MapProperty : Property
     public string KeyType { get; set; } = string.Empty;
     public string ValueType { get; set; } = string.Empty;
     public int ModeType { get; set; }
-    public IDictionary<UnionBase, UnionBase?> Elements { get; set; }
-
-    public MapProperty(IDictionary<UnionBase, UnionBase?> elements)
-    {
-        Elements = elements;
-    }
+    public required IDictionary<UnionBase, UnionBase?> Elements { get; set; }
 }

@@ -8,36 +8,38 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 
 namespace SatisfactorySaveNet;
 
 public class PropertySerializer : IPropertySerializer
 {
-    public static readonly IPropertySerializer Instance = new PropertySerializer(StringSerializer.Instance, ObjectReferenceSerializer.Instance, VectorSerializer.Instance, HexSerializer.Instance);
+    public static readonly IPropertySerializer Instance = new PropertySerializer(StringSerializer.Instance, ObjectReferenceSerializer.Instance, VectorSerializer.Instance, HexSerializer.Instance, SoftObjectReferenceSerializer.Instance);
 
     private readonly IStringSerializer _stringSerializer;
     private readonly IObjectReferenceSerializer _objectReferenceSerializer;
+    private readonly ISoftObjectReferenceSerializer _softObjectReferenceSerializer;
     private readonly ITypedDataSerializer _typedDataSerializer;
     private readonly IHexSerializer _hexSerializer;
     private readonly IVectorSerializer _vectorSerializer;
 
-    internal PropertySerializer(IStringSerializer stringSerializer, IObjectReferenceSerializer objectReferenceSerializer, ITypedDataSerializer typedDataSerializer, IHexSerializer hexSerializer, IVectorSerializer vectorSerializer)
+    internal PropertySerializer(IStringSerializer stringSerializer, IObjectReferenceSerializer objectReferenceSerializer, ITypedDataSerializer typedDataSerializer, IHexSerializer hexSerializer, IVectorSerializer vectorSerializer, ISoftObjectReferenceSerializer softObjectReferenceSerializer)
     {
         _stringSerializer = stringSerializer;
         _objectReferenceSerializer = objectReferenceSerializer;
         _typedDataSerializer = typedDataSerializer;
         _hexSerializer = hexSerializer;
         _vectorSerializer = vectorSerializer;
+        _softObjectReferenceSerializer = softObjectReferenceSerializer;
     }
 
-    public PropertySerializer(IStringSerializer stringSerializer, IObjectReferenceSerializer objectReferenceSerializer, IVectorSerializer vectorSerializer, IHexSerializer hexSerializer)
+    public PropertySerializer(IStringSerializer stringSerializer, IObjectReferenceSerializer objectReferenceSerializer, IVectorSerializer vectorSerializer, IHexSerializer hexSerializer, ISoftObjectReferenceSerializer softObjectReferenceSerializer)
     {
         _stringSerializer = stringSerializer;
         _objectReferenceSerializer = objectReferenceSerializer;
         _typedDataSerializer = new TypedDataSerializer(vectorSerializer, stringSerializer, this, hexSerializer, objectReferenceSerializer);
         _hexSerializer = hexSerializer;
         _vectorSerializer = vectorSerializer;
+        _softObjectReferenceSerializer = softObjectReferenceSerializer;
     }
 
     public IEnumerable<Property> DeserializeProperties(BinaryReader reader, Header? header = null, string? type = null)
@@ -76,6 +78,7 @@ public class PropertySerializer : IPropertySerializer
             nameof(MapProperty) => header == null ? throw new ArgumentNullException(nameof(header)) : DeserializeMapProperty(reader, header, propertyName, type),
             nameof(NameProperty) => DeserializeNameProperty(reader),
             nameof(ObjectProperty) => DeserializeObjectProperty(reader),
+            nameof(SoftObjectProperty) => DeserializeSoftObjectProperty(reader),
             nameof(SetProperty) => DeserializeSetProperty(reader, propertyName),
             nameof(StrProperty) => DeserializeStrProperty(reader),
             nameof(StructProperty) => header == null ? throw new ArgumentNullException(nameof(header)) : DeserializeStructProperty(reader, header),
@@ -103,6 +106,7 @@ public class PropertySerializer : IPropertySerializer
             nameof(EnumProperty) => DeserializeArrayEnumProperty(reader, count),
             nameof(StrProperty) => DeserializeArrayStrProperty(reader, count),
             nameof(TextProperty) => DeserializeArrayTextProperty(reader, header, count),
+            nameof(SoftObjectProperty) => DeserializeArraySoftObjectProperty(reader, count),
             nameof(ObjectProperty) => DeserializeArrayObjectProperty(reader, count),
             nameof(InterfaceProperty) => DeserializeArrayInterfaceProperty(reader, count),
             nameof(StructProperty) => DeserializeArrayStructProperty(reader, header, count),
@@ -293,6 +297,21 @@ public class PropertySerializer : IPropertySerializer
         };
     }
 
+    private ArraySoftObjectProperty DeserializeArraySoftObjectProperty(BinaryReader reader, int count)
+    {
+        var values = new SoftObjectReference[count];
+
+        for (var x = 0; x < count; x++)
+        {
+            values[x] = _softObjectReferenceSerializer.Deserialize(reader);
+        }
+
+        return new ArraySoftObjectProperty
+        {
+            Values = values
+        };
+    }
+
     private ArrayProperty DeserializeArrayProperty(BinaryReader reader, Header header)
     {
         var binarySize = reader.ReadInt32();
@@ -303,10 +322,11 @@ public class PropertySerializer : IPropertySerializer
 
         var property = DeserializeArrayProperty(reader, header, type, length);
 
-        return new ArrayProperty(property)
+        return new ArrayProperty
         {
             Index = index,
-            Type = type
+            Type = type,
+            Property = property
         };
     }
 
@@ -365,8 +385,8 @@ public class PropertySerializer : IPropertySerializer
                     var valueType = reader.ReadByte();
                     TextArgument textArgument = valueType switch
                     {
-                        0 => new TextArgumentV0(name, reader.ReadInt32(), reader.ReadInt32()),
-                        4 => new TextArgumentV4(name, DeserializeTextProperty(reader, header)),
+                        0 => new TextArgumentV0 { Name = name, ArgumentValue = reader.ReadInt32(), ArgumentValueUnknown = reader.ReadInt32() },
+                        4 => new TextArgumentV4 { Name = name, ArgumentPropertyValue = DeserializeTextProperty(reader, header) },
                         _ => throw new InvalidDataException("Unknown valueType type in array text property"),
                     };
                     arguments[x] = textArgument;
@@ -626,12 +646,13 @@ public class PropertySerializer : IPropertySerializer
 
         var count = reader.ReadInt32();
 
-        var property = new MapProperty(new Dictionary<UnionBase, UnionBase?>(count))
+        var property = new MapProperty
         {
             Index = index,
             KeyType = keyType,
             ValueType = valueType,
-            ModeType = modeType
+            ModeType = modeType,
+            Elements = new Dictionary<UnionBase, UnionBase?>(count)
         };
 
         UnionBase key;
@@ -692,6 +713,9 @@ public class PropertySerializer : IPropertySerializer
                     break;
                 case nameof(IntProperty):
                     value = new IntUnion { Value = reader.ReadInt32() };
+                    break;
+                case nameof(Int64Property):
+                    value = new Int64Union { Value = reader.ReadInt64() };
                     break;
                 case nameof(DoubleProperty):
                     value = new DoubleUnion { Value = reader.ReadDouble() };
@@ -760,9 +784,26 @@ public class PropertySerializer : IPropertySerializer
         var padding = reader.ReadSByte();
         var value = _objectReferenceSerializer.Deserialize(reader);
 
-        var property = new ObjectProperty(value)
+        var property = new ObjectProperty
         {
-            Index = index
+            Index = index,
+            Value = value
+        };
+
+        return property;
+    }
+
+    private SoftObjectProperty DeserializeSoftObjectProperty(BinaryReader reader)
+    {
+        var binarySize = reader.ReadInt32();
+        var index = reader.ReadInt32();
+        var padding = reader.ReadSByte();
+        var value = _softObjectReferenceSerializer.Deserialize(reader);
+
+        var property = new SoftObjectProperty
+        {
+            Index = index,
+            Value = value,
         };
 
         return property;
@@ -864,10 +905,11 @@ public class PropertySerializer : IPropertySerializer
         var padding3 = reader.ReadSByte();
         var typedData = _typedDataSerializer.Deserialize(reader, header, type, startPosition + binarySize);
 
-        var property = new StructProperty(typedData)
+        var property = new StructProperty
         {
             Index = index,
-            Type = type
+            Type = type,
+            Value = typedData
         };
 
         return property;

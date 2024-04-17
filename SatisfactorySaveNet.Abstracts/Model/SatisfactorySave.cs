@@ -8,16 +8,10 @@ public class SatisfactorySave
     /// <summary>
     /// Header part of the save containing things like the version and metadata
     /// </summary>
-    public Header Header { get; set; }
+    public required Header Header { get; set; }
 
     /// <summary>
     /// Body part of the save containing things like subLevels
     /// </summary>
-    public Body? Body { get; set; }
-
-    public SatisfactorySave(Header header, Body? body)
-    {
-        Header = header;
-        Body = body;
-    }
+    public required Body? Body { get; set; }
 }

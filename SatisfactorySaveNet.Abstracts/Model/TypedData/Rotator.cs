@@ -1,5 +1,3 @@
-using SatisfactorySaveNet.Abstracts.Maths.Vector;
-
 namespace SatisfactorySaveNet.Abstracts.Model.TypedData;
 
 public class Rotator : TypedData
