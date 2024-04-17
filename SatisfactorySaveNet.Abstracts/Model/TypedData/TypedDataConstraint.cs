@@ -15,7 +15,7 @@ public enum TypedDataConstraint
     Guid,
     IntPoint,
     InventoryItem,
-    InventoryStackV0,
+    InventoryStack,
     LinearColor,
     PropertyData,
     Quat,

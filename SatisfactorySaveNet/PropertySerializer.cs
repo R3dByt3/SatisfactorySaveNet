@@ -452,7 +452,7 @@ public class PropertySerializer : IPropertySerializer
 
         for (var x = 0; x < length; x++)
         {
-            values[x] = _typedDataSerializer.Deserialize(reader, header, elementType, endPosition);
+            values[x] = _typedDataSerializer.Deserialize(reader, header, elementType);
         }
 
         var property = new ArrayStructProperty
@@ -903,7 +903,7 @@ public class PropertySerializer : IPropertySerializer
         var padding1 = reader.ReadInt64();
         var padding2 = reader.ReadInt64();
         var padding3 = reader.ReadSByte();
-        var typedData = _typedDataSerializer.Deserialize(reader, header, type, startPosition + binarySize);
+        var typedData = _typedDataSerializer.Deserialize(reader, header, type);
 
         var property = new StructProperty
         {

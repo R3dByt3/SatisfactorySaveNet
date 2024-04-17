@@ -38,7 +38,7 @@ public class TypedDataSerializer : ITypedDataSerializer
         _objectReferenceSerializer = objectReferenceSerializer;
     }
 
-    public TypedData Deserialize(BinaryReader reader, Header header, string type, long endPosition)
+    public TypedData Deserialize(BinaryReader reader, Header header, string type)
     {
         return type switch
         {
@@ -64,7 +64,7 @@ public class TypedDataSerializer : ITypedDataSerializer
             nameof(FINGPUT1BufferPixel) => DeserializeFINGPUT1BufferPixel(reader),
             //ToDo: All implemented?
 
-            nameof(InventoryStackV0) => DeserializeInventoryStack(reader, header),
+            //nameof(InventoryStack) => DeserializeInventoryStack(reader, header),
             //nameof(SpawnData) => DeserializeSpawnData(reader), False?
             //nameof(FactoryCustomizationColorSlot) => DeserializeFactoryCustomizationColorSlot(reader, header, endPosition), False?
 
@@ -415,7 +415,7 @@ public class TypedDataSerializer : ITypedDataSerializer
             var unknown4 = reader.ReadInt32();
             var unknown5 = reader.ReadInt32();
 
-            return new InventoryStackV0
+            return new InventoryStack
             {
                 Unknown1 = unknown1,
                 Unknown2 = unknown2,
@@ -432,10 +432,11 @@ public class TypedDataSerializer : ITypedDataSerializer
         var itemType = _stringSerializer.Deserialize(reader);
         ObjectReference? objectReference = null;
         string? unknown1 = null;
+
         if (header.SaveVersion < 44)
             objectReference = _objectReferenceSerializer.Deserialize(reader);
         else
-            _ = _stringSerializer.Deserialize(reader); //ToDo: Store
+            unknown1 = _stringSerializer.Deserialize(reader);
 
         var property = _propertySerializer.DeserializeProperty(reader, header);
 

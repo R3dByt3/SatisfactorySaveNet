@@ -1,8 +1,8 @@
 namespace SatisfactorySaveNet.Abstracts.Model.TypedData;
 
-public class InventoryStackV0 : TypedData
+public class InventoryStack : TypedData
 {
-    public override TypedDataConstraint Type => TypedDataConstraint.InventoryStackV0;
+    public override TypedDataConstraint Type => TypedDataConstraint.InventoryStack;
 
     public required int Unknown1 { get; set; }
     public required string Unknown2 { get; set; } = string.Empty;
