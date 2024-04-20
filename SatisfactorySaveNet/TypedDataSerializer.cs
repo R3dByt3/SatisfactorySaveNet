@@ -38,7 +38,7 @@ public class TypedDataSerializer : ITypedDataSerializer
         _objectReferenceSerializer = objectReferenceSerializer;
     }
 
-    public TypedData Deserialize(BinaryReader reader, Header header, string type)
+    public TypedData Deserialize(BinaryReader reader, Header header, string type, bool isArrayProperty)
     {
         return type switch
         {
@@ -53,7 +53,7 @@ public class TypedDataSerializer : ITypedDataSerializer
             nameof(RailroadTrackPosition) => DeserializeRailroadTrackPosition(reader),
             nameof(TimerHandle) => DeserializeTimerHandle(reader),
             nameof(Guid) => DeserializeGuid(reader),
-            nameof(InventoryItem) => DeserializeInventoryItem(reader, header),
+            nameof(InventoryItem) => DeserializeInventoryItem(reader, header, isArrayProperty),
             nameof(FluidBox) => DeserializeFluidBox(reader),
             nameof(SlateBrush) => DeserializeSlateBrush(reader),
             nameof(DateTime) => DeserializeDateTime(reader),
@@ -386,6 +386,7 @@ public class TypedDataSerializer : ITypedDataSerializer
         };
     }
 
+    //Seems to be dead code
     private TypedData DeserializeInventoryStack(BinaryReader reader, Header header)
     {
         if (header.SaveVersion >= 42)
@@ -426,7 +427,7 @@ public class TypedDataSerializer : ITypedDataSerializer
         }
     }
 
-    private InventoryItem DeserializeInventoryItem(BinaryReader reader, Header header)
+    private InventoryItem DeserializeInventoryItem(BinaryReader reader, Header header, bool isArrayProperty)
     {
         var padding = reader.ReadInt32();
         var itemType = _stringSerializer.Deserialize(reader);
@@ -438,7 +439,10 @@ public class TypedDataSerializer : ITypedDataSerializer
         else
             unknown1 = _stringSerializer.Deserialize(reader);
 
-        var property = _propertySerializer.DeserializeProperty(reader, header);
+        Property? property = null;
+
+        if (!isArrayProperty)
+            property = _propertySerializer.DeserializeProperty(reader, header);
 
         return new InventoryItem
         {

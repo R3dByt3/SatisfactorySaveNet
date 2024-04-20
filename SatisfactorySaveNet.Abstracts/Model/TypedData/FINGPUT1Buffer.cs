@@ -11,6 +11,6 @@ public class FINGPUT1Buffer : TypedData
     public string Name { get; set; } = string.Empty;
     public string TypeName {  get; set; } = string.Empty;
     public int Length { get; set; }
-    public IList<FINGPUT1BufferPixel> Buffer { get; set; } = [];
+    public ICollection<FINGPUT1BufferPixel> Buffer { get; set; } = [];
     public string Unknown { get; set; } = string.Empty;
 }

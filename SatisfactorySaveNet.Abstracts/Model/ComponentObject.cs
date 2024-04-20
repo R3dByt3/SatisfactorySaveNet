@@ -1,3 +1,4 @@
+using SatisfactorySaveNet.Abstracts.Model.Extra;
 using SatisfactorySaveNet.Abstracts.Model.Properties;
 using System.Collections.Generic;
 
@@ -14,6 +15,7 @@ public class ComponentObject
 
     public string ParentActorName { get; set; } = string.Empty;
 
-    public IList<Property> Properties { get; set; } = [];
+    public ICollection<Property> Properties { get; set; } = [];
+    public ExtraData? ExtraData { get; set; }
     public int? EntitySaveVersion { get; set; }
 }

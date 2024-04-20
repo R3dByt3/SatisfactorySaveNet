@@ -6,9 +6,9 @@ public class FINLuaProcessorStateStorage : TypedData
 {
     public override TypedDataConstraint Type => TypedDataConstraint.FINLuaProcessorStateStorage;
 
-    public IList<FINNetworkTrace> Traces { get; set; } = [];
-    public IList<ObjectReference> ObjectReferences { get; set; } = [];
+    public ICollection<FINNetworkTrace> Traces { get; set; } = [];
+    public ICollection<ObjectReference> ObjectReferences { get; set; } = [];
     public string Thread { get; set; } = string.Empty;
     public string Globals { get; set; } = string.Empty;
-    public IList<TypedData> TypedData { get; set; } = [];
+    public ICollection<TypedData> TypedData { get; set; } = [];
 }

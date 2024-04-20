@@ -10,17 +10,19 @@ namespace SatisfactorySaveNet;
 
 public class ObjectSerializer : IObjectSerializer
 {
-    public static readonly IObjectSerializer Instance = new ObjectSerializer(StringSerializer.Instance, ObjectReferenceSerializer.Instance, PropertySerializer.Instance);
+    public static readonly IObjectSerializer Instance = new ObjectSerializer(StringSerializer.Instance, ObjectReferenceSerializer.Instance, PropertySerializer.Instance, ExtraDataSerializer.Instance);
 
     private readonly IStringSerializer _stringSerializer;
     private readonly IObjectReferenceSerializer _objectReferenceSerializer;
     private readonly IPropertySerializer _propertySerializer;
+    private readonly IExtraDataSerializer _extraDataSerializer;
 
-    public ObjectSerializer(IStringSerializer stringSerializer, IObjectReferenceSerializer objectReferenceSerializer, IPropertySerializer propertySerializer)
+    public ObjectSerializer(IStringSerializer stringSerializer, IObjectReferenceSerializer objectReferenceSerializer, IPropertySerializer propertySerializer, IExtraDataSerializer extraDataSerializer)
     {
         _stringSerializer = stringSerializer;
         _objectReferenceSerializer = objectReferenceSerializer;
         _propertySerializer = propertySerializer;
+        _extraDataSerializer = extraDataSerializer;
     }
 
     public ComponentObject Deserialize(BinaryReader reader, Header header, ComponentObject componentObject)
@@ -62,24 +64,25 @@ public class ObjectSerializer : IObjectSerializer
         actorObject.ParentObjectName = parentObjectName;
 
         var expectedPosition = positionStart + binarySize;
+        actorObject.Components = components;
 
         if (expectedPosition == reader.BaseStream.Position)
             return actorObject;
 
-        var properties = _propertySerializer.DeserializeProperties(reader, header).ToList();
+        var properties = _propertySerializer.DeserializeProperties(reader, header, expectedPosition: expectedPosition).ToList();
 
-        actorObject.Components = components;
         actorObject.Properties = properties;
+        actorObject.ExtraData = _extraDataSerializer.Deserialize(reader, actorObject.TypePath, header, expectedPosition);
 
         var missingBytes = expectedPosition - reader.BaseStream.Position;
 
         if (missingBytes > 4)
         {
             var binary = reader.ReadBytes(Cast(missingBytes));
-            //var hex = new string(binary.Select(Convert.ToChar).ToArray());
+            var hex = new string(binary.Select(Convert.ToChar).ToArray());
         }
         else
-            reader.BaseStream.Seek(4, SeekOrigin.Current);
+            reader.BaseStream.Seek(missingBytes, SeekOrigin.Current);
 
         return actorObject;
     }
@@ -113,10 +116,10 @@ public class ObjectSerializer : IObjectSerializer
         if (missingBytes > 4)
         {
             var binary = reader.ReadBytes(Cast(missingBytes));
-            //var hex = new string(binary.Select(Convert.ToChar).ToArray());
+            var hex = new string(binary.Select(Convert.ToChar).ToArray());
         }
         else
-            reader.BaseStream.Seek(4, SeekOrigin.Current);
+            reader.BaseStream.Seek(missingBytes, SeekOrigin.Current);
 
         return componentObject;
     }

@@ -4,5 +4,5 @@ namespace SatisfactorySaveNet.Abstracts.Model.Properties;
 
 public class ArrayTextProperty : IArrayProperty
 {
-    public IList<TextProperty> Values { get; set; } = [];
+    public ICollection<TextProperty> Values { get; set; } = [];
 }

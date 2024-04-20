@@ -129,6 +129,7 @@ public class BodySerializer : IBodySerializer
                 }
 
                 var binarySizeObjects = header.SaveVersion >= 41 ? reader.ReadInt64() : reader.ReadInt32();
+                var positionStart = reader.BaseStream.Position;
                 var nrObjects = reader.ReadInt32();
 
                 if (nrObjects != nrObjectHeaders)
@@ -138,6 +139,10 @@ public class BodySerializer : IBodySerializer
                 {
                     objects[j] = _objectSerializer.Deserialize(reader, header, objects[j]);
                 }
+
+                var expectedPosition = positionStart + binarySizeObjects;
+                if (expectedPosition != reader.BaseStream.Position)
+                    throw new BadReadException("Expected stream position does not match actual position");
 
                 var nrSecondCollectables = reader.ReadInt32();
                 var secondCollectables = new List<ObjectReference>(nrSecondCollectables);

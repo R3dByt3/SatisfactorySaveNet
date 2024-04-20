@@ -7,5 +7,5 @@ public class ArrayBoolProperty : IArrayProperty
     /// <summary>
     /// Values[x] != 0 <=> True
     /// </summary>
-    public IList<sbyte> Values { get; set; } = [];
+    public ICollection<sbyte> Values { get; set; } = [];
 }

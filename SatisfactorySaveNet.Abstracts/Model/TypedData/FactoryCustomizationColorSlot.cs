@@ -7,5 +7,5 @@ public class FactoryCustomizationColorSlot : TypedData
 {
     public override TypedDataConstraint Type => TypedDataConstraint.FactoryCustomizationColorSlot;
 
-    public IList<Property> Properties { get; set; } = [];
+    public ICollection<Property> Properties { get; set; } = [];
 }

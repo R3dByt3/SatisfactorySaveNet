@@ -6,5 +6,5 @@ namespace SatisfactorySaveNet.Abstracts.Model.Properties;
 public class SetProperty : Property
 {
     public string Type { get; set; } = string.Empty;
-    public IList<UnionBase> Elements { get; set; } = [];
+    public ICollection<UnionBase> Elements { get; set; } = [];
 }

@@ -5,6 +5,7 @@ using SatisfactorySaveNet.Abstracts.Model.TypedData;
 using SatisfactorySaveNet.Abstracts.Model.Union;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
@@ -42,11 +43,19 @@ public class PropertySerializer : IPropertySerializer
         _softObjectReferenceSerializer = softObjectReferenceSerializer;
     }
 
-    public IEnumerable<Property> DeserializeProperties(BinaryReader reader, Header? header = null, string? type = null)
+    public IEnumerable<Property> DeserializeProperties(BinaryReader reader, Header? header = null, string? type = null, long? expectedPosition = null)
     {
+        if (expectedPosition != null && expectedPosition < reader.BaseStream.Position)
+            yield break;
+
         Property? property;
         while ((property = DeserializeProperty(reader, header, type)) != null)
+        {
             yield return property;
+
+            if (expectedPosition != null && expectedPosition < reader.BaseStream.Position)
+                yield break;
+        }
     }
 
     [return: NotNullIfNotNull(nameof(type))]
@@ -58,10 +67,8 @@ public class PropertySerializer : IPropertySerializer
         {
             propertyName = _stringSerializer.Deserialize(reader);
 
-            if (string.Equals(propertyName, "None", StringComparison.Ordinal))
+            if (string.Equals(propertyName, "None", StringComparison.Ordinal) || string.IsNullOrWhiteSpace(propertyName))
                 return null;
-
-            //if (reader.ReadByte() != 0) reader.BaseStream.Seek(-1, SeekOrigin.Current); //ToDo: Dead code?
 
             type = _stringSerializer.Deserialize(reader);
         }
@@ -332,23 +339,6 @@ public class PropertySerializer : IPropertySerializer
 
     private TextProperty DeserializeTextProperty(BinaryReader reader, Header header)
     {
-        //var binarySize = reader.ReadInt32();
-        //var index = reader.ReadInt32();
-        //var padding = reader.ReadSByte();
-        //var flags = reader.ReadInt32();
-        //var historyType = reader.ReadSByte();
-        //var isCultureInvariant = reader.ReadInt32() != 0;
-        //var value = _stringSerializer.Deserialize(reader);
-        //
-        //return new TextProperty
-        //{
-        //    Index = index,
-        //    Flags = flags,
-        //    HistoryType = historyType,
-        //    IsCultureInvariant = isCultureInvariant,
-        //    Value = value,
-        //};
-
         var binarySize = reader.ReadInt32();
         var index = reader.ReadInt32();
         var padding = reader.ReadSByte();
@@ -436,7 +426,6 @@ public class PropertySerializer : IPropertySerializer
         var propertyType = _stringSerializer.Deserialize(reader);
 
         var binarySize = reader.ReadInt32();
-        var startPosition = reader.BaseStream.Position;
         var padding1 = reader.ReadInt32();
         var elementType = _stringSerializer.Deserialize(reader);
 
@@ -446,13 +435,11 @@ public class PropertySerializer : IPropertySerializer
         var uuid4 = reader.ReadInt32();
         var padding2 = reader.ReadSByte();
 
-        var endPosition = startPosition + binarySize;
-
         var values = new TypedData[length];
 
         for (var x = 0; x < length; x++)
         {
-            values[x] = _typedDataSerializer.Deserialize(reader, header, elementType);
+            values[x] = _typedDataSerializer.Deserialize(reader, header, elementType, true);
         }
 
         var property = new ArrayStructProperty
@@ -866,8 +853,7 @@ public class PropertySerializer : IPropertySerializer
 
     private FINNetworkProperty DeserializeFINNetworkProperty(BinaryReader reader)
     {
-        var levelName = _stringSerializer.Deserialize(reader); //ToDo: ObjectReference
-        var pathName = _stringSerializer.Deserialize(reader);
+        var objectReference = _objectReferenceSerializer.Deserialize(reader);
         FINNetworkProperty? previous = null;
         string? step = null;
         if (reader.ReadInt32() == 1)
@@ -875,7 +861,7 @@ public class PropertySerializer : IPropertySerializer
         if (reader.ReadInt32() == 1)
             step = _stringSerializer.Deserialize(reader);
 
-        return new FINNetworkProperty { LevelName = levelName, PathName = pathName, Previous = previous, Step = step };
+        return new FINNetworkProperty { ObjectReference = objectReference, Previous = previous, Step = step };
     }
 
     private StrProperty DeserializeStrProperty(BinaryReader reader)
@@ -897,13 +883,12 @@ public class PropertySerializer : IPropertySerializer
     private StructProperty DeserializeStructProperty(BinaryReader reader, Header header)
     {
         var binarySize = reader.ReadInt32();
-        var startPosition = reader.BaseStream.Position;
         var index = reader.ReadInt32();
         var type = _stringSerializer.Deserialize(reader);
         var padding1 = reader.ReadInt64();
         var padding2 = reader.ReadInt64();
         var padding3 = reader.ReadSByte();
-        var typedData = _typedDataSerializer.Deserialize(reader, header, type);
+        var typedData = _typedDataSerializer.Deserialize(reader, header, type, false);
 
         var property = new StructProperty
         {

@@ -22,5 +22,5 @@ public class ActorObject : ComponentObject
 
     public string ParentObjectRoot { get; set; } = string.Empty;
     public string ParentObjectName { get; set; } = string.Empty;
-    public IList<ObjectReference> Components { get; set; } = [];
+    public ICollection<ObjectReference> Components { get; set; } = [];
 }

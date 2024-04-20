@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 namespace SatisfactorySaveNet.Abstracts.Model.Properties;
 
 public class ArrayFloatProperty : IArrayProperty
 {
-    public IList<float> Values { get; set; } = [];
+    public ICollection<float> Values { get; set; } = [];
 }

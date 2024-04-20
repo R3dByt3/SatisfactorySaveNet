@@ -7,6 +7,6 @@ namespace SatisfactorySaveNet.Abstracts;
 
 public interface IPropertySerializer
 {
-    public IEnumerable<Property> DeserializeProperties(BinaryReader reader, Header? header = null, string? type = null);
+    public IEnumerable<Property> DeserializeProperties(BinaryReader reader, Header? header = null, string? type = null, long? expectedPosition = null);
     public Property? DeserializeProperty(BinaryReader reader, Header? header = null, string? type = null);
 }

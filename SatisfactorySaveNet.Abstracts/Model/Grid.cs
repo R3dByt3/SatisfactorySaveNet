@@ -9,5 +9,5 @@ public class Grid
     public int Unknown3 { get; set; }
     public string Unknown4 { get; set; } = string.Empty;
     public int Unknown5 { get; set; }
-    public IList<GridData> Data { get; set; } = [];
+    public ICollection<GridData> Data { get; set; } = [];
 }

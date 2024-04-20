@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 namespace SatisfactorySaveNet.Abstracts.Model.Properties;
 
 public class ArrayStrProperty : IArrayProperty
 {
-    public IList<string> Values { get; set; } = [];
+    public ICollection<string> Values { get; set; } = [];
 }

@@ -7,5 +7,5 @@ public class SpawnData : TypedData
 {
     public override TypedDataConstraint Type => TypedDataConstraint.SpawnData;
 
-    public IList<Property> Properties { get; set; } = [];
+    public ICollection<Property> Properties { get; set; } = [];
 }
