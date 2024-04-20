@@ -2,6 +2,8 @@ namespace SatisfactorySaveNet.Abstracts.Model.Properties;
 
 public class TextProperty : Property
 {
+    public override PropertyConstraint PropertyValueType => PropertyConstraint.Text;
+
     public int Flags { get; set; }
     public byte HistoryType { get; set; }
 

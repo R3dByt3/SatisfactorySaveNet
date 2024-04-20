@@ -60,7 +60,7 @@ public class ExtraDataSerializer : IExtraDataSerializer
                 reader.BaseStream.Seek(8, SeekOrigin.Current);
             else
             {
-                var missing = _hexSerializer.Deserialize(reader, (int) bytesCount);
+                var missing = _hexSerializer.Deserialize(reader, bytesCount.ToInt());
 
                 return new UnknownExtraData
                 {
@@ -148,7 +148,7 @@ public class ExtraDataSerializer : IExtraDataSerializer
         }
 
         var bytesCount = expectedPosition - reader.BaseStream.Position;
-        var missing = _hexSerializer.Deserialize(reader, (int)bytesCount);
+        var missing = _hexSerializer.Deserialize(reader, bytesCount.ToInt());
 
         return new DroneStationData
         {
@@ -163,7 +163,7 @@ public class ExtraDataSerializer : IExtraDataSerializer
 
         if (bytesCount > 0)
         {
-            var missing = _hexSerializer.Deserialize(reader, (int)bytesCount);
+            var missing = _hexSerializer.Deserialize(reader, bytesCount.ToInt());
             reader.BaseStream.Seek(-bytesCount, SeekOrigin.Current);
             _ = reader.ReadInt32();
             var mode = reader.ReadByte();
@@ -183,7 +183,7 @@ public class ExtraDataSerializer : IExtraDataSerializer
                         sb1.Append(reader.ReadByte().ToString("X2"));
                     }
 
-                    playerData.EpicOnlineServicesId = sb1.ToString().TrimStart('0'); //.Substring(1, 32);
+                    playerData.EpicOnlineServicesId = new string(sb1.ToString().TrimStart('0').Skip(1).Take(32).ToArray());
                     return playerData;
                 case 248:
                     var value = _stringSerializer.Deserialize(reader);

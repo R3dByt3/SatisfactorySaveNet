@@ -5,5 +5,5 @@ namespace SatisfactorySaveNet.Abstracts;
 
 public interface IBodySerializer
 {
-    public Body? Deserialize(BinaryReader reader, Header header);
+    public BodyBase? Deserialize(BinaryReader reader, Header header);
 }

@@ -1,11 +1,10 @@
 using SatisfactorySaveNet.Abstracts;
 using SatisfactorySaveNet.Abstracts.Model;
 using SatisfactorySaveNet.Abstracts.Model.Properties;
-using SatisfactorySaveNet.Abstracts.Model.TypedData;
+using SatisfactorySaveNet.Abstracts.Model.Typed;
 using SatisfactorySaveNet.Abstracts.Model.Union;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
@@ -100,7 +99,7 @@ public class PropertySerializer : IPropertySerializer
         };
     }
 
-    private IArrayProperty DeserializeArrayProperty(BinaryReader reader, Header header, string type, int count)
+    private ArrayPropertyBase DeserializeArrayProperty(BinaryReader reader, Header header, string type, int count)
     {
         return type switch
         {

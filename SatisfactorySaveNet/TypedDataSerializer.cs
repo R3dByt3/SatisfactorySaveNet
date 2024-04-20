@@ -1,12 +1,12 @@
 using SatisfactorySaveNet.Abstracts;
 using SatisfactorySaveNet.Abstracts.Model;
 using SatisfactorySaveNet.Abstracts.Model.Properties;
-using SatisfactorySaveNet.Abstracts.Model.TypedData;
+using SatisfactorySaveNet.Abstracts.Model.Typed;
 using System;
 using System.IO;
 using System.Linq;
-using DateTime = SatisfactorySaveNet.Abstracts.Model.TypedData.DateTime;
-using Guid = SatisfactorySaveNet.Abstracts.Model.TypedData.Guid;
+using DateTime = SatisfactorySaveNet.Abstracts.Model.Typed.DateTime;
+using Guid = SatisfactorySaveNet.Abstracts.Model.Typed.Guid;
 
 namespace SatisfactorySaveNet;
 

@@ -2,6 +2,8 @@ namespace SatisfactorySaveNet.Abstracts.Model.Properties;
 
 public class ArrayProperty : Property
 {
+    public override PropertyConstraint PropertyValueType => PropertyConstraint.Array;
+
     public string Type { get; set; } = string.Empty;
-    public required IArrayProperty Property { get; set; }
+    public required ArrayPropertyBase Property { get; set; }
 }

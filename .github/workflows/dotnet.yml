@@ -34,7 +34,7 @@ jobs:
       with:
         PROJECT_FILE_PATH: ./SatisfactorySaveNet.Abstracts/SatisfactorySaveNet.Abstracts.csproj
         PACKAGE_NAME: SatisfactorySaveNet
-        VERSION_STATIC: 0.0.13
+        VERSION_STATIC: 0.1.0
         TAG_COMMIT: false
         NUGET_KEY: ${{secrets.NUGET_API_KEY}}
         NUGET_SOURCE: https://api.nuget.org
@@ -45,7 +45,7 @@ jobs:
       with:
         PROJECT_FILE_PATH: ./SatisfactorySaveNet/SatisfactorySaveNet.csproj
         PACKAGE_NAME: SatisfactorySaveNet
-        VERSION_STATIC: 0.0.13
+        VERSION_STATIC: 0.1.0
         TAG_COMMIT: false
         NUGET_KEY: ${{secrets.NUGET_API_KEY}}
         NUGET_SOURCE: https://api.nuget.org

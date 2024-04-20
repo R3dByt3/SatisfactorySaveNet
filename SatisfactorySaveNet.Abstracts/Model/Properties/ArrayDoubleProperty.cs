@@ -1,7 +1,9 @@
 using System.Collections.Generic;
 namespace SatisfactorySaveNet.Abstracts.Model.Properties;
 
-public class ArrayDoubleProperty : IArrayProperty
+public class ArrayDoubleProperty : ArrayPropertyBase
 {
+    public override ArrayPropertyConstraint ArrayValueType => ArrayPropertyConstraint.Double;
+
     public ICollection<double> Values { get; set; } = [];
 }

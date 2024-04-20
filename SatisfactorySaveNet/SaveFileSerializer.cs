@@ -59,7 +59,7 @@ public class SaveFileSerializer : ISaveFileSerializer
 
         var header = _headerSerializer.Deserialize(reader);
 
-        Body? body;
+        BodyBase? body;
 
         if (header.SaveVersion < 21)
         {

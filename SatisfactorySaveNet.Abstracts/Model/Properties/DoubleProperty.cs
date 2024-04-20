@@ -1,6 +1,8 @@
-﻿namespace SatisfactorySaveNet.Abstracts.Model.Properties;
+namespace SatisfactorySaveNet.Abstracts.Model.Properties;
 
-public class FloatProperty : Property
+public class DoubleProperty : Property
 {
-    public float Value { get; set; }
+    public override PropertyConstraint PropertyValueType => PropertyConstraint.Double;
+
+    public double Value { get; set; }
 }

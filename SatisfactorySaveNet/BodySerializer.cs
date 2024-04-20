@@ -23,7 +23,7 @@ public class BodySerializer : IBodySerializer
         _objectSerializer = objectSerializer;
     }
 
-    public Body? Deserialize(BinaryReader reader, Header header)
+    public BodyBase? Deserialize(BinaryReader reader, Header header)
     {
         Grid? grid = null;
         if (header.SaveVersion >= 41)
@@ -165,7 +165,7 @@ public class BodySerializer : IBodySerializer
 
             if (reader.BaseStream.Position == reader.BaseStream.Length)
             {
-                return new Body
+                return new BodyV8
                 {
                     Levels = levels,
                     Grid = grid
@@ -180,12 +180,14 @@ public class BodySerializer : IBodySerializer
                 objectReferences[i] = _objectReferenceSerializer.Deserialize(reader);
             }
 
-            return new Body
+#pragma warning disable CS0618 // Type or member is obsolete
+            return new BodyV8
             {
                 Levels = levels,
                 Grid = grid,
                 ObjectReferences = objectReferences
             };
+#pragma warning restore CS0618 // Type or member is obsolete
         }
         else
         {
@@ -197,17 +199,6 @@ public class BodySerializer : IBodySerializer
                 objects.Add(_objectHeaderSerializer.Deserialize(reader));
             }
 
-            //List<ObjectReference> collectables;
-            //
-            //var nrCollectables = reader.ReadInt32();
-            //collectables = new List<ObjectReference>(nrCollectables);
-            //
-            //for (var j = 0; j < nrCollectables; j++)
-            //{
-            //    collectables.Add(_objectReferenceSerializer.Deserialize(reader));
-            //}
-
-            //var binarySizeObjects = reader.ReadInt32();
             var nrObjects = reader.ReadInt32();
             
             if (nrObjects != nrObjectHeaders)
@@ -219,26 +210,19 @@ public class BodySerializer : IBodySerializer
             }
             
             var nrSecondCollectables = reader.ReadInt32();
-            var secondCollectables = new List<ObjectReference>(nrSecondCollectables);
+            var collectables = new List<ObjectReference>(nrSecondCollectables);
             
             for (var j = 0; j < nrSecondCollectables; j++)
             {
-                secondCollectables.Add(_objectReferenceSerializer.Deserialize(reader));
+                collectables.Add(_objectReferenceSerializer.Deserialize(reader));
             }
-            return new Body
+#pragma warning disable CS0618 // Type or member is obsolete
+            return new BodyPreV8
             {
-                Levels = 
-                [
-                    new Level
-                    {
-                        Collectables = null!,//collectables,
-                        SecondCollectables = secondCollectables,
-                        Objects = objects,
-                    }
-                ],
-                Grid = null!,
-                ObjectReferences = null!
+                Collectables = collectables,
+                Objects = objects,
             };
+#pragma warning restore CS0618 // Type or member is obsolete
         }
     }
 }

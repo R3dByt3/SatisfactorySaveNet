@@ -13,5 +13,5 @@ public class SatisfactorySave
     /// <summary>
     /// Body part of the save containing things like subLevels
     /// </summary>
-    public required Body? Body { get; set; }
+    public required BodyBase? Body { get; set; }
 }

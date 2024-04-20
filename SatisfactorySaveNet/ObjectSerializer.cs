@@ -1,7 +1,6 @@
 using SatisfactorySaveNet.Abstracts;
 using SatisfactorySaveNet.Abstracts.Exceptions;
 using SatisfactorySaveNet.Abstracts.Model;
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -10,19 +9,21 @@ namespace SatisfactorySaveNet;
 
 public class ObjectSerializer : IObjectSerializer
 {
-    public static readonly IObjectSerializer Instance = new ObjectSerializer(StringSerializer.Instance, ObjectReferenceSerializer.Instance, PropertySerializer.Instance, ExtraDataSerializer.Instance);
+    public static readonly IObjectSerializer Instance = new ObjectSerializer(StringSerializer.Instance, ObjectReferenceSerializer.Instance, PropertySerializer.Instance, ExtraDataSerializer.Instance, HexSerializer.Instance);
 
     private readonly IStringSerializer _stringSerializer;
     private readonly IObjectReferenceSerializer _objectReferenceSerializer;
     private readonly IPropertySerializer _propertySerializer;
     private readonly IExtraDataSerializer _extraDataSerializer;
+    private readonly IHexSerializer _hexSerializer;
 
-    public ObjectSerializer(IStringSerializer stringSerializer, IObjectReferenceSerializer objectReferenceSerializer, IPropertySerializer propertySerializer, IExtraDataSerializer extraDataSerializer)
+    public ObjectSerializer(IStringSerializer stringSerializer, IObjectReferenceSerializer objectReferenceSerializer, IPropertySerializer propertySerializer, IExtraDataSerializer extraDataSerializer, IHexSerializer hexSerializer)
     {
         _stringSerializer = stringSerializer;
         _objectReferenceSerializer = objectReferenceSerializer;
         _propertySerializer = propertySerializer;
         _extraDataSerializer = extraDataSerializer;
+        _hexSerializer = hexSerializer;
     }
 
     public ComponentObject Deserialize(BinaryReader reader, Header header, ComponentObject componentObject)
@@ -78,21 +79,12 @@ public class ObjectSerializer : IObjectSerializer
 
         if (missingBytes > 4)
         {
-            var binary = reader.ReadBytes(Cast(missingBytes));
-            var hex = new string(binary.Select(Convert.ToChar).ToArray());
+            var hex = _hexSerializer.Deserialize(reader, missingBytes.ToInt());
         }
         else
             reader.BaseStream.Seek(missingBytes, SeekOrigin.Current);
 
         return actorObject;
-    }
-
-    private static int Cast(long value)
-    {
-        if (value > int.MaxValue)
-            throw new ArgumentOutOfRangeException(nameof(value), value, null);
-
-        return (int) value;
     }
 
     private ComponentObject DeserializeComponent(BinaryReader reader, Header header, ComponentObject componentObject)
@@ -115,8 +107,7 @@ public class ObjectSerializer : IObjectSerializer
 
         if (missingBytes > 4)
         {
-            var binary = reader.ReadBytes(Cast(missingBytes));
-            var hex = new string(binary.Select(Convert.ToChar).ToArray());
+            var hex = _hexSerializer.Deserialize(reader, missingBytes.ToInt());
         }
         else
             reader.BaseStream.Seek(missingBytes, SeekOrigin.Current);
