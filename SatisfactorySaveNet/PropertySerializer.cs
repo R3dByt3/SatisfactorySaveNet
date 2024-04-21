@@ -72,7 +72,7 @@ public class PropertySerializer : IPropertySerializer
             type = _stringSerializer.Deserialize(reader);
         }
 
-        return type switch
+        Property property = type switch
         {
             nameof(ArrayProperty) => header == null ? throw new ArgumentNullException(nameof(header)) : DeserializeArrayProperty(reader, header),
             nameof(BoolProperty) => DeserializeBoolProperty(reader),
@@ -97,6 +97,9 @@ public class PropertySerializer : IPropertySerializer
 
             _ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
         };
+
+        property.Name = propertyName;
+        return property;
     }
 
     private ArrayPropertyBase DeserializeArrayProperty(BinaryReader reader, Header header, string type, int count)

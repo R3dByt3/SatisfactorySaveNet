@@ -70,7 +70,7 @@ public class ObjectSerializer : IObjectSerializer
         if (expectedPosition == reader.BaseStream.Position)
             return actorObject;
 
-        var properties = _propertySerializer.DeserializeProperties(reader, header, expectedPosition: expectedPosition).ToList();
+        var properties = _propertySerializer.DeserializeProperties(reader, header, expectedPosition: expectedPosition).ToArray();
 
         actorObject.Properties = properties;
         actorObject.ExtraData = _extraDataSerializer.Deserialize(reader, actorObject.TypePath, header, expectedPosition);
@@ -99,7 +99,7 @@ public class ObjectSerializer : IObjectSerializer
         var binarySize = reader.ReadInt32();
         var positionStart = reader.BaseStream.Position;
 
-        var properties = _propertySerializer.DeserializeProperties(reader, header).ToList();
+        var properties = _propertySerializer.DeserializeProperties(reader, header).ToArray();
         componentObject.Properties = properties;
 
         var expectedPosition = positionStart + binarySize;

@@ -32,7 +32,7 @@ public class ExtraDataSerializer : IExtraDataSerializer
     public ExtraData? Deserialize(BinaryReader reader, string typePath, Header header, long expectedPosition)
     {
         if (KnownConstants.IsConveyor(typePath))
-            return DeserializeConveyor(reader);
+            return DeserializeConveyor(reader, header);
         if (KnownConstants.IsPowerLine(typePath))
             return DeserializePowerLine(reader, header);
         if (KnownConstants.IsVehicle(typePath))
@@ -248,7 +248,7 @@ public class ExtraDataSerializer : IExtraDataSerializer
         };
     }
 
-    private ConveyorData DeserializeConveyor(BinaryReader reader)
+    private ConveyorData DeserializeConveyor(BinaryReader reader, Header header)
     {
         var count = reader.ReadInt32();
         var nrElements = reader.ReadInt32();
@@ -259,13 +259,22 @@ public class ExtraDataSerializer : IExtraDataSerializer
         {
             var length = reader.ReadInt32();
             var name = _stringSerializer.Deserialize(reader);
-            var objectReference = _objectReferenceSerializer.Deserialize(reader);
-            var position = VectorSerializer.Instance.DeserializeVec4B(reader);
+
+            string? levelName = null;
+            ObjectReference? objectReference = null;
+
+            if (header.SaveVersion < 44)
+                objectReference = _objectReferenceSerializer.Deserialize(reader);
+            else
+                levelName = _stringSerializer.Deserialize(reader);
+
+            var position = _vectorSerializer.DeserializeVec4B(reader);
 
             items[x] = new Item
             {
                 Name = name,
                 ObjectReference = objectReference,
+                LevelName = levelName,
                 Position = position,
                 Length = length
             };

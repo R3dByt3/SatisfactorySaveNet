@@ -3,6 +3,7 @@ using SatisfactorySaveNet.Abstracts.Model;
 using SatisfactorySaveNet.Abstracts.Model.Properties;
 using SatisfactorySaveNet.Abstracts.Model.Typed;
 using System;
+using System.Collections.Frozen;
 using System.IO;
 using System.Linq;
 using DateTime = SatisfactorySaveNet.Abstracts.Model.Typed.DateTime;
@@ -427,19 +428,49 @@ public class TypedDataSerializer : ITypedDataSerializer
         }
     }
 
+    private static readonly FrozenSet<string> FuelContainingItems = new string[]
+    {
+        "/Game/FactoryGame/Equipment/Chainsaw/Desc_Chainsaw.Desc_Chainsaw_C",
+        "/Game/FactoryGame/Resource/Equipment/JetPack/BP_EquipmentDescriptorJetPack.BP_EquipmentDescriptorJetPack_C"
+    }.ToFrozenSet(StringComparer.Ordinal);
+
     private InventoryItem DeserializeInventoryItem(BinaryReader reader, Header header, bool isArrayProperty)
     {
         var padding = reader.ReadInt32();
         var itemType = _stringSerializer.Deserialize(reader);
         ObjectReference? objectReference = null;
-        string? unknown1 = null;
+        string? levelName = null;
 
         if (header.SaveVersion < 44)
             objectReference = _objectReferenceSerializer.Deserialize(reader);
         else
-            unknown1 = _stringSerializer.Deserialize(reader);
+            levelName = _stringSerializer.Deserialize(reader);
 
         Property? property = null;
+
+        if (header.SaveVersion >= 44 && FuelContainingItems.Contains(itemType))
+        {
+            _ = reader.ReadSByte();
+            _ = reader.ReadSByte();
+            _ = reader.ReadSByte();
+            var scriptName = _stringSerializer.Deserialize(reader);
+            var unknown = reader.ReadInt32();
+            var properties = _propertySerializer.DeserializeProperties(reader, header).ToArray();
+
+            if (!isArrayProperty)
+                property = _propertySerializer.DeserializeProperty(reader, header);
+
+            return new FueledInventoryItem
+            {
+                ItemType = itemType,
+                ObjectReference = objectReference,
+                ExtraProperty = property,
+                LevelName = levelName,
+                Properties = properties,
+                ScriptName = scriptName,
+                Unknown1 = unknown
+            };
+        }
 
         if (!isArrayProperty)
             property = _propertySerializer.DeserializeProperty(reader, header);
@@ -449,7 +480,7 @@ public class TypedDataSerializer : ITypedDataSerializer
             ItemType = itemType,
             ObjectReference = objectReference,
             ExtraProperty = property,
-            Unknown1 = unknown1
+            LevelName = levelName
         };
     }
 
