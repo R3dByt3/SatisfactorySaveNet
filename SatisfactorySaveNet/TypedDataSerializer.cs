@@ -431,7 +431,10 @@ public class TypedDataSerializer : ITypedDataSerializer
     private static readonly FrozenSet<string> FuelContainingItems = new string[]
     {
         "/Game/FactoryGame/Equipment/Chainsaw/Desc_Chainsaw.Desc_Chainsaw_C",
-        "/Game/FactoryGame/Resource/Equipment/JetPack/BP_EquipmentDescriptorJetPack.BP_EquipmentDescriptorJetPack_C"
+        "/Game/FactoryGame/Resource/Equipment/JetPack/BP_EquipmentDescriptorJetPack.BP_EquipmentDescriptorJetPack_C",
+        "/Game/FactoryGame/Resource/Equipment/NailGun/Desc_RebarGunProjectile.Desc_RebarGunProjectile_C",
+        "/Game/FactoryGame/Resource/Equipment/Rifle/BP_EquipmentDescriptorRifle.BP_EquipmentDescriptorRifle_C",
+        "/Game/FactoryGame/Resource/Equipment/NobeliskDetonator/BP_EquipmentDescriptorNobeliskDetonator.BP_EquipmentDescriptorNobeliskDetonator_C"
     }.ToFrozenSet(StringComparer.Ordinal);
 
     private InventoryItem DeserializeInventoryItem(BinaryReader reader, Header header, bool isArrayProperty)
@@ -448,11 +451,12 @@ public class TypedDataSerializer : ITypedDataSerializer
 
         Property? property = null;
 
-        if (header.SaveVersion >= 44 && FuelContainingItems.Contains(itemType))
+        var hex = _hexSerializer.Deserialize(reader, 3);
+
+        var hasFuel = hex.Equals("\0\0\0", StringComparison.Ordinal);
+
+        if (header.SaveVersion >= 44 && FuelContainingItems.Contains(itemType) && hasFuel)
         {
-            _ = reader.ReadSByte();
-            _ = reader.ReadSByte();
-            _ = reader.ReadSByte();
             var scriptName = _stringSerializer.Deserialize(reader);
             var unknown = reader.ReadInt32();
             var properties = _propertySerializer.DeserializeProperties(reader, header).ToArray();
@@ -471,6 +475,8 @@ public class TypedDataSerializer : ITypedDataSerializer
                 Unknown1 = unknown
             };
         }
+
+        reader.BaseStream.Seek(-3, SeekOrigin.Current);
 
         if (!isArrayProperty)
             property = _propertySerializer.DeserializeProperty(reader, header);
