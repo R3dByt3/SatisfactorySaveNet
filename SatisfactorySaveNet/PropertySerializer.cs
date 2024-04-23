@@ -339,11 +339,11 @@ public class PropertySerializer : IPropertySerializer
         };
     }
 
-    private TextProperty DeserializeTextProperty(BinaryReader reader, Header header)
+    private TextProperty DeserializeTextProperty(BinaryReader reader, Header header, int? binarySize = null, int? index = null, sbyte? padding = null)
     {
-        var binarySize = reader.ReadInt32();
-        var index = reader.ReadInt32();
-        var padding = reader.ReadSByte();
+        binarySize ??= reader.ReadInt32();
+        index ??= reader.ReadInt32();
+        padding ??= reader.ReadSByte();
         var flags = reader.ReadInt32();
         var historyType = reader.ReadByte();
 
@@ -367,7 +367,7 @@ public class PropertySerializer : IPropertySerializer
                 break;
             case 1:
             case 3:
-                sourceFmt = DeserializeTextProperty(reader, header);
+                sourceFmt = DeserializeTextProperty(reader, header, binarySize, index, padding);
                 var argumentsCount = reader.ReadInt32();
                 arguments = new TextArgument[argumentsCount];
 
@@ -378,14 +378,14 @@ public class PropertySerializer : IPropertySerializer
                     TextArgument textArgument = valueType switch
                     {
                         0 => new TextArgumentV0 { Name = name, ArgumentValue = reader.ReadInt32(), ArgumentValueUnknown = reader.ReadInt32() },
-                        4 => new TextArgumentV4 { Name = name, ArgumentPropertyValue = DeserializeTextProperty(reader, header) },
+                        4 => new TextArgumentV4 { Name = name, ArgumentPropertyValue = DeserializeTextProperty(reader, header, binarySize, index, padding) },
                         _ => throw new InvalidDataException("Unknown valueType type in array text property"),
                     };
                     arguments[x] = textArgument;
                 }
                 break;
             case 10:
-                sourceText = DeserializeTextProperty(reader, header);
+                sourceText = DeserializeTextProperty(reader, header, binarySize, index, padding);
                 transformType = reader.ReadByte();
                 break;
             case 11:
@@ -406,7 +406,7 @@ public class PropertySerializer : IPropertySerializer
 
         return new TextProperty
         {
-            Index = index,
+            Index = index.Value,
             Flags = flags,
             HistoryType = historyType,
             IsCultureInvariant = isCultureInvariant,
