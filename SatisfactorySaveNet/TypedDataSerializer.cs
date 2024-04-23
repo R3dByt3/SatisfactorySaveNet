@@ -451,32 +451,34 @@ public class TypedDataSerializer : ITypedDataSerializer
 
         Property? property = null;
 
-        var hex = _hexSerializer.Deserialize(reader, 3);
-
-        var hasFuel = hex.Equals("\0\0\0", StringComparison.Ordinal);
-
-        if (header.SaveVersion >= 44 && FuelContainingItems.Contains(itemType) && hasFuel)
+        if (header.SaveVersion >= 44 && FuelContainingItems.Contains(itemType))
         {
-            var scriptName = _stringSerializer.Deserialize(reader);
-            var unknown = reader.ReadInt32();
-            var properties = _propertySerializer.DeserializeProperties(reader, header).ToArray();
+            var hex = _hexSerializer.Deserialize(reader, 3);
+            var hasFuel = hex.Equals("\0\0\0", StringComparison.Ordinal);
 
-            if (!isArrayProperty)
-                property = _propertySerializer.DeserializeProperty(reader, header);
-
-            return new FueledInventoryItem
+            if (hasFuel)
             {
-                ItemType = itemType,
-                ObjectReference = objectReference,
-                ExtraProperty = property,
-                LevelName = levelName,
-                Properties = properties,
-                ScriptName = scriptName,
-                Unknown1 = unknown
-            };
-        }
+                var scriptName = _stringSerializer.Deserialize(reader);
+                var unknown = reader.ReadInt32();
+                var properties = _propertySerializer.DeserializeProperties(reader, header).ToArray();
 
-        reader.BaseStream.Seek(-3, SeekOrigin.Current);
+                if (!isArrayProperty)
+                    property = _propertySerializer.DeserializeProperty(reader, header);
+
+                return new FueledInventoryItem
+                {
+                    ItemType = itemType,
+                    ObjectReference = objectReference,
+                    ExtraProperty = property,
+                    LevelName = levelName,
+                    Properties = properties,
+                    ScriptName = scriptName,
+                    Unknown1 = unknown
+                };
+            }
+
+            reader.BaseStream.Seek(-3, SeekOrigin.Current);
+        }
 
         if (!isArrayProperty)
             property = _propertySerializer.DeserializeProperty(reader, header);
