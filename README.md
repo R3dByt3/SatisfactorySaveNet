@@ -1,5 +1,6 @@
 # SatisfactorySaveNet
 I'm very happy to announce the first stable release of this component (v0.1.0).
+ **EDIT:** Still consider using versions starting from v0.1.4 due to some bugfixes.
 By this I consider this software as **stable** and **correct**!
 You can integrate it using [nuget.org](https://www.nuget.org/packages/SatisfactorySaveNet/).
 
@@ -9,7 +10,7 @@ This component currently allows reading all contained data of the *.sav file typ
 
 It is planned to add writing capabilities if this project finds interested users.
 
-Further, (external and promising looking) documentation of the save game format is available [here](docs/SATISFACTORY_SAVE.md).
+Further, (external and promising looking) documentation of the save game format is available [here](https://github.com/moritz-h/satisfactory-3d-map/blob/master/docs/SATISFACTORY_SAVE.md). **Link fixed now sorry**
 
 ## How to use
 ```CSharp
