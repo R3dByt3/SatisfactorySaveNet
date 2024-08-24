@@ -266,7 +266,7 @@ public class ExtraDataSerializer : IExtraDataSerializer
             if (header.SaveVersion < 44)
                 objectReference = _objectReferenceSerializer.Deserialize(reader);
             else
-                levelName = _stringSerializer.Deserialize(reader);
+                levelName = _stringSerializer.Deserialize(reader); //ToDo: This might be an int state like in TypedDataSerializer.DeserializeInventoryItem()
 
             var position = _vectorSerializer.DeserializeVec4B(reader);
 

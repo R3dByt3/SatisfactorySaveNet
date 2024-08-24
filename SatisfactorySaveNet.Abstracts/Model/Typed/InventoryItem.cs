@@ -9,5 +9,4 @@ public class InventoryItem : TypedData
     public string ItemType { get; set; } = string.Empty;
     public required ObjectReference? ObjectReference { get; set; }
     public Property? ExtraProperty { get; set; }
-    public string? LevelName { get; set; }
 }
