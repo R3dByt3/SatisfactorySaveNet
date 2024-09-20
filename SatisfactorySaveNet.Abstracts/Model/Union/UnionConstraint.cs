@@ -8,6 +8,7 @@ public enum UnionConstraint
     Vector3D,
     Vector3,
     Vector3I,
+    Vector4,
     Int,
     Int64,
     Str,

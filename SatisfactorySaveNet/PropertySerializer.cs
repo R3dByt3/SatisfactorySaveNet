@@ -441,7 +441,7 @@ public class PropertySerializer : IPropertySerializer
 
         for (var x = 0; x < length; x++)
         {
-            values[x] = _typedDataSerializer.Deserialize(reader, header, elementType, true);
+            values[x] = _typedDataSerializer.Deserialize(reader, header, elementType, true, binarySize);
         }
 
         var property = new ArrayStructProperty
@@ -829,6 +829,11 @@ public class PropertySerializer : IPropertySerializer
                         value = new Vector3Union { Value = _vectorSerializer.DeserializeVec3(reader) };
                         break;
                     }
+                    if (propertyName.Equals("mDestroyedPickups", StringComparison.Ordinal))
+                    {
+                        value = new Vector4Union { Value = _vectorSerializer.DeserializeVec4(reader) };
+                        break;
+                    }
                     value = new FINNetworkUnion { Value = DeserializeFINNetworkProperty(reader) };
                     break;
                 case nameof(NameProperty):
@@ -890,7 +895,7 @@ public class PropertySerializer : IPropertySerializer
         var padding1 = reader.ReadInt64();
         var padding2 = reader.ReadInt64();
         var padding3 = reader.ReadSByte();
-        var typedData = _typedDataSerializer.Deserialize(reader, header, type, false);
+        var typedData = _typedDataSerializer.Deserialize(reader, header, type, false, binarySize);
 
         var property = new StructProperty
         {

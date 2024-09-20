@@ -6,5 +6,5 @@ namespace SatisfactorySaveNet.Abstracts;
 
 public interface ITypedDataSerializer
 {
-    public TypedData Deserialize(BinaryReader reader, Header header, string type, bool isArrayProperty);
+    public TypedData Deserialize(BinaryReader reader, Header header, string type, bool isArrayProperty, int binarySize);
 }

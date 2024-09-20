@@ -4,6 +4,7 @@ public enum TypedDataConstraint
 {
     ArrayProperties,
     Box,
+    ClientIdentityInfo,
     Color,
     DateTime,
     FactoryCustomizationColorSlot,
