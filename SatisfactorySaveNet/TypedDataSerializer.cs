@@ -39,7 +39,7 @@ public class TypedDataSerializer : ITypedDataSerializer
         _objectReferenceSerializer = objectReferenceSerializer;
     }
 
-    public TypedData Deserialize(BinaryReader reader, Header header, string type, bool isArrayProperty)
+    public TypedData Deserialize(BinaryReader reader, Header header, string type, bool isArrayProperty, int binarySize)
     {
         return type switch
         {
@@ -63,6 +63,7 @@ public class TypedDataSerializer : ITypedDataSerializer
             nameof(FICFrameRange) => DeserializeFICFrameRange(reader),
             nameof(IntPoint) => DeserializeIntPoint(reader),
             nameof(FINGPUT1BufferPixel) => DeserializeFINGPUT1BufferPixel(reader),
+            nameof(ClientIdentityInfo) => DeserializeClientIdentityInfo(reader, binarySize),
             //ToDo: All implemented?
 
             //nameof(InventoryStack) => DeserializeInventoryStack(reader, header),
@@ -107,6 +108,21 @@ public class TypedDataSerializer : ITypedDataSerializer
             Character = character,
             ForegroundColor = foregroundColor,
             BackgroundColor = backgroundColor
+        };
+    }
+
+    private ClientIdentityInfo DeserializeClientIdentityInfo(BinaryReader reader, int binarySize)
+    {
+        var value = _stringSerializer.Deserialize(reader);
+
+        if (binarySize - 4 - value.Length > 0)
+        {
+            _ = reader.ReadBytes(binarySize - 4 - value.Length - 1);
+        }
+
+        return new ClientIdentityInfo
+        {
+            Value = value
         };
     }
 
@@ -434,7 +450,9 @@ public class TypedDataSerializer : ITypedDataSerializer
         "/Game/FactoryGame/Resource/Equipment/JetPack/BP_EquipmentDescriptorJetPack.BP_EquipmentDescriptorJetPack_C",
         "/Game/FactoryGame/Resource/Equipment/NailGun/Desc_RebarGunProjectile.Desc_RebarGunProjectile_C",
         "/Game/FactoryGame/Resource/Equipment/Rifle/BP_EquipmentDescriptorRifle.BP_EquipmentDescriptorRifle_C",
-        "/Game/FactoryGame/Resource/Equipment/NobeliskDetonator/BP_EquipmentDescriptorNobeliskDetonator.BP_EquipmentDescriptorNobeliskDetonator_C"
+        "/Game/FactoryGame/Resource/Equipment/NobeliskDetonator/BP_EquipmentDescriptorNobeliskDetonator.BP_EquipmentDescriptorNobeliskDetonator_C",
+        "/Game/FactoryGame/Resource/Equipment/GemstoneScanner/BP_EquipmentDescriptorObjectScanner.BP_EquipmentDescriptorObjectScanner_C",
+        "/Game/FactoryGame/Resource/Equipment/GasMask/BP_EquipmentDescriptorGasmask.BP_EquipmentDescriptorGasmask_C"
     }.ToFrozenSet(StringComparer.Ordinal);
 
     private InventoryItem DeserializeInventoryItem(BinaryReader reader, Header header, bool isArrayProperty)
