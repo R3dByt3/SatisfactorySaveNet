@@ -444,17 +444,6 @@ public class TypedDataSerializer : ITypedDataSerializer
         }
     }
 
-    private static readonly FrozenSet<string> FuelContainingItems = new string[]
-    {
-        "/Game/FactoryGame/Equipment/Chainsaw/Desc_Chainsaw.Desc_Chainsaw_C",
-        "/Game/FactoryGame/Resource/Equipment/JetPack/BP_EquipmentDescriptorJetPack.BP_EquipmentDescriptorJetPack_C",
-        "/Game/FactoryGame/Resource/Equipment/NailGun/Desc_RebarGunProjectile.Desc_RebarGunProjectile_C",
-        "/Game/FactoryGame/Resource/Equipment/Rifle/BP_EquipmentDescriptorRifle.BP_EquipmentDescriptorRifle_C",
-        "/Game/FactoryGame/Resource/Equipment/NobeliskDetonator/BP_EquipmentDescriptorNobeliskDetonator.BP_EquipmentDescriptorNobeliskDetonator_C",
-        "/Game/FactoryGame/Resource/Equipment/GemstoneScanner/BP_EquipmentDescriptorObjectScanner.BP_EquipmentDescriptorObjectScanner_C",
-        "/Game/FactoryGame/Resource/Equipment/GasMask/BP_EquipmentDescriptorGasmask.BP_EquipmentDescriptorGasmask_C"
-    }.ToFrozenSet(StringComparer.Ordinal);
-
     private InventoryItem DeserializeInventoryItem(BinaryReader reader, Header header, bool isArrayProperty)
     {
         var padding1 = reader.ReadInt32();
@@ -469,7 +458,7 @@ public class TypedDataSerializer : ITypedDataSerializer
 
         Property? property = null;
 
-        if (header.SaveVersion >= 44 && FuelContainingItems.Contains(itemType) && hasState)
+        if (header.SaveVersion >= 44 && KnownConstants.StatefulInventoryItems.Contains(itemType) && hasState)
         {
             var padding2 = reader.ReadInt32();
             var scriptName = _stringSerializer.Deserialize(reader);
@@ -479,7 +468,7 @@ public class TypedDataSerializer : ITypedDataSerializer
             if (!isArrayProperty)
                 property = _propertySerializer.DeserializeProperty(reader, header);
 
-            return new FueledInventoryItem
+            return new StatefulInventoryItem
             {
                 ItemType = itemType,
                 ObjectReference = objectReference,

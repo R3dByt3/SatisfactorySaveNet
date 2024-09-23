@@ -103,6 +103,17 @@ public static class KnownConstants
         "/DI_Transportation_Darkplate/Trains/Wagon/DI_Wagon_512/Build_DI_FrieghtWagon512.Build_DI_FrieghtWagon512_C"
     ];
 
+    public static readonly FrozenSet<string> StatefulInventoryItems = new string[]
+    {
+        "/Game/FactoryGame/Equipment/Chainsaw/Desc_Chainsaw.Desc_Chainsaw_C",
+        "/Game/FactoryGame/Resource/Equipment/JetPack/BP_EquipmentDescriptorJetPack.BP_EquipmentDescriptorJetPack_C",
+        "/Game/FactoryGame/Resource/Equipment/NailGun/Desc_RebarGunProjectile.Desc_RebarGunProjectile_C",
+        "/Game/FactoryGame/Resource/Equipment/Rifle/BP_EquipmentDescriptorRifle.BP_EquipmentDescriptorRifle_C",
+        "/Game/FactoryGame/Resource/Equipment/NobeliskDetonator/BP_EquipmentDescriptorNobeliskDetonator.BP_EquipmentDescriptorNobeliskDetonator_C",
+        "/Game/FactoryGame/Resource/Equipment/GemstoneScanner/BP_EquipmentDescriptorObjectScanner.BP_EquipmentDescriptorObjectScanner_C",
+        "/Game/FactoryGame/Resource/Equipment/GasMask/BP_EquipmentDescriptorGasmask.BP_EquipmentDescriptorGasmask_C"
+    }.ToFrozenSet(StringComparer.Ordinal);
+
     public static bool IsConveyorLift(string path)
     {
         return ConveyorLifts.Contains(path) || ModConveyorLifts.Any(x => x.StartsWith(path, StringComparison.Ordinal));
