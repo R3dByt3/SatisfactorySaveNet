@@ -77,7 +77,7 @@ public class SaveFileSerializer : ISaveFileSerializer
                 if (chunkInfo.CompressedSize != ChunkInfo.MagicValue || chunkInfo.UncompressedSize != ChunkInfo.ChunkSize)
                     throw new CorruptedSatisFactorySaveFileException("Corrupted chunk was read");
 
-                if (header.HeaderVersion >= 13)
+                if (header.SaveVersion >= 41)
                     _ = reader.ReadByte();
 
                 var summary = _chunkSerializer.Deserialize(reader);  //16, 20, 24, 28
@@ -108,12 +108,12 @@ public class SaveFileSerializer : ISaveFileSerializer
             using var bufferReader = new BinaryReader(buffer);
 
             long dataLength;
-            if (header.HeaderVersion >= 13)
+            if (header.SaveVersion >= 41)
                 dataLength = bufferReader.ReadInt64();
             else
                 dataLength = bufferReader.ReadInt32();
 
-            var offset = header.HeaderVersion >= 13 ? 8 : 4;
+            var offset = header.SaveVersion >= 41 ? 8 : 4;
 
             if (uncompressedSize != dataLength + offset)
                 throw new CorruptedSatisFactorySaveFileException("Umcompressed size mismatch detected");

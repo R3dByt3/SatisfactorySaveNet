@@ -1,6 +1,7 @@
+using SatisfactorySaveNet.Abstracts.Model;
 using System.Collections.Generic;
 
-namespace SatisfactorySaveNet.Abstracts.Model.Extra;
+namespace SatisfactorySaveNet.Abstracts.Extra;
 
 public class BlueprintData : ExtraData
 {

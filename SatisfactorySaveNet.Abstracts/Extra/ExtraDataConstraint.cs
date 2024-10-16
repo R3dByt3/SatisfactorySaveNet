@@ -1,4 +1,4 @@
-namespace SatisfactorySaveNet.Abstracts.Model.Extra;
+namespace SatisfactorySaveNet.Abstracts.Extra;
 
 public enum ExtraDataConstraint
 {
@@ -10,5 +10,7 @@ public enum ExtraDataConstraint
     LocomotiveData,
     DroneStationData,
     CircuitData,
-    UnknownExtraData
+    UnknownExtraData,
+    ConveyorChainActor,
+    LightweightBuildableSubsystem
 }

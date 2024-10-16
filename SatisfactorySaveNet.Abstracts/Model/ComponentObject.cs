@@ -1,4 +1,4 @@
-using SatisfactorySaveNet.Abstracts.Model.Extra;
+using SatisfactorySaveNet.Abstracts.Extra;
 using SatisfactorySaveNet.Abstracts.Model.Properties;
 using System.Collections.Generic;
 

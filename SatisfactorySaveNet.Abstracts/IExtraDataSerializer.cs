@@ -1,5 +1,5 @@
+using SatisfactorySaveNet.Abstracts.Extra;
 using SatisfactorySaveNet.Abstracts.Model;
-using SatisfactorySaveNet.Abstracts.Model.Extra;
 using System.IO;
 
 namespace SatisfactorySaveNet.Abstracts;

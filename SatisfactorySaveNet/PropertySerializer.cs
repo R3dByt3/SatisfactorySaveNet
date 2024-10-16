@@ -1,3 +1,5 @@
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using SatisfactorySaveNet.Abstracts;
 using SatisfactorySaveNet.Abstracts.Model;
 using SatisfactorySaveNet.Abstracts.Model.Properties;
@@ -13,7 +15,7 @@ namespace SatisfactorySaveNet;
 
 public class PropertySerializer : IPropertySerializer
 {
-    public static readonly IPropertySerializer Instance = new PropertySerializer(StringSerializer.Instance, ObjectReferenceSerializer.Instance, VectorSerializer.Instance, HexSerializer.Instance, SoftObjectReferenceSerializer.Instance);
+    public static readonly IPropertySerializer Instance = new PropertySerializer(StringSerializer.Instance, ObjectReferenceSerializer.Instance, VectorSerializer.Instance, HexSerializer.Instance, SoftObjectReferenceSerializer.Instance, NullLoggerFactory.Instance);
 
     private readonly IStringSerializer _stringSerializer;
     private readonly IObjectReferenceSerializer _objectReferenceSerializer;
@@ -21,8 +23,9 @@ public class PropertySerializer : IPropertySerializer
     private readonly ITypedDataSerializer _typedDataSerializer;
     private readonly IHexSerializer _hexSerializer;
     private readonly IVectorSerializer _vectorSerializer;
+    private readonly ILogger _logger;
 
-    internal PropertySerializer(IStringSerializer stringSerializer, IObjectReferenceSerializer objectReferenceSerializer, ITypedDataSerializer typedDataSerializer, IHexSerializer hexSerializer, IVectorSerializer vectorSerializer, ISoftObjectReferenceSerializer softObjectReferenceSerializer)
+    internal PropertySerializer(IStringSerializer stringSerializer, IObjectReferenceSerializer objectReferenceSerializer, ITypedDataSerializer typedDataSerializer, IHexSerializer hexSerializer, IVectorSerializer vectorSerializer, ISoftObjectReferenceSerializer softObjectReferenceSerializer, ILoggerFactory loggerFactory)
     {
         _stringSerializer = stringSerializer;
         _objectReferenceSerializer = objectReferenceSerializer;
@@ -30,9 +33,10 @@ public class PropertySerializer : IPropertySerializer
         _hexSerializer = hexSerializer;
         _vectorSerializer = vectorSerializer;
         _softObjectReferenceSerializer = softObjectReferenceSerializer;
+        _logger = loggerFactory.CreateLogger<PropertySerializer>() ?? NullLogger<PropertySerializer>.Instance;
     }
 
-    public PropertySerializer(IStringSerializer stringSerializer, IObjectReferenceSerializer objectReferenceSerializer, IVectorSerializer vectorSerializer, IHexSerializer hexSerializer, ISoftObjectReferenceSerializer softObjectReferenceSerializer)
+    public PropertySerializer(IStringSerializer stringSerializer, IObjectReferenceSerializer objectReferenceSerializer, IVectorSerializer vectorSerializer, IHexSerializer hexSerializer, ISoftObjectReferenceSerializer softObjectReferenceSerializer, ILoggerFactory loggerFactory)
     {
         _stringSerializer = stringSerializer;
         _objectReferenceSerializer = objectReferenceSerializer;
@@ -40,6 +44,7 @@ public class PropertySerializer : IPropertySerializer
         _hexSerializer = hexSerializer;
         _vectorSerializer = vectorSerializer;
         _softObjectReferenceSerializer = softObjectReferenceSerializer;
+        _logger = loggerFactory.CreateLogger<PropertySerializer>() ?? NullLogger<PropertySerializer>.Instance;
     }
 
     public IEnumerable<Property> DeserializeProperties(BinaryReader reader, Header? header = null, string? type = null, long? expectedPosition = null)
@@ -81,6 +86,7 @@ public class PropertySerializer : IPropertySerializer
             nameof(FloatProperty) => DeserializeFloatProperty(reader),
             nameof(IntProperty) => DeserializeIntProperty(reader),
             nameof(Int64Property) => DeserializeInt64Property(reader),
+            nameof(UInt64Property) => DeserializeUInt64Property(reader),
             nameof(MapProperty) => header == null ? throw new ArgumentNullException(nameof(header)) : DeserializeMapProperty(reader, header, propertyName, type),
             nameof(NameProperty) => DeserializeNameProperty(reader),
             nameof(ObjectProperty) => DeserializeObjectProperty(reader),
@@ -93,7 +99,6 @@ public class PropertySerializer : IPropertySerializer
             nameof(Int8Property) => DeserializeInt8Property(reader),
             nameof(DoubleProperty) => DeserializeDoubleProperty(reader),
             nameof(FINNetworkProperty) => DeserializeFINNetworkProperty(reader),
-            //ToDo: All implemented?
 
             _ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
         };
@@ -110,6 +115,7 @@ public class PropertySerializer : IPropertySerializer
             nameof(BoolProperty) => DeserializeBoolArrayProperty(reader, count),
             nameof(IntProperty) => DeserializeArrayIntProperty(reader, count),
             nameof(Int64Property) => DeserializeArrayInt64Property(reader, count),
+            nameof(UInt64Property) => DeserializeArrayUInt64Property(reader, count),
             nameof(DoubleProperty) => DeserializeArrayDoubleProperty(reader, count),
             nameof(FloatProperty) => DeserializeArrayFloatProperty(reader, count),
             nameof(EnumProperty) => DeserializeArrayEnumProperty(reader, count),
@@ -195,6 +201,21 @@ public class PropertySerializer : IPropertySerializer
         }
 
         return new ArrayInt64Property
+        {
+            Values = values
+        };
+    }
+
+    private static ArrayUInt64Property DeserializeArrayUInt64Property(BinaryReader reader, int count)
+    {
+        var values = new ulong[count];
+
+        for (var x = 0; x < count; x++)
+        {
+            values[x] = reader.ReadUInt64();
+        }
+
+        return new ArrayUInt64Property
         {
             Values = values
         };
@@ -428,6 +449,7 @@ public class PropertySerializer : IPropertySerializer
         var propertyType = _stringSerializer.Deserialize(reader);
 
         var binarySize = reader.ReadInt32();
+        //var positionStart = reader.BaseStream.Position;
         var padding1 = reader.ReadInt32();
         var elementType = _stringSerializer.Deserialize(reader);
 
@@ -452,6 +474,13 @@ public class PropertySerializer : IPropertySerializer
             UUID = (uuid1, uuid2, uuid3, uuid4),
             Values = values
         };
+
+        //var expectedPosition = positionStart + binarySize;
+        //if (expectedPosition != reader.BaseStream.Position)
+        //{
+        //    var hex = _hexSerializer.Deserialize(reader, (expectedPosition - reader.BaseStream.Position).ToInt());
+        //    //throw new BadReadException("Expected stream position does not match actual position");
+        //}
 
         return property;
     }
@@ -604,6 +633,22 @@ public class PropertySerializer : IPropertySerializer
         var value = reader.ReadInt64();
 
         var property = new Int64Property
+        {
+            Index = index,
+            Value = value
+        };
+
+        return property;
+    }
+
+    private static UInt64Property DeserializeUInt64Property(BinaryReader reader)
+    {
+        var binarySize = reader.ReadInt32();
+        var index = reader.ReadInt32();
+        var padding = reader.ReadSByte();
+        var value = reader.ReadUInt64();
+
+        var property = new UInt64Property
         {
             Index = index,
             Value = value
@@ -823,15 +868,17 @@ public class PropertySerializer : IPropertySerializer
                     value = new ObjectReferenceUnion { Value = _objectReferenceSerializer.Deserialize(reader) };
                     break;
                 case nameof(StructProperty):
-                    if (propertyName.Equals("/Script/FactoryGame.FGFoliageRemoval", StringComparison.Ordinal) ||
-                        propertyName.Equals("mRemovalLocations", StringComparison.Ordinal))
+                    if (propertyName.Equals("/Script/FactoryGame.FGFoliageRemoval", StringComparison.Ordinal)
+                        || propertyName.Equals("mRemovalLocations", StringComparison.Ordinal))
                     {
                         value = new Vector3Union { Value = _vectorSerializer.DeserializeVec3(reader) };
                         break;
                     }
-                    if (propertyName.Equals("mDestroyedPickups", StringComparison.Ordinal))
+                    if (propertyName.Equals("mDestroyedPickups", StringComparison.Ordinal)
+                        || propertyName.Equals("mLootedDropPods", StringComparison.Ordinal)
+                        || propertyName.Equals("/Script/FactoryGame.FGScannableSubsystem", StringComparison.Ordinal))
                     {
-                        value = new Vector4Union { Value = _vectorSerializer.DeserializeVec4(reader) };
+                        value = new GuidUnion { Value = new System.Guid(reader.ReadBytes(16)) };
                         break;
                     }
                     value = new FINNetworkUnion { Value = DeserializeFINNetworkProperty(reader) };
@@ -890,6 +937,7 @@ public class PropertySerializer : IPropertySerializer
     private StructProperty DeserializeStructProperty(BinaryReader reader, Header header)
     {
         var binarySize = reader.ReadInt32();
+        //var positionStart = reader.BaseStream.Position;
         var index = reader.ReadInt32();
         var type = _stringSerializer.Deserialize(reader);
         var padding1 = reader.ReadInt64();
@@ -903,6 +951,13 @@ public class PropertySerializer : IPropertySerializer
             Type = type,
             Value = typedData
         };
+
+        //var expectedPosition = positionStart + binarySize;
+        //if (expectedPosition != reader.BaseStream.Position)
+        //{
+        //    var hex = _hexSerializer.Deserialize(reader, (expectedPosition - reader.BaseStream.Position).ToInt());
+        //    // throw new BadReadException("Expected stream position does not match actual position");
+        //}
 
         return property;
     }

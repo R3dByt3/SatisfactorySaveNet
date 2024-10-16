@@ -96,16 +96,30 @@ public class VectorSerializer : IVectorSerializer
         var y = reader.ReadInt32();
         var z = reader.ReadInt32();
 
-        return new Vector3I(x, y, z);
+        var vector3I = new Vector3I(x, y, z);
+        return vector3I;
     }
 
-    public Vector4I DeserializeVec4B(BinaryReader reader)
+    public Vector4I DeserializeVec4BAs4I(BinaryReader reader)
     {
         var x = reader.ReadSByte();
         var y = reader.ReadSByte();
         var z = reader.ReadSByte();
         var w = reader.ReadSByte();
 
-        return new Vector4I(x, y, z, w);
+        var vector4I = new Vector4I(x, y, z, w);
+        return vector4I;
+    }
+
+    public Color4 DeserializeColor4(BinaryReader reader)
+    {
+        var r = reader.ReadSingle();
+        var g = reader.ReadSingle();
+        var b = reader.ReadSingle();
+        var a = reader.ReadSingle();
+
+        var color4 = new Color4(r, g, b, a);
+
+        return color4;
     }
 }

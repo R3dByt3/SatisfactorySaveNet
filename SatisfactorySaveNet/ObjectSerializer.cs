@@ -1,3 +1,5 @@
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using SatisfactorySaveNet.Abstracts;
 using SatisfactorySaveNet.Abstracts.Exceptions;
 using SatisfactorySaveNet.Abstracts.Model;
@@ -9,21 +11,23 @@ namespace SatisfactorySaveNet;
 
 public class ObjectSerializer : IObjectSerializer
 {
-    public static readonly IObjectSerializer Instance = new ObjectSerializer(StringSerializer.Instance, ObjectReferenceSerializer.Instance, PropertySerializer.Instance, ExtraDataSerializer.Instance, HexSerializer.Instance);
+    public static readonly IObjectSerializer Instance = new ObjectSerializer(NullLoggerFactory.Instance, StringSerializer.Instance, ObjectReferenceSerializer.Instance, PropertySerializer.Instance, ExtraDataSerializer.Instance, HexSerializer.Instance);
 
     private readonly IStringSerializer _stringSerializer;
     private readonly IObjectReferenceSerializer _objectReferenceSerializer;
     private readonly IPropertySerializer _propertySerializer;
     private readonly IExtraDataSerializer _extraDataSerializer;
     private readonly IHexSerializer _hexSerializer;
+    private readonly ILogger<ObjectSerializer> _logger;
 
-    public ObjectSerializer(IStringSerializer stringSerializer, IObjectReferenceSerializer objectReferenceSerializer, IPropertySerializer propertySerializer, IExtraDataSerializer extraDataSerializer, IHexSerializer hexSerializer)
+    public ObjectSerializer(ILoggerFactory loggerFactory, IStringSerializer stringSerializer, IObjectReferenceSerializer objectReferenceSerializer, IPropertySerializer propertySerializer, IExtraDataSerializer extraDataSerializer, IHexSerializer hexSerializer)
     {
         _stringSerializer = stringSerializer;
         _objectReferenceSerializer = objectReferenceSerializer;
         _propertySerializer = propertySerializer;
         _extraDataSerializer = extraDataSerializer;
         _hexSerializer = hexSerializer;
+        _logger = loggerFactory.CreateLogger<ObjectSerializer>();
     }
 
     public ComponentObject Deserialize(BinaryReader reader, Header header, ComponentObject componentObject)
@@ -77,11 +81,13 @@ public class ObjectSerializer : IObjectSerializer
 
         var missingBytes = expectedPosition - reader.BaseStream.Position;
 
-        if (missingBytes > 4)
+        if (missingBytes > 0)
         {
             var hex = _hexSerializer.Deserialize(reader, missingBytes.ToInt());
+            if (hex.Any(c => c != '\0'))
+                _logger.LogWarning("Missing bytes: {MissingBytes}", hex);
         }
-        else
+        else if (missingBytes < 0)
             reader.BaseStream.Seek(missingBytes, SeekOrigin.Current);
 
         return actorObject;
@@ -105,11 +111,13 @@ public class ObjectSerializer : IObjectSerializer
         var expectedPosition = positionStart + binarySize;
         var missingBytes = expectedPosition - reader.BaseStream.Position;
 
-        if (missingBytes > 4)
+        if (missingBytes > 0)
         {
             var hex = _hexSerializer.Deserialize(reader, missingBytes.ToInt());
+            if (hex.Any(c => c != '\0'))
+                _logger.LogCritical("BAD READ {MissingBytes}", missingBytes);
         }
-        else
+        else if (missingBytes < 0)
             reader.BaseStream.Seek(missingBytes, SeekOrigin.Current);
 
         return componentObject;

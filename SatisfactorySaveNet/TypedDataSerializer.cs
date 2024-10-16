@@ -1,9 +1,10 @@
+using Microsoft.Extensions.Logging.Abstractions;
 using SatisfactorySaveNet.Abstracts;
+using SatisfactorySaveNet.Abstracts.Exceptions;
 using SatisfactorySaveNet.Abstracts.Model;
 using SatisfactorySaveNet.Abstracts.Model.Properties;
 using SatisfactorySaveNet.Abstracts.Model.Typed;
 using System;
-using System.Collections.Frozen;
 using System.IO;
 using System.Linq;
 using DateTime = SatisfactorySaveNet.Abstracts.Model.Typed.DateTime;
@@ -34,7 +35,7 @@ public class TypedDataSerializer : ITypedDataSerializer
     {
         _vectorSerializer = vectorSerializer;
         _stringSerializer = stringSerializer;
-        _propertySerializer = new PropertySerializer(stringSerializer, objectReferenceSerializer, this, hexSerializer, vectorSerializer, softObjectReferenceSerializer);
+        _propertySerializer = new PropertySerializer(stringSerializer, objectReferenceSerializer, this, hexSerializer, vectorSerializer, softObjectReferenceSerializer, NullLoggerFactory.Instance);
         _hexSerializer = hexSerializer;
         _objectReferenceSerializer = objectReferenceSerializer;
     }
@@ -49,6 +50,7 @@ public class TypedDataSerializer : ITypedDataSerializer
             nameof(Rotator) => DeserializeRotator(reader, header, type),
             nameof(Vector2D) => DeserializeVector2D(reader, header),
             nameof(Quat) => DeserializeQuat(reader, header),
+            nameof(IntVector4) => DeserializeVector4I(reader),
             nameof(Vector4) => DeserializeVector4(reader, header),
             nameof(Box) => DeserializeBox(reader, header),
             nameof(RailroadTrackPosition) => DeserializeRailroadTrackPosition(reader),
@@ -63,28 +65,121 @@ public class TypedDataSerializer : ITypedDataSerializer
             nameof(FICFrameRange) => DeserializeFICFrameRange(reader),
             nameof(IntPoint) => DeserializeIntPoint(reader),
             nameof(FINGPUT1BufferPixel) => DeserializeFINGPUT1BufferPixel(reader),
+            nameof(FINDynamicStructHolder) => DeserializeFINDynamicStructHolder(reader, header),
             nameof(ClientIdentityInfo) => DeserializeClientIdentityInfo(reader, binarySize),
-            //ToDo: All implemented?
 
-            //nameof(InventoryStack) => DeserializeInventoryStack(reader, header),
-            //nameof(SpawnData) => DeserializeSpawnData(reader), False?
-            //nameof(FactoryCustomizationColorSlot) => DeserializeFactoryCustomizationColorSlot(reader, header, endPosition), False?
+            nameof(InventoryStack) => DeserializeArrayProperties(reader, header, type),
+            nameof(SpawnData) => DeserializeArrayProperties(reader, header, type),
+            "FactoryCustomizationColorSlot" => DeserializeArrayProperties(reader, header, type),
+            "PhaseCost" => DeserializeArrayProperties(reader, header, type),
+            "GlobalColorPreset" => DeserializeArrayProperties(reader, header, type),
+            "MiniGameResult" => DeserializeArrayProperties(reader, header, type),
+            "ItemAmount" => DeserializeArrayProperties(reader, header, type),
+            "MapMarker" => DeserializeArrayProperties(reader, header, type),
+            "ScannableResourcePair" => DeserializeArrayProperties(reader, header, type),
+            "SwatchGroupData" => DeserializeArrayProperties(reader, header, type),
+            "Vector_NetQuantize" => DeserializeArrayProperties(reader, header, type),
+            "ItemFoundData" => DeserializeArrayProperties(reader, header, type),
+            "Transform" => DeserializeArrayProperties(reader, header, type),
+            "RemovedInstanceArray" => DeserializeArrayProperties(reader, header, type),
+            "ResearchCost" => DeserializeArrayProperties(reader, header, type),
+            "TimeTableStop" => DeserializeArrayProperties(reader, header, type),
+            "ScannableObjectData" => DeserializeArrayProperties(reader, header, type),
+            "HighlightedMarkerPair" => DeserializeArrayProperties(reader, header, type),
+            "TrainDockingRuleSet" => DeserializeArrayProperties(reader, header, type),
+            "RemovedInstance" => DeserializeArrayProperties(reader, header, type),
+            "CompletedResearch" => DeserializeArrayProperties(reader, header, type),
+            "FactoryCustomizationData" => DeserializeArrayProperties(reader, header, type),
+            "TrainSimulationData" => DeserializeArrayProperties(reader, header, type),
+            "ResourceSinkHistory" => DeserializeArrayProperties(reader, header, type),
+            "RecipeAmountStruct" => DeserializeArrayProperties(reader, header, type),
+            "ResearchData" => DeserializeArrayProperties(reader, header, type),
+            "Hotbar" => DeserializeArrayProperties(reader, header, type),
+            "GCheckmarkUnlockData" => DeserializeArrayProperties(reader, header, type),
+            "BlueprintCategoryRecord" => DeserializeArrayProperties(reader, header, type),
+            "BlueprintSubCategoryRecord" => DeserializeArrayProperties(reader, header, type),
+            "SplinePointData" => DeserializeArrayProperties(reader, header, type),
+            "LampGroup" => DeserializeArrayProperties(reader, header, type),
+            "MessageData" => DeserializeArrayProperties(reader, header, type),
+            "SplitterSortRule" => DeserializeArrayProperties(reader, header, type),
+            "SubCategoryMaterialDefault" => DeserializeArrayProperties(reader, header, type),
+            "FeetOffset" => DeserializeArrayProperties(reader, header, type),
+            "WireInstance" => DeserializeArrayProperties(reader, header, type),
+            "DroneTripInformation" => DeserializeArrayProperties(reader, header, type),
+            "LightSourceControlData" => DeserializeArrayProperties(reader, header, type),
+            "PrefabTextElementSaveData" => DeserializeArrayProperties(reader, header, type),
+            "PlayerRules" => DeserializeArrayProperties(reader, header, type),
+            "PrefabIconElementSaveData" => DeserializeArrayProperties(reader, header, type),
+            "BoomBoxPlayerState" => DeserializeArrayProperties(reader, header, type),
+            "ShoppingListRecipeEntry" => DeserializeArrayProperties(reader, header, type),
+            "BlueprintRecord" => DeserializeArrayProperties(reader, header, type),
+            "DroneDockingStateInfo" => DeserializeArrayProperties(reader, header, type),
+            "FGDroneFuelRuntimeData" => DeserializeArrayProperties(reader, header, type),
+            "ShoppingListBlueprintEntry" => DeserializeArrayProperties(reader, header, type),
+            "FICAttributeBool" => DeserializeArrayProperties(reader, header, type),
+            "PlayerCustomizationData" => DeserializeArrayProperties(reader, header, type),
+            "FICAttributePosition" => DeserializeArrayProperties(reader, header, type),
+            "FICFloatAttribute" => DeserializeArrayProperties(reader, header, type),
+            "FICAttributeRotation" => DeserializeArrayProperties(reader, header, type),
 
-            //nameof(PhaseCost) => DeserializePhaseCost(reader),
-            //"" => DeserializeProperty(reader),
+            "HardDriveData" => DeserializeArrayProperties(reader, header, type),
+            "SchematicCost" => DeserializeArrayProperties(reader, header, type),
+            "FGPlayerPortalData" => DeserializeArrayProperties(reader, header, type),
+            "ShoppingListClassEntry" => DeserializeArrayProperties(reader, header, type),
+            "FGPortalCachedFactoryTickData" => DeserializeArrayProperties(reader, header, type),
+
             _ => DeserializeArrayProperties(reader, header, type)
         };
     }
 
-    //private ITypedData DeserializeProperty(BinaryReader reader)
-    //{
-    //    var value = _propertySerializer.DeserializeProperty(reader);
-    //
-    //    return new PropertyData
-    //    {
-    //        Value = value
-    //    };
-    //}
+    private FINDynamicStructHolder DeserializeFINDynamicStructHolder(BinaryReader reader, Header header)
+    {
+        var unknown1 = reader.ReadInt32();
+        var type = _stringSerializer.Deserialize(reader);
+        Property[] properties;
+
+        switch (type)
+        {
+            case "/Script/FicsItNetworks.FINGPUT2DC_Box":
+                properties = _propertySerializer.DeserializeProperties(reader, header).ToArray();
+                return new FINGPUT2DC_Box
+                {
+                    Unknown1 = unknown1,
+                    TypeName = type,
+                    Properties = properties
+                };
+            case "/Script/FicsItNetworks.FINGPUT2DC_Lines":
+                var unknown2 = _stringSerializer.Deserialize(reader);
+                var unknown3 = _stringSerializer.Deserialize(reader);
+                var unknown4 = reader.ReadInt32();
+                var unknown5 = reader.ReadInt32();
+                var unknown6 = _stringSerializer.Deserialize(reader);
+                var unknown7 = reader.ReadByte();
+                var unknown8 = reader.ReadInt32();
+                var unknown9 = _propertySerializer.DeserializeProperty(reader, header) ?? throw new BadReadException("Expected property to be read");
+                var unknown10 = reader.ReadDouble();
+                var unknown11 = reader.ReadDouble();
+                properties = _propertySerializer.DeserializeProperties(reader, header).ToArray();
+                return new FINGPUT2DC_Lines
+                {
+                    Unknown1 = unknown1,
+                    Unknown2 = unknown2,
+                    Unknown3 = unknown3,
+                    Unknown4 = unknown4,
+                    Unknown5 = unknown5,
+                    Unknown6 = unknown6,
+                    Unknown7 = unknown7,
+                    Unknown8 = unknown8,
+                    Unknown9 = unknown9,
+                    Unknown10 = unknown10,
+                    Unknown11 = unknown11,
+                    TypeName = type,
+                    Properties = properties
+                };
+            default:
+                throw new ArgumentOutOfRangeException(nameof(type), type, null);
+        }
+    }
 
     private ArrayProperties DeserializeArrayProperties(BinaryReader reader, Header header, string type)
     {
@@ -308,7 +403,12 @@ public class TypedDataSerializer : ITypedDataSerializer
             ? new Vector2D { Value = _vectorSerializer.DeserializeVec2D(reader) }
             : new Vector2 { Value = _vectorSerializer.DeserializeVec2(reader) };
     }
-    
+
+    private Vector4 DeserializeVector4I(BinaryReader reader)
+    {
+        return new Vector4 { Value = _vectorSerializer.DeserializeVec4(reader) };
+    }
+
     private TypedData DeserializeVector4(BinaryReader reader, Header header)
     {
         return header.SaveVersion >= 41
@@ -385,7 +485,7 @@ public class TypedDataSerializer : ITypedDataSerializer
 
     private Color DeserializeColor(BinaryReader reader)
     {
-        var color = _vectorSerializer.DeserializeVec4B(reader);
+        var color = _vectorSerializer.DeserializeVec4BAs4I(reader);
 
         return new Color
         {
@@ -448,17 +548,17 @@ public class TypedDataSerializer : ITypedDataSerializer
     {
         var padding1 = reader.ReadInt32();
         var itemType = _stringSerializer.Deserialize(reader);
-        ObjectReference? objectReference = null;
-        var hasState = false;
+        ObjectReference? itemState = null;
+        var state = 0;
 
         if (header.SaveVersion < 44)
-            objectReference = _objectReferenceSerializer.Deserialize(reader);
+            itemState = _objectReferenceSerializer.Deserialize(reader);
         else
-            hasState = reader.ReadInt32() != 0;
+            state = reader.ReadInt32();
 
         Property? property = null;
 
-        if (header.SaveVersion >= 44 && KnownConstants.StatefulInventoryItems.Contains(itemType) && hasState)
+        if (header.SaveVersion >= 44 && KnownConstants.StatefulInventoryItems.Contains(itemType) && state != 0)
         {
             var padding2 = reader.ReadInt32();
             var scriptName = _stringSerializer.Deserialize(reader);
@@ -470,8 +570,9 @@ public class TypedDataSerializer : ITypedDataSerializer
 
             return new StatefulInventoryItem
             {
+                State = state,
                 ItemType = itemType,
-                ObjectReference = objectReference,
+                ItemState = itemState,
                 ExtraProperty = property,
                 Properties = properties,
                 ScriptName = scriptName,
@@ -479,13 +580,16 @@ public class TypedDataSerializer : ITypedDataSerializer
             };
         }
 
+        if (header.SaveVersion >= 46 && reader.ReadInt32() != 0)
+            reader.BaseStream.Seek(-4, SeekOrigin.Current);
+
         if (!isArrayProperty)
             property = _propertySerializer.DeserializeProperty(reader, header);
 
         return new InventoryItem
         {
             ItemType = itemType,
-            ObjectReference = objectReference,
+            ItemState = itemState,
             ExtraProperty = property
         };
     }

@@ -36,5 +36,8 @@ public enum TypedDataConstraint
     Vector2,
     QuatD,
     BoxD,
-    InventoryStackV1
+    InventoryStackV1,
+    IntVector4,
+    FINGPUT2DC_Box,
+    FINGPUT2DC_Lines
 }

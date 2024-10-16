@@ -21,5 +21,6 @@ public enum PropertyConstraint
     String,
     Struct,
     Text,
-    UInt32
+    UInt32,
+    UInt64
 }

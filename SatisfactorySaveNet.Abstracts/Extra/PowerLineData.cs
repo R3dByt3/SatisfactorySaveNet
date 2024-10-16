@@ -1,6 +1,5 @@
 using SatisfactorySaveNet.Abstracts.Maths.Vector;
 using SatisfactorySaveNet.Abstracts.Model;
-using SatisfactorySaveNet.Abstracts.Model.Extra;
 
 namespace SatisfactorySaveNet.Abstracts.Extra;
 

@@ -4,12 +4,10 @@ namespace SatisfactorySaveNet.Abstracts.Model;
 
 public class Item
 {
-    public string Name { get; set; } = string.Empty;
-    public ObjectReference? ObjectReference { get; set; }
+    public required ObjectReference Name { get; set; }
+    public ObjectReference? ItemState { get; set; }
     /// <summary>
     /// Supposed to be a float, but Vec4 seems to be logical?
     /// </summary>
-    public Vector4I Position { get; set; }
-    public int Length { get; set; }
-    public string? LevelName { get; set; }
+    public required Vector4I Position { get; set; }
 }

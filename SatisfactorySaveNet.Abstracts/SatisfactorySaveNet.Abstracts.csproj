@@ -23,6 +23,9 @@
     <Compile Remove="Math\**" />
     <EmbeddedResource Remove="Math\**" />
     <None Remove="Math\**" />
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+      <_Parameter1>SatisfactorySaveNet</_Parameter1>
+    </AssemblyAttribute>
   </ItemGroup>
 
 </Project>

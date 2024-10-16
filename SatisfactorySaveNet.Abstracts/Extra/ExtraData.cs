@@ -1,4 +1,4 @@
-namespace SatisfactorySaveNet.Abstracts.Model.Extra;
+namespace SatisfactorySaveNet.Abstracts.Extra;
 
 public abstract class ExtraData
 {

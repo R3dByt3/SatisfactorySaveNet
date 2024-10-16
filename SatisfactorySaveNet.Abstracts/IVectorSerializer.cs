@@ -12,9 +12,11 @@ public interface IVectorSerializer
     public Vector3 DeserializeVec3(BinaryReader reader);
     public Vector3D DeserializeVec3D(BinaryReader reader);
     public Vector4 DeserializeVec4(BinaryReader reader);
+    public Vector4 DeserializeVec4I(BinaryReader reader);
     public Vector4D DeserializeVec4D(BinaryReader reader);
     public Quaternion DeserializeQuaternion(BinaryReader reader);
     public Vector3I DeserializeVec3I(BinaryReader reader);
-    public Vector4I DeserializeVec4B(BinaryReader reader);
+    public Vector4I DeserializeVec4BAs4I(BinaryReader reader);
     public QuaternionD DeserializeQuaternionD(BinaryReader reader);
+    public Color4 DeserializeColor4(BinaryReader reader);
 }

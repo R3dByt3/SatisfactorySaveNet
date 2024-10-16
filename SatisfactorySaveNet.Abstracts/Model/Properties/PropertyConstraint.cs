@@ -14,5 +14,6 @@ public enum ArrayPropertyConstraint
     SoftObject,
     String,
     Struct,
-    Text
+    Text,
+    UInt64
 }

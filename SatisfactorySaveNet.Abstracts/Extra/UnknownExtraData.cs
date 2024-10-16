@@ -1,5 +1,3 @@
-using SatisfactorySaveNet.Abstracts.Model.Extra;
-
 namespace SatisfactorySaveNet.Abstracts.Extra;
 
 public class UnknownExtraData : ExtraData

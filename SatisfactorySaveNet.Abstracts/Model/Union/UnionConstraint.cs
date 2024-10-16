@@ -25,5 +25,6 @@ public enum UnionConstraint
     StorageSingle,
     StorageDouble,
     FINNetwork,
-    UInt32
+    UInt32,
+    Guid
 }

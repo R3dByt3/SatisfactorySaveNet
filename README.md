@@ -2,8 +2,6 @@
 I'm very happy to announce the first stable release of this component (v0.1.0).
  **EDIT:** Still consider using versions starting from v1.0.0 due to some bugfixes.
 
-**Please notice:** This project currently does not support version 1 safe files, but it is intended to be added in the near future.
-
 By this I consider this software as **stable** and **correct**!
 You can integrate it using [nuget.org](https://www.nuget.org/packages/SatisfactorySaveNet/).
 
