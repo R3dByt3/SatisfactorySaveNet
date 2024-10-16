@@ -18,6 +18,18 @@ public class VectorSerializer : IVectorSerializer
 
         return new Vector4(x, y, z, w);
     }
+
+    public Vector4 DeserializeVec4I(BinaryReader reader)
+    {
+        var x = reader.ReadInt32();
+        var y = reader.ReadInt32();
+        var z = reader.ReadInt32();
+        var w = reader.ReadInt32();
+
+        var vector4I = new Vector4I(x, y, z, w);
+        return vector4I;
+    }
+
     public Vector4D DeserializeVec4D(BinaryReader reader)
     {
         var x = reader.ReadDouble();
