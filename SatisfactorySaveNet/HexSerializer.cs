@@ -1,4 +1,4 @@
-﻿using SatisfactorySaveNet.Abstracts;
+using SatisfactorySaveNet.Abstracts;
 using System.IO;
 using System.Linq;
 
@@ -18,6 +18,6 @@ public class HexSerializer : IHexSerializer
             hexChars[i] = hexChar;
         }
 
-        return new string(hexChars.ToArray());
+        return new string([.. hexChars]);
     }
 }

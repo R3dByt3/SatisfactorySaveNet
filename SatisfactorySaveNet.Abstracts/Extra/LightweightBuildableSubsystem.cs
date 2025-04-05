@@ -8,4 +8,5 @@ public class LightweightBuildableSubsystem : ExtraData
 
     public int Unknown1 { get; set; }
     public required ICollection<ExtraObject> Objects { get; set; }
+    public int? LightWeightVersion { get; set; }
 }

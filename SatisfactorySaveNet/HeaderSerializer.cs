@@ -20,11 +20,21 @@ public class HeaderSerializer : IHeaderSerializer
 
     public Header Deserialize(BinaryReader reader)
     {
+        var headerVersion = reader.ReadInt32();
+        var saveVersion = reader.ReadInt32();
+        var buildVersion = reader.ReadInt32();
+
+        string? saveName = null;
+
+        if (headerVersion >= 14)
+            saveName = _stringSerializer.Deserialize(reader);
+
         var header = new Header
         {
-            HeaderVersion = reader.ReadInt32(),
-            SaveVersion = reader.ReadInt32(),
-            BuildVersion = reader.ReadInt32(),
+            HeaderVersion = headerVersion,
+            SaveVersion = saveVersion,
+            BuildVersion = buildVersion,
+            SaveName = saveName,
 
             MapName = _stringSerializer.Deserialize(reader),
             MapOptions = _stringSerializer.Deserialize(reader),
@@ -40,7 +50,7 @@ public class HeaderSerializer : IHeaderSerializer
         //if (header.SaveVersion < FSaveCustomVersion.DROPPED_WireSpanFromConnnectionComponents || header.SaveVersion > FSaveCustomVersion.LatestVersion)
 
         if (header.HeaderVersion >= 5)
-            header.SessionVisibility = reader.ReadSByte();
+            header.SessionVisibility = reader.ReadByte();
 
         if (header.HeaderVersion >= 7)
             header.EditorObjectVersion = reader.ReadInt32();
@@ -61,6 +71,6 @@ public class HeaderSerializer : IHeaderSerializer
             header.IsCreativeModeEnabled = reader.ReadInt32();
         }
 
-        return header;
+            return header;
     }
 }

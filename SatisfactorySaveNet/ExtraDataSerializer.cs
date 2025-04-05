@@ -51,7 +51,7 @@ public class ExtraDataSerializer : IExtraDataSerializer
             "/Game/FactoryGame/Character/Player/BP_PlayerState.BP_PlayerState_C" => DeserializePlayerData(reader, expectedPosition),
             "/Game/FactoryGame/Buildable/Factory/DroneStation/BP_DroneTransport.BP_DroneTransport_C" => DeserializeDroneStation(reader, header, expectedPosition),
             "/Game/FactoryGame/-Shared/Blueprint/BP_CircuitSubsystem.BP_CircuitSubsystem_C" => DeserializeCircuitData(reader),
-            "/Script/FactoryGame.FGLightweightBuildableSubsystem" => DeserializeLightweightBuildableSubsystem(reader),
+            "/Script/FactoryGame.FGLightweightBuildableSubsystem" => DeserializeLightweightBuildableSubsystem(reader, header),
             _ => DeserializeUnknownData(reader, header, typePath, expectedPosition),
         };
     }
@@ -65,7 +65,9 @@ public class ExtraDataSerializer : IExtraDataSerializer
             if (header.SaveVersion >= 41 && (
                 typePath.StartsWith("/Script/FactoryGame.FG", StringComparison.Ordinal) ||
                 typePath.StartsWith("/Script/FicsitFarming.", StringComparison.Ordinal) ||
-                typePath.StartsWith("/Script/RefinedRDLib.", StringComparison.Ordinal)
+                typePath.StartsWith("/Script/RefinedRDLib.", StringComparison.Ordinal) ||
+                typePath.StartsWith("/Script/DigitalStorage.", StringComparison.Ordinal) ||
+                typePath.StartsWith("/Script/FicsIt", StringComparison.Ordinal)
                 ))
                 reader.BaseStream.Seek(8, SeekOrigin.Current);
             else
@@ -87,9 +89,14 @@ public class ExtraDataSerializer : IExtraDataSerializer
         return null;
     }
 
-    private LightweightBuildableSubsystem DeserializeLightweightBuildableSubsystem(BinaryReader reader)
+    private LightweightBuildableSubsystem DeserializeLightweightBuildableSubsystem(BinaryReader reader, Header header)
     {
         var unknownRoot1 = reader.ReadInt32();
+
+        int? lightWeightVersion = null;
+        if (header.HeaderVersion >= 14)
+            lightWeightVersion = reader.ReadInt32();
+
         var objectCount = reader.ReadInt32();
         var objects = new ExtraObject[objectCount];
 
@@ -122,6 +129,29 @@ public class ExtraDataSerializer : IExtraDataSerializer
                 var buildWithRecipe = _objectReferenceSerializer.Deserialize(reader);
                 var blueprintProxy = _objectReferenceSerializer.Deserialize(reader);
 
+                TypeSpecificData? typeSpecificData = null;
+
+                if (header.HeaderVersion >= 14)
+                {
+                    var specificationDataFlag = reader.ReadInt32();
+                    var hasSpecificationData = specificationDataFlag == 1;
+
+                    if (hasSpecificationData)
+                    {
+                        var objectReference = _objectReferenceSerializer.Deserialize(reader);
+
+                        _ = reader.ReadInt32();
+
+                        var properties = _propertySerializer.DeserializeProperties(reader, header).ToArray();
+
+                        typeSpecificData = new TypeSpecificData
+                        {
+                            ObjectReference = objectReference,
+                            Properties = properties,
+                        };
+                    }
+                }
+
                 instances[y] = new ExtraInstance
                 {
                     PathName = pathName,
@@ -137,7 +167,8 @@ public class ExtraDataSerializer : IExtraDataSerializer
                     PaintFinish = paintFinish,
                     PatternRotation = patternRotation,
                     BuildWithRecipe = buildWithRecipe,
-                    BlueprintProxy = blueprintProxy
+                    BlueprintProxy = blueprintProxy,
+                    TypeSpecificData = typeSpecificData
                 };
             }
 
@@ -152,7 +183,8 @@ public class ExtraDataSerializer : IExtraDataSerializer
         var lightweightBuildableSubsystem = new LightweightBuildableSubsystem
         {
             Unknown1 = unknownRoot1,
-            Objects = objects
+            Objects = objects,
+            LightWeightVersion = lightWeightVersion
         };
 
         return lightweightBuildableSubsystem;
@@ -275,7 +307,7 @@ public class ExtraDataSerializer : IExtraDataSerializer
                         sb1.Append(reader.ReadByte().ToString("X2"));
                     }
 
-                    playerData.EpicOnlineServicesId = new string(sb1.ToString().TrimStart('0').Skip(1).Take(32).ToArray());
+                    playerData.EpicOnlineServicesId = new string([.. sb1.ToString().TrimStart('0').Skip(1).Take(32)]);
                     return playerData;
                 case 248:
                     var value = _stringSerializer.Deserialize(reader);
@@ -415,18 +447,37 @@ public class ExtraDataSerializer : IExtraDataSerializer
                 var binarySizeProperties = reader.ReadInt32();
                 var expectedPosition = reader.BaseStream.Position + binarySizeProperties;
 
-                var properties = _propertySerializer.DeserializeProperties(reader, header, expectedPosition: expectedPosition).ToArray();
-
-                position = _vectorSerializer.DeserializeVec4BAs4I(reader);
-
-                items[x] = new StatefulItem
+                if (string.Equals(itemState?.PathName, "/Script/FicsItNetworksComputer.FINItemStateFileSystem"))
                 {
-                    Name = name,
-                    State = state,
-                    ItemState = itemState,
-                    Position = position,
-                    Properties = properties
-                };
+                    var length = reader.ReadInt32();
+                    var fINItemStateFileSystem = _hexSerializer.Deserialize(reader, length);
+
+                    position = _vectorSerializer.DeserializeVec4BAs4I(reader);
+
+                    items[x] = new StatefulItem
+                    {
+                        Name = name,
+                        State = state,
+                        ItemState = itemState,
+                        Position = position,
+                        FINItemStateFileSystem = fINItemStateFileSystem,
+                    };
+                }
+                else
+                {
+                    var properties = _propertySerializer.DeserializeProperties(reader, header, expectedPosition: expectedPosition).ToArray();
+
+                    position = _vectorSerializer.DeserializeVec4BAs4I(reader);
+
+                    items[x] = new StatefulItem
+                    {
+                        Name = name,
+                        State = state,
+                        ItemState = itemState,
+                        Position = position,
+                        Properties = properties
+                    };
+                }
 
                 break;
             }
@@ -476,19 +527,40 @@ public class ExtraDataSerializer : IExtraDataSerializer
                 if (state != 0)
                 {
                     itemState = _objectReferenceSerializer.Deserialize(reader);
-                    var properties = _propertySerializer.DeserializeProperties(reader, header).ToArray();
 
-                    position = _vectorSerializer.DeserializeVec4BAs4I(reader);
-
-                    items[x] = new StatefulItem
+                    if (string.Equals(itemState?.PathName, "/Script/FicsItNetworksComputer.FINItemStateFileSystem"))
                     {
-                        Name = name,
-                        ItemState = itemState,
-                        Position = position,
-                        State = state,
-                        Properties = properties
-                    };
-                    break;
+                        var length = reader.ReadInt32();
+                        var fINItemStateFileSystem = _hexSerializer.Deserialize(reader, length);
+
+                        position = _vectorSerializer.DeserializeVec4BAs4I(reader);
+
+                        items[x] = new StatefulItem
+                        {
+                            Name = name,
+                            ItemState = itemState,
+                            Position = position,
+                            State = state,
+                            FINItemStateFileSystem = fINItemStateFileSystem
+                        };
+                        break;
+                    }
+                    else
+                    {
+                        var properties = _propertySerializer.DeserializeProperties(reader, header).ToArray();
+
+                        position = _vectorSerializer.DeserializeVec4BAs4I(reader);
+
+                        items[x] = new StatefulItem
+                        {
+                            Name = name,
+                            ItemState = itemState,
+                            Position = position,
+                            State = state,
+                            Properties = properties
+                        };
+                        break;
+                    }
                 }
             }
             else

@@ -28,20 +28,21 @@ public class BodySerializer : IBodySerializer
         Grid? grid = null;
         if (header.SaveVersion >= 41)
         {
-            var nrData = reader.ReadInt32();
+            var partitionCount = reader.ReadInt32();
             var unknown1 = _stringSerializer.Deserialize(reader);
-            var unknown2 = reader.ReadInt64();
-            var unknown3 = reader.ReadInt32();
+            var unknown2 = reader.ReadUInt32();
+            var headHex1 = reader.ReadUInt32();
+            _ = reader.ReadInt32();
             var unknown4 = _stringSerializer.Deserialize(reader);
-            var unknown5 = reader.ReadInt32();
+            var headHex2 = reader.ReadUInt32();
 
-            var data = new GridData[nrData - 1];
+            var data = new GridData[partitionCount - 1];
 
-            for (var x = 1; x < nrData; x++)
+            for (var x = 1; x < partitionCount; x++)
             {
                 var unknown6 = _stringSerializer.Deserialize(reader);
-                var unknown7 = reader.ReadInt32();
-                var unknown8 = reader.ReadInt32();
+                var gridHex = reader.ReadUInt32();
+                var count = reader.ReadUInt32();
                 var nrLevels = reader.ReadInt32();
 
                 var levels = new GridLevel[nrLevels];
@@ -61,8 +62,8 @@ public class BodySerializer : IBodySerializer
                 data[x - 1] = new GridData
                 {
                     Unknown1 = unknown6,
-                    Unknown2 = unknown7,
-                    Unknown3 = unknown8,
+                    GridHex = gridHex,
+                    Count = count,
                     Levels = levels
                 };
             }
@@ -71,9 +72,9 @@ public class BodySerializer : IBodySerializer
             {
                 Unknown1 = unknown1,
                 Unknown2 = unknown2,
-                Unknown3 = unknown3,
+                HeadHex1 = headHex1,
                 Unknown4 = unknown4,
-                Unknown5 = unknown5,
+                HeadHex2 = headHex2,
                 Data = data
             };
         }
@@ -87,13 +88,30 @@ public class BodySerializer : IBodySerializer
                 var levelName = i == nrLevels ? "Level " + header.MapName : _stringSerializer.Deserialize(reader);
                 var binaryLength = header.SaveVersion >= 41 ? reader.ReadInt64() : reader.ReadInt32();
                 var position = reader.BaseStream.Position;
+                int? saveVersion = null;
+
+                if (header.SaveVersion >= 51)
+                {
+                    if (i == nrLevels)
+                    {
+                        saveVersion = header.SaveVersion;
+                    }
+                    else
+                    {
+                        reader.BaseStream.Seek(binaryLength, SeekOrigin.Current);
+                        var skip = reader.ReadInt64();
+                        reader.BaseStream.Seek(skip, SeekOrigin.Current);
+                        saveVersion = reader.ReadInt32();
+                        reader.BaseStream.Seek(-(skip + binaryLength + sizeof(int) + sizeof(long)), SeekOrigin.Current);
+                    }
+                }
 
                 var nrObjectHeaders = reader.ReadInt32();
                 var objects = new List<ComponentObject>(nrObjectHeaders);
 
                 for (var j = 0; j < nrObjectHeaders; j++)
                 {
-                    objects.Add(_objectHeaderSerializer.Deserialize(reader));
+                    objects.Add(_objectHeaderSerializer.Deserialize(reader, saveVersion));
                 }
 
                 List<ObjectReference> collectables;
@@ -143,6 +161,9 @@ public class BodySerializer : IBodySerializer
                 var expectedPosition = positionStart + binarySizeObjects;
                 if (expectedPosition != reader.BaseStream.Position)
                     throw new BadReadException("Expected stream position does not match actual position");
+
+                if (i != nrLevels && header.SaveVersion >= 51)
+                    _ = reader.ReadUInt32();
 
                 var nrSecondCollectables = reader.ReadInt32();
                 var secondCollectables = new List<ObjectReference>(nrSecondCollectables);
@@ -196,7 +217,7 @@ public class BodySerializer : IBodySerializer
 
             for (var j = 0; j < nrObjectHeaders; j++)
             {
-                objects.Add(_objectHeaderSerializer.Deserialize(reader));
+                objects.Add(_objectHeaderSerializer.Deserialize(reader, null));
             }
 
             var nrObjects = reader.ReadInt32();

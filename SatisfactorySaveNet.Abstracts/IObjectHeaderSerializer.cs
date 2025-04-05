@@ -1,9 +1,9 @@
-﻿using SatisfactorySaveNet.Abstracts.Model;
+using SatisfactorySaveNet.Abstracts.Model;
 using System.IO;
 
 namespace SatisfactorySaveNet.Abstracts;
 
 public interface IObjectHeaderSerializer
 {
-    public ComponentObject Deserialize(BinaryReader reader);
+    public ComponentObject Deserialize(BinaryReader reader, int? saveVersion);
 }
