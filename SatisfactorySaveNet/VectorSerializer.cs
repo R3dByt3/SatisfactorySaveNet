@@ -1,3 +1,5 @@
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using SatisfactorySaveNet.Abstracts;
 using SatisfactorySaveNet.Abstracts.Maths.Data;
 using SatisfactorySaveNet.Abstracts.Maths.Vector;
@@ -7,7 +9,14 @@ namespace SatisfactorySaveNet;
 
 public class VectorSerializer : IVectorSerializer
 {
-    public static readonly IVectorSerializer Instance = new VectorSerializer();
+    public static readonly IVectorSerializer Instance = new VectorSerializer(NullLoggerFactory.Instance);
+
+    private readonly ILogger<VectorSerializer> _logger;
+
+    public VectorSerializer(ILoggerFactory loggerFactory)
+    {
+        _logger = loggerFactory.CreateLogger<VectorSerializer>() ?? NullLogger<VectorSerializer>.Instance;
+    }
 
     public Vector4 DeserializeVec4(BinaryReader reader)
     {
@@ -37,7 +46,13 @@ public class VectorSerializer : IVectorSerializer
         var z = reader.ReadDouble();
         var w = reader.ReadDouble();
 
-        return new Vector4D(x, y, z, w);
+        var vector4D = new Vector4D(x, y, z, w);
+//#if DEBUG
+//        var sf1 = new System.Diagnostics.StackTrace(true).GetFrame(1)!;
+//        var sf2 = new System.Diagnostics.StackTrace(true).GetFrame(2)!;
+//        _logger.LogInformation("DeserializeVec4D - {Vector4D} - ContainsScientificNumber {ContainsScientificNumber} - File {File1} - Line {Line1} - File {File2} - Line {Line2}", vector4D, ContainsScientificNumber(x, y, z, w), sf1.GetFileName(), sf1.GetFileLineNumber(), sf2.GetFileName(), sf2.GetFileLineNumber());
+//#endif
+        return vector4D;
     }
 
     public Vector3 DeserializeVec3(BinaryReader reader)
@@ -46,7 +61,14 @@ public class VectorSerializer : IVectorSerializer
         var y = reader.ReadSingle();
         var z = reader.ReadSingle();
 
-        return new Vector3(x, y, z);
+        var vector3 = new Vector3(x, y, z);
+//#if DEBUG
+//        var sf1 = new System.Diagnostics.StackTrace(true).GetFrame(1)!;
+//        var sf2 = new System.Diagnostics.StackTrace(true).GetFrame(2)!;
+//        var csn = ContainsScientificNumber(x, y, z);
+//        _logger.LogInformation("DeserializeVec3 - {Vector3} - ContainsScientificNumber {ContainsScientificNumber} - File {File1} - Line {Line1} - File {File2} - Line {Line2}", vector3, csn, sf1.GetFileName(), sf1.GetFileLineNumber(), sf2.GetFileName(), sf2.GetFileLineNumber());
+//#endif
+        return vector3;
     }
 
     public Vector3D DeserializeVec3D(BinaryReader reader)
@@ -55,7 +77,14 @@ public class VectorSerializer : IVectorSerializer
         var y = reader.ReadDouble();
         var z = reader.ReadDouble();
 
-        return new Vector3D(x, y, z);
+        var vector3D = new Vector3D(x, y, z);
+//#if DEBUG
+//        var sf1 = new System.Diagnostics.StackTrace(true).GetFrame(1)!;
+//        var sf2 = new System.Diagnostics.StackTrace(true).GetFrame(2)!;
+//        var csn = ContainsScientificNumber(x, y, z);
+//        _logger.LogInformation("DeserializeVec3D - {Vector3D} - ContainsScientificNumber {ContainsScientificNumber} - File {File1} - Line {Line1} - File {File2} - Line {Line2}", vector3D, csn, sf1.GetFileName(), sf1.GetFileLineNumber(), sf2.GetFileName(), sf2.GetFileLineNumber());
+//#endif
+        return vector3D;
     }
 
     public Vector2 DeserializeVec2(BinaryReader reader)
@@ -63,7 +92,13 @@ public class VectorSerializer : IVectorSerializer
         var x = reader.ReadSingle();
         var y = reader.ReadSingle();
 
-        return new Vector2(x, y);
+        var vector2 = new Vector2(x, y);
+//#if DEBUG
+//        var sf1 = new System.Diagnostics.StackTrace(true).GetFrame(1)!;
+//        var sf2 = new System.Diagnostics.StackTrace(true).GetFrame(2)!;
+//        _logger.LogInformation("DeserializeVec2 - {Vector2} - ContainsScientificNumber {ContainsScientificNumber} - File {File1} - Line {Line1} - File {File2} - Line {Line2}", vector2, ContainsScientificNumber(x, y), sf1.GetFileName(), sf1.GetFileLineNumber(), sf2.GetFileName(), sf2.GetFileLineNumber());
+//#endif
+        return vector2;
     }
 
     public Vector2I DeserializeVec2I(BinaryReader reader)
@@ -71,7 +106,13 @@ public class VectorSerializer : IVectorSerializer
         var x = reader.ReadInt32();
         var y = reader.ReadInt32();
 
-        return new Vector2I(x, y);
+        var vector2I = new Vector2I(x, y);
+//#if DEBUG
+//        var sf1 = new System.Diagnostics.StackTrace(true).GetFrame(1)!;
+//        var sf2 = new System.Diagnostics.StackTrace(true).GetFrame(2)!;
+//        _logger.LogInformation("DeserializeVec2I - {Vector2I} - - File {File1} - Line {Line1} - File {File2} - Line {Line2}", vector2I, sf1.GetFileName(), sf1.GetFileLineNumber(), sf2.GetFileName(), sf2.GetFileLineNumber());
+//#endif
+        return vector2I;
     }
 
     public Vector2D DeserializeVec2D(BinaryReader reader)
@@ -79,7 +120,13 @@ public class VectorSerializer : IVectorSerializer
         var x = reader.ReadDouble();
         var y = reader.ReadDouble();
 
-        return new Vector2D(x, y);
+        var vector2D = new Vector2D(x, y);
+//#if DEBUG
+//        var sf1 = new System.Diagnostics.StackTrace(true).GetFrame(1)!;
+//        var sf2 = new System.Diagnostics.StackTrace(true).GetFrame(2)!;
+//        _logger.LogInformation("DeserializeVec2D - {Vector2D} - ContainsScientificNumber {ContainsScientificNumber} - File {File1} - Line {Line1} - File {File2} - Line {Line2}", vector2D, ContainsScientificNumber(x, y), sf1.GetFileName(), sf1.GetFileLineNumber(), sf2.GetFileName(), sf2.GetFileLineNumber());
+//#endif
+        return vector2D;
     }
 
     public Quaternion DeserializeQuaternion(BinaryReader reader)
@@ -89,7 +136,13 @@ public class VectorSerializer : IVectorSerializer
         var z = reader.ReadSingle();
         var w = reader.ReadSingle();
 
-        return new Quaternion(x, y, z, w);
+        var quaternion = new Quaternion(x, y, z, w);
+//#if DEBUG
+//        var sf1 = new System.Diagnostics.StackTrace(true).GetFrame(1)!;
+//        var sf2 = new System.Diagnostics.StackTrace(true).GetFrame(2)!;
+//        _logger.LogInformation("DeserializeQuaternion - {Quaternion} - ContainsScientificNumber {ContainsScientificNumber} - File {File1} - Line {Line1} - File {File2} - Line {Line2}", quaternion, ContainsScientificNumber(x, y, z, w), sf1.GetFileName(), sf1.GetFileLineNumber(), sf2.GetFileName(), sf2.GetFileLineNumber());
+//#endif
+        return quaternion;
     }
 
     public QuaternionD DeserializeQuaternionD(BinaryReader reader)
@@ -99,7 +152,13 @@ public class VectorSerializer : IVectorSerializer
         var z = reader.ReadDouble();
         var w = reader.ReadDouble();
 
-        return new QuaternionD(x, y, z, w);
+        var quaternionD = new QuaternionD(x, y, z, w);
+//#if DEBUG
+//        var sf1 = new System.Diagnostics.StackTrace(true).GetFrame(1)!;
+//        var sf2 = new System.Diagnostics.StackTrace(true).GetFrame(2)!;
+//        _logger.LogInformation("DeserializeQuaternionD - {QuaternionD} - ContainsScientificNumber {ContainsScientificNumber} - File {File1} - Line {Line1} - File {File2} - Line {Line2}", quaternionD, ContainsScientificNumber(x, y, z, w), sf1.GetFileName(), sf1.GetFileLineNumber(), sf2.GetFileName(), sf2.GetFileLineNumber());
+//#endif
+        return quaternionD;
     }
 
     public Vector3I DeserializeVec3I(BinaryReader reader)
@@ -109,6 +168,11 @@ public class VectorSerializer : IVectorSerializer
         var z = reader.ReadInt32();
 
         var vector3I = new Vector3I(x, y, z);
+//#if DEBUG
+//        var sf1 = new System.Diagnostics.StackTrace(true).GetFrame(1)!;
+//        var sf2 = new System.Diagnostics.StackTrace(true).GetFrame(2)!;
+//        _logger.LogInformation("DeserializeVector3I - {Vector3I} - File {File1} - Line {Line1} - File {File2} - Line {Line2}", vector3I, sf1.GetFileName(), sf1.GetFileLineNumber(), sf2.GetFileName(), sf2.GetFileLineNumber());
+//#endif
         return vector3I;
     }
 
@@ -120,6 +184,11 @@ public class VectorSerializer : IVectorSerializer
         var w = reader.ReadSByte();
 
         var vector4I = new Vector4I(x, y, z, w);
+//#if DEBUG
+//        var sf1 = new System.Diagnostics.StackTrace(true).GetFrame(1)!;
+//        var sf2 = new System.Diagnostics.StackTrace(true).GetFrame(2)!;
+//        _logger.LogInformation("DeserializeVector4I - {Vector4I} - File {File1} - Line {Line1} - File {File2} - Line {Line2}", vector4I, sf1.GetFileName(), sf1.GetFileLineNumber(), sf2.GetFileName(), sf2.GetFileLineNumber());
+//#endif
         return vector4I;
     }
 
@@ -134,4 +203,27 @@ public class VectorSerializer : IVectorSerializer
 
         return color4;
     }
+
+    //#if DEBUG
+    //    private static bool ContainsScientificNumber(params double[] values)
+    //    {
+    //        foreach (var number in values)
+    //        {
+    //            if (number.ToString().Contains('e', System.StringComparison.OrdinalIgnoreCase))
+    //                return true;
+    //        }
+    //
+    //        return false;
+    //    }
+    //    private static bool ContainsScientificNumber(params float[] values)
+    //    {
+    //        foreach (var number in values)
+    //        {
+    //            if (number.ToString().Contains('e', System.StringComparison.OrdinalIgnoreCase))
+    //                return true;
+    //        }
+    //
+    //        return false;
+    //    }
+    //#endif
 }

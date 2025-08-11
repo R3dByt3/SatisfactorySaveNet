@@ -7,33 +7,39 @@ namespace SatisfactorySaveNet;
 
 public class ObjectHeaderSerializer : IObjectHeaderSerializer
 {
-    public static readonly IObjectHeaderSerializer Instance = new ObjectHeaderSerializer(StringSerializer.Instance, VectorSerializer.Instance);
+    public static readonly IObjectHeaderSerializer Instance = new ObjectHeaderSerializer(StringSerializer.Instance, VectorSerializer.Instance, ObjectReferenceSerializer.Instance);
 
     private readonly IStringSerializer _stringSerializer;
     private readonly IVectorSerializer _vectorSerializer;
+    private readonly IObjectReferenceSerializer _objectReferenceSerializer;
 
-    public ObjectHeaderSerializer(IStringSerializer stringSerializer, IVectorSerializer vectorSerializer)
+    public ObjectHeaderSerializer(IStringSerializer stringSerializer, IVectorSerializer vectorSerializer, IObjectReferenceSerializer objectReferenceSerializer)
     {
         _stringSerializer = stringSerializer;
         _vectorSerializer = vectorSerializer;
+        _objectReferenceSerializer = objectReferenceSerializer;
     }
 
-    public ComponentObject Deserialize(BinaryReader reader)
+    public ComponentObject Deserialize(BinaryReader reader, int? saveVersion)
     {
         var type = reader.ReadInt32();
         return type switch
         {
-            ComponentObject.TypeID => DeserializeComponentHeader(reader),
-            ActorObject.TypeID => DeserializeActorHeader(reader),
+            ComponentObject.TypeID => DeserializeComponentHeader(reader, saveVersion),
+            ActorObject.TypeID => DeserializeActorHeader(reader, saveVersion),
             _ => throw new CorruptedSatisFactorySaveFileException("Encountered unknown object type")
         };
     }
 
-    private ActorObject DeserializeActorHeader(BinaryReader reader)
+    private ActorObject DeserializeActorHeader(BinaryReader reader, int? saveVersion)
     {
         var typePath = _stringSerializer.Deserialize(reader);
-        var rootObject = _stringSerializer.Deserialize(reader);
-        var instanceName = _stringSerializer.Deserialize(reader);
+        var objectReference = _objectReferenceSerializer.Deserialize(reader);
+        
+        uint? flags = null;
+        if (saveVersion >= 51)
+            flags = reader.ReadUInt32();
+
         var needTransform = reader.ReadInt32();
         var rotation = _vectorSerializer.DeserializeVec4(reader);
         var position = _vectorSerializer.DeserializeVec3(reader);
@@ -43,29 +49,33 @@ public class ObjectHeaderSerializer : IObjectHeaderSerializer
         return new ActorObject
         {
             TypePath = typePath,
-            RootObject = rootObject,
-            InstanceName = instanceName,
+            ObjectReference = objectReference,
             NeedTransform = needTransform,
             Rotation = rotation,
             Position = position,
             Scale = scale,
-            PlacedInLevel = wasPlacedInLevel
+            PlacedInLevel = wasPlacedInLevel,
+            Flags = flags
         };
     }
 
-    private ComponentObject DeserializeComponentHeader(BinaryReader reader)
+    private ComponentObject DeserializeComponentHeader(BinaryReader reader, int? saveVersion)
     {
         var typePath = _stringSerializer.Deserialize(reader);
-        var rootObject = _stringSerializer.Deserialize(reader);
-        var instanceName = _stringSerializer.Deserialize(reader);
+        var objectReference = _objectReferenceSerializer.Deserialize(reader);
+
+        uint? flags = null;
+        if (saveVersion >= 51)
+            flags = reader.ReadUInt32();
+
         var parentActorName = _stringSerializer.Deserialize(reader);
 
         return new ComponentObject
         {
             TypePath = typePath,
-            RootObject = rootObject,
-            InstanceName = instanceName,
-            ParentActorName = parentActorName
+            ObjectReference = objectReference,
+            ParentActorName = parentActorName,
+            Flags = flags
         };
     }
 }

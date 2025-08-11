@@ -39,5 +39,9 @@ public enum TypedDataConstraint
     InventoryStackV1,
     IntVector4,
     FINGPUT2DC_Box,
-    FINGPUT2DC_Lines
+    FINGPUT2DC_Lines,
+    FIRAnyValue,
+    FIRExecutionContext,
+    Collection,
+    FINLuaInventoryItem
 }

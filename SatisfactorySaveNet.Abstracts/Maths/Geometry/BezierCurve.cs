@@ -47,7 +47,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Geometry
                 throw new ArgumentNullException(nameof(points), "Must point to a valid list of Vector2 structures.");
             }
 
-            _points = new List<Vector2>(points);
+            _points = [.. points];
             Parallel = 0.0f;
         }
 
@@ -62,7 +62,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Geometry
                 throw new ArgumentNullException(nameof(points), "Must point to a valid list of Vector2 structures.");
             }
 
-            _points = new List<Vector2>(points);
+            _points = [.. points];
             Parallel = 0.0f;
         }
 
@@ -79,7 +79,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Geometry
             }
 
             Parallel = parallel;
-            _points = new List<Vector2>(points);
+            _points = [.. points];
         }
 
         /// <summary>
@@ -95,7 +95,7 @@ namespace SatisfactorySaveNet.Abstracts.Maths.Geometry
             }
 
             Parallel = parallel;
-            _points = new List<Vector2>(points);
+            _points = [.. points];
         }
 
         /// <summary>

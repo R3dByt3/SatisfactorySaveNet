@@ -74,7 +74,8 @@ public static class KnownConstants
         "/AB_CableMod/Cables_Heavy/Build_AB-PLHeavy-Cu.Build_AB-PLHeavy-Cu_C",
         "/AB_CableMod/Cables_Standard/Build_AB-PLStandard-Cu.Build_AB-PLStandard-Cu_C",
         "/AB_CableMod/Cables_Wire/Build_AB-PLWire-Si.Build_AB-PLWire-Si_C",
-        "/AB_CableMod/Cables_Wire/Build_AB-PLWire-Au.Build_AB-PLWire-Au_C"
+        "/AB_CableMod/Cables_Wire/Build_AB-PLWire-Au.Build_AB-PLWire-Au_C",
+        "/AB_CableMod/Cables_Wire/Build_AB-PLWire-Cu.Build_AB-PLWire-Cu_C"
     ];
 
     public static readonly FrozenSet<string> Vehicles = new[]
@@ -124,7 +125,8 @@ public static class KnownConstants
         "/Game/FactoryGame/Resource/Equipment/Rifle/BP_EquipmentDescriptorRifle.BP_EquipmentDescriptorRifle_C",
         "/Game/FactoryGame/Resource/Equipment/NobeliskDetonator/BP_EquipmentDescriptorNobeliskDetonator.BP_EquipmentDescriptorNobeliskDetonator_C",
         "/Game/FactoryGame/Resource/Equipment/GemstoneScanner/BP_EquipmentDescriptorObjectScanner.BP_EquipmentDescriptorObjectScanner_C",
-        "/Game/FactoryGame/Resource/Equipment/GasMask/BP_EquipmentDescriptorGasmask.BP_EquipmentDescriptorGasmask_C"
+        "/Game/FactoryGame/Resource/Equipment/GasMask/BP_EquipmentDescriptorGasmask.BP_EquipmentDescriptorGasmask_C",
+        "/Game/FactoryGame/Equipment/BoomBox/Desc_BoomBox.Desc_BoomBox_C"
     }.ToFrozenSet(StringComparer.Ordinal);
 
     public static bool IsConveyorLift(string path)

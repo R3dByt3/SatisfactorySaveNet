@@ -10,5 +10,5 @@ public class FINLuaProcessorStateStorage : TypedData
     public ICollection<ObjectReference> ObjectReferences { get; set; } = [];
     public string Thread { get; set; } = string.Empty;
     public string Globals { get; set; } = string.Empty;
-    public ICollection<TypedData> TypedData { get; set; } = [];
+    public ICollection<TypedData?> TypedData { get; set; } = [];
 }

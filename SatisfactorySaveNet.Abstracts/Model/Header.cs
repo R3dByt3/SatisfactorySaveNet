@@ -49,7 +49,7 @@ public class Header
     /// <summary>
     /// This is "private" visibility, 1 would be "friends only" 
     /// </summary>
-    public sbyte? SessionVisibility { get; set; }
+    public byte? SessionVisibility { get; set; }
 
     /// <summary>
     /// Depends on the <see href="https://docs.unrealengine.com/4.26/en-US/ProgrammingAndScripting/ProgrammingWithCPP/UnrealArchitecture/VersioningAssetsAndPackages/">unreal engine</see> version used 
@@ -88,4 +88,9 @@ public class Header
     /// IsCreativeModeEnabled != 0 <=> True
     /// </summary>
     public int? IsCreativeModeEnabled { get; set; }
+
+    /// <summary>
+    /// Name of the save
+    /// </summary>
+    public string? SaveName { get; set; }
 }

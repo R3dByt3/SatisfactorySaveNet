@@ -20,4 +20,5 @@ public class ExtraInstance
     public sbyte PatternRotation { get; set; }
     public required ObjectReference BuildWithRecipe { get; set; }
     public required ObjectReference BlueprintProxy { get; set; }
+    public TypeSpecificData? TypeSpecificData { get; set; }
 }

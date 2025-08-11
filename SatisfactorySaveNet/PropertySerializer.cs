@@ -347,7 +347,7 @@ public class PropertySerializer : IPropertySerializer
         var binarySize = reader.ReadInt32();
         var index = reader.ReadInt32();
         var type = _stringSerializer.Deserialize(reader);
-        var padding = reader.ReadSByte();
+        _ = reader.ReadSByte();
         var length = reader.ReadInt32();
 
         var property = DeserializeArrayProperty(reader, header, type, length);
@@ -449,15 +449,14 @@ public class PropertySerializer : IPropertySerializer
         var propertyType = _stringSerializer.Deserialize(reader);
 
         var binarySize = reader.ReadInt32();
-        //var positionStart = reader.BaseStream.Position;
-        var padding1 = reader.ReadInt32();
+        _ = reader.ReadInt32();
         var elementType = _stringSerializer.Deserialize(reader);
 
         var uuid1 = reader.ReadInt32();
         var uuid2 = reader.ReadInt32();
         var uuid3 = reader.ReadInt32();
         var uuid4 = reader.ReadInt32();
-        var padding2 = reader.ReadSByte();
+        _ = reader.ReadSByte();
 
         var values = new TypedData[length];
 
@@ -475,22 +474,15 @@ public class PropertySerializer : IPropertySerializer
             Values = values
         };
 
-        //var expectedPosition = positionStart + binarySize;
-        //if (expectedPosition != reader.BaseStream.Position)
-        //{
-        //    var hex = _hexSerializer.Deserialize(reader, (expectedPosition - reader.BaseStream.Position).ToInt());
-        //    //throw new BadReadException("Expected stream position does not match actual position");
-        //}
-
         return property;
     }
 
     private static BoolProperty DeserializeBoolProperty(BinaryReader reader)
     {
-        var padding = reader.ReadInt32();
+        _ = reader.ReadInt32();
         var index = reader.ReadInt32();
         var value = reader.ReadSByte();
-        var padding2 = reader.ReadSByte();
+        _ = reader.ReadSByte();
 
         var property = new BoolProperty
         {
@@ -506,7 +498,7 @@ public class PropertySerializer : IPropertySerializer
         var binarySize = reader.ReadInt32();
         var index = reader.ReadInt32();
         var type = _stringSerializer.Deserialize(reader);
-        var padding = reader.ReadSByte();
+        _ = reader.ReadSByte();
 
         sbyte? byteData = null;
         string? stringData = null;
@@ -532,7 +524,7 @@ public class PropertySerializer : IPropertySerializer
         var binarySize = reader.ReadInt32();
         var index = reader.ReadInt32();
         var type = _stringSerializer.Deserialize(reader);
-        var padding = reader.ReadSByte();
+        _ = reader.ReadSByte();
         var value = _stringSerializer.Deserialize(reader);
 
         var property = new EnumProperty
@@ -549,7 +541,7 @@ public class PropertySerializer : IPropertySerializer
     {
         var binarySize = reader.ReadInt32();
         var index = reader.ReadInt32();
-        var padding = reader.ReadSByte();
+        _ = reader.ReadSByte();
         var value = reader.ReadSingle();
 
         var property = new FloatProperty
@@ -565,7 +557,7 @@ public class PropertySerializer : IPropertySerializer
     {
         var binarySize = reader.ReadInt32();
         var index = reader.ReadInt32();
-        var padding = reader.ReadSByte();
+        _ = reader.ReadSByte();
         var value = reader.ReadDouble();
 
         var property = new DoubleProperty
@@ -581,7 +573,7 @@ public class PropertySerializer : IPropertySerializer
     {
         var binarySize = reader.ReadInt32();
         var index = reader.ReadInt32();
-        var padding = reader.ReadSByte();
+        _ = reader.ReadSByte();
         var value = reader.ReadInt32();
 
         var property = new IntProperty
@@ -597,7 +589,7 @@ public class PropertySerializer : IPropertySerializer
     {
         var binarySize = reader.ReadInt32();
         var index = reader.ReadInt32();
-        var padding = reader.ReadSByte();
+        _ = reader.ReadSByte();
         var value = reader.ReadSByte();
 
         var property = new Int8Property
@@ -613,7 +605,7 @@ public class PropertySerializer : IPropertySerializer
     {
         var binarySize = reader.ReadInt32();
         var index = reader.ReadInt32();
-        var padding = reader.ReadSByte();
+        _ = reader.ReadSByte();
         var value = reader.ReadUInt32();
 
         var property = new UInt32Property
@@ -629,7 +621,7 @@ public class PropertySerializer : IPropertySerializer
     {
         var binarySize = reader.ReadInt32();
         var index = reader.ReadInt32();
-        var padding = reader.ReadSByte();
+        _ = reader.ReadSByte();
         var value = reader.ReadInt64();
 
         var property = new Int64Property
@@ -645,7 +637,7 @@ public class PropertySerializer : IPropertySerializer
     {
         var binarySize = reader.ReadInt32();
         var index = reader.ReadInt32();
-        var padding = reader.ReadSByte();
+        _ = reader.ReadSByte();
         var value = reader.ReadUInt64();
 
         var property = new UInt64Property
@@ -732,7 +724,7 @@ public class PropertySerializer : IPropertySerializer
                         key = new Vector3IUnion { Value = _vectorSerializer.DeserializeVec3I(reader) };
                         break;
                     }
-                    key = new PropertiesUnion { Value = DeserializeProperties(reader, header).ToArray() };
+                    key = new PropertiesUnion { Value = [.. DeserializeProperties(reader, header)] };
                     break;
                 default:
                     throw new InvalidDataException("Unknown dictionary property key type");
@@ -783,7 +775,7 @@ public class PropertySerializer : IPropertySerializer
                             : new StorageSingleUnion { Unknown1 = reader.ReadSingle(), Unknown2 = reader.ReadSingle(), Unknown3 = reader.ReadSingle() };
                         break;
                     }
-                    value = new PropertiesUnion { Value = DeserializeProperties(reader, header).ToArray() };
+                    value = new PropertiesUnion { Value = [.. DeserializeProperties(reader, header)] };
                     break;
                 default:
                     throw new InvalidDataException("Unknown dictionary property value type");
@@ -799,7 +791,7 @@ public class PropertySerializer : IPropertySerializer
     {
         var binarySize = reader.ReadInt32();
         var index = reader.ReadInt32();
-        var padding = reader.ReadSByte();
+        _ = reader.ReadSByte();
         var value = _stringSerializer.Deserialize(reader);
 
         var property = new NameProperty
@@ -815,7 +807,7 @@ public class PropertySerializer : IPropertySerializer
     {
         var binarySize = reader.ReadInt32();
         var index = reader.ReadInt32();
-        var padding = reader.ReadSByte();
+        _ = reader.ReadSByte();
         var value = _objectReferenceSerializer.Deserialize(reader);
 
         var property = new ObjectProperty
@@ -831,7 +823,7 @@ public class PropertySerializer : IPropertySerializer
     {
         var binarySize = reader.ReadInt32();
         var index = reader.ReadInt32();
-        var padding = reader.ReadSByte();
+        _ = reader.ReadSByte();
         var value = _softObjectReferenceSerializer.Deserialize(reader);
 
         var property = new SoftObjectProperty
@@ -848,8 +840,8 @@ public class PropertySerializer : IPropertySerializer
         var binarySize = reader.ReadInt32();
         var index = reader.ReadInt32();
         var type = _stringSerializer.Deserialize(reader);
-        var padding = reader.ReadSByte();
-        var padding2 = reader.ReadInt32();
+        _ = reader.ReadSByte();
+        _ = reader.ReadInt32();
         var count = reader.ReadInt32();
 
         var property = new SetProperty
@@ -922,7 +914,7 @@ public class PropertySerializer : IPropertySerializer
     {
         var binarySize = reader.ReadInt32();
         var index = reader.ReadInt32();
-        var padding = reader.ReadSByte();
+        _ = reader.ReadSByte();
         var value = _stringSerializer.Deserialize(reader);
 
         var property = new StrProperty
@@ -940,9 +932,9 @@ public class PropertySerializer : IPropertySerializer
         //var positionStart = reader.BaseStream.Position;
         var index = reader.ReadInt32();
         var type = _stringSerializer.Deserialize(reader);
-        var padding1 = reader.ReadInt64();
-        var padding2 = reader.ReadInt64();
-        var padding3 = reader.ReadSByte();
+        _ = reader.ReadInt64();
+        _ = reader.ReadInt64();
+        _ = reader.ReadSByte();
         var typedData = _typedDataSerializer.Deserialize(reader, header, type, false, binarySize);
 
         var property = new StructProperty

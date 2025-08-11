@@ -61,12 +61,17 @@ public class TypedDataSerializer : ITypedDataSerializer
             nameof(SlateBrush) => DeserializeSlateBrush(reader),
             nameof(DateTime) => DeserializeDateTime(reader),
             nameof(FINNetworkTrace) => DeserializeFINNetworkTrace(reader),
+            "FIRTrace" => DeserializeFINNetworkTrace(reader),
             nameof(FINLuaProcessorStateStorage) => DeserializeFINLuaProcessorStateStorage(reader, header),
+            "FINLuaRuntimePersistenceState" => DeserializeFINLuaProcessorStateStorage(reader, header),
+            nameof(FIRExecutionContext) => DeserializeFIRExecutionContext(reader),
             nameof(FICFrameRange) => DeserializeFICFrameRange(reader),
             nameof(IntPoint) => DeserializeIntPoint(reader),
             nameof(FINGPUT1BufferPixel) => DeserializeFINGPUT1BufferPixel(reader),
             nameof(FINDynamicStructHolder) => DeserializeFINDynamicStructHolder(reader, header),
+            "FIRInstancedStruct" => DeserializeFINDynamicStructHolder(reader, header),
             nameof(ClientIdentityInfo) => DeserializeClientIdentityInfo(reader, binarySize),
+            nameof(FIRAnyValue) => DeserializeFIRAnyValue(reader),
 
             nameof(InventoryStack) => DeserializeArrayProperties(reader, header, type),
             nameof(SpawnData) => DeserializeArrayProperties(reader, header, type),
@@ -132,16 +137,56 @@ public class TypedDataSerializer : ITypedDataSerializer
         };
     }
 
+    private FIRExecutionContext DeserializeFIRExecutionContext(BinaryReader reader)
+    {
+        var unknown1 = reader.ReadInt32();
+        var trace = DeserializeFINNetworkTrace(reader);
+
+        return new FIRExecutionContext
+        {
+            Unknown1 = unknown1,
+            Trace = trace
+        };
+    }
+
+    private FIRAnyValue DeserializeFIRAnyValue(BinaryReader reader)
+    {
+        var valueType = reader.ReadSByte();
+
+        if (valueType != 4)
+        {
+            throw new NotSupportedException($"Unimplemented type '{valueType}' in ReadFIRAnyValue.");
+        }
+
+        var value = _stringSerializer.Deserialize(reader);
+
+        return new FIRAnyValue
+        {
+            ValueType = valueType,
+            Value = value
+        };
+    }
+
     private FINDynamicStructHolder DeserializeFINDynamicStructHolder(BinaryReader reader, Header header)
     {
         var unknown1 = reader.ReadInt32();
         var type = _stringSerializer.Deserialize(reader);
+        return MapNetwork(reader, header, unknown1, type);
+    }
+
+    private FINDynamicStructHolder MapNetwork(BinaryReader reader, Header header, int unknown1, string type)
+    {
         Property[] properties;
 
         switch (type)
         {
             case "/Script/FicsItNetworks.FINGPUT2DC_Box":
-                properties = _propertySerializer.DeserializeProperties(reader, header).ToArray();
+            case "/Script/FicsItNetworksComputer.FINGPUT2DC_Box":
+            case "/Script/FicsItNetworksComputer.FINGPUT2DC_Text":
+            case "/Script/FicsItNetworksComputer.FINGPUT2DC_PushClipRect":
+            case "/Script/FicsItNetworksComputer.FINGPUT2DC_PopClip":
+            case "/Script/FicsItNetworksLua.FINEventFilter":
+                properties = [.. _propertySerializer.DeserializeProperties(reader, header, type)];
                 return new FINGPUT2DC_Box
                 {
                     Unknown1 = unknown1,
@@ -157,9 +202,12 @@ public class TypedDataSerializer : ITypedDataSerializer
                 var unknown7 = reader.ReadByte();
                 var unknown8 = reader.ReadInt32();
                 var unknown9 = _propertySerializer.DeserializeProperty(reader, header) ?? throw new BadReadException("Expected property to be read");
-                var unknown10 = reader.ReadDouble();
-                var unknown11 = reader.ReadDouble();
-                properties = _propertySerializer.DeserializeProperties(reader, header).ToArray();
+                var unknown10 = new Abstracts.Maths.Vector.Vector2D[unknown8 - 1];
+                for (var x = 0; x < unknown8 - 1; x++)
+                {
+                    unknown10[x] = _vectorSerializer.DeserializeVec2D(reader);
+                }
+                properties = [.. _propertySerializer.DeserializeProperties(reader, header, type)];
                 return new FINGPUT2DC_Lines
                 {
                     Unknown1 = unknown1,
@@ -172,7 +220,6 @@ public class TypedDataSerializer : ITypedDataSerializer
                     Unknown8 = unknown8,
                     Unknown9 = unknown9,
                     Unknown10 = unknown10,
-                    Unknown11 = unknown11,
                     TypeName = type,
                     Properties = properties
                 };
@@ -261,22 +308,25 @@ public class TypedDataSerializer : ITypedDataSerializer
         var globals = _stringSerializer.Deserialize(reader);
 
         var nrTypedData = reader.ReadInt32();
-        var typedData = new TypedData[nrTypedData];
+        var typedData = new TypedData?[nrTypedData];
         for (var x = 0; x < nrTypedData; x++)
         {
             var unknown1 = reader.ReadInt32();
             var objectPath = _stringSerializer.Deserialize(reader);
 
-            TypedData data;
+            TypedData? data = null;
             switch (objectPath) {
                 case "/Script/CoreUObject.Vector":
                     data = DeserializeVector(reader);
+                    break;
+                case "/Script/CoreUObject.Vector2D":
+                    data = DeserializeVector2D(reader);
                     break;
                 case "/Script/CoreUObject.LinearColor":
                     data = DeserializeLinearColor(reader);
                     break;
                 case "/Script/FactoryGame.InventoryStack":
-                    data = DeserializeInventoryStack(reader, header);
+                    data = DeserializeInventoryStack(reader, header, objectPath);
                     break;
                 case "/Script/FactoryGame.ItemAmount":
                     data = DeserializeItemAmount(reader);
@@ -284,14 +334,39 @@ public class TypedDataSerializer : ITypedDataSerializer
                 case "/Script/FicsItNetworks.FINTrackGraph":
                     data = DeserializeFINNetworkTrace(reader);
                     break;
-                case "/Script/FactoryGame.PrefabSignData":
-                case "/Script/FicsItNetworks.FINInternetCardHttpRequestFuture":
-                case "/Script/FactoryGame.InventoryItem":
-                case "/Script/FicsItNetworks.FINRailroadSignalBlock":
-                    continue;
                 case "/Script/FicsItNetworks.FINGPUT1Buffer":
                     data = DeserializeFINGPUT1Buffer(reader);
                     break;
+                case "/Script/FicsItNetworksLua.FINLuaEventRegistry":
+                case "/Script/FicsItNetworksMisc.FINFutureReflection":
+                case "/Script/FactoryGame.PrefabSignData":
+                    if (header.SaveVersion >= 46)
+                    {
+                        var properties = _propertySerializer.DeserializeProperties(reader, header).ToArray();
+                        data = new TypedDataCollection
+                        {
+                            Properties = properties
+                        };
+                    }
+                    break;
+                case "/Script/FactoryGame.InventoryItem":
+                    if (header.SaveVersion >= 46)
+                    {
+                        var unknown11 = _objectReferenceSerializer.Deserialize(reader);
+                        var unknown12 = reader.ReadInt32();
+                        var unknown13 = _objectReferenceSerializer.Deserialize(reader);
+                        data = new FINLuaInventoryItem
+                        {
+                            Unknown1 = unknown11,
+                            Unknown2 = unknown12,
+                            Unknown3 = unknown13
+                        };
+                    }
+                    break;
+                case "/Script/FicsItNetworks.FINInternetCardHttpRequestFuture":
+                case "/Script/FicsItNetworksComputer.FINInternetCardHttpRequestFuture":
+                case "/Script/FicsItNetworks.FINRailroadSignalBlock":
+                    continue;
                 default:
                     throw new InvalidDataException($"Unknown object path for {nameof(FINLuaProcessorStateStorage)}");
             }
@@ -335,15 +410,13 @@ public class TypedDataSerializer : ITypedDataSerializer
 
     private ItemAmount DeserializeItemAmount(BinaryReader reader)
     {
-        var unknown1 = reader.ReadInt32();
-        var unknown2 = _stringSerializer.Deserialize(reader);
-        var unknown3 = reader.ReadInt32();
+        var unknown1 = _objectReferenceSerializer.Deserialize(reader);
+        var unknown2 = reader.ReadInt32();
 
         return new ItemAmount
         {
             Unknown1 = unknown1,
             Unknown2 = unknown2,
-            Unknown3 = unknown3
         };
     }
 
@@ -414,6 +487,11 @@ public class TypedDataSerializer : ITypedDataSerializer
         return header.SaveVersion >= 41
             ? new Vector4D { Value = _vectorSerializer.DeserializeVec4D(reader) }
             : new Vector4 { Value = _vectorSerializer.DeserializeVec4(reader) };
+    }
+
+    private Vector2D DeserializeVector2D(BinaryReader reader)
+    {
+        return new Vector2D { Value = _vectorSerializer.DeserializeVec2D(reader) };
     }
 
     private Vector DeserializeVector(BinaryReader reader)
@@ -504,16 +582,15 @@ public class TypedDataSerializer : ITypedDataSerializer
     }
 
     //Seems to be dead code
-    private TypedData DeserializeInventoryStack(BinaryReader reader, Header header)
+    private TypedData DeserializeInventoryStack(BinaryReader reader, Header header, string type)
     {
         if (header.SaveVersion >= 42)
         {
-            var unknown1 = _stringSerializer.Deserialize(reader);
-            var unknown2 = _stringSerializer.Deserialize(reader);
+            var unknown1 = _objectReferenceSerializer.Deserialize(reader);
+            var unknown2 = reader.ReadInt32();
             var unknown3 = reader.ReadInt32();
-            var unknown4 = reader.ReadInt32();
-            var unknown5 = _propertySerializer.DeserializeProperty(reader, header, unknown2);
-            var unknown6 = _stringSerializer.Deserialize(reader);
+            var unknown4 = _propertySerializer.DeserializeProperty(reader, header, type);
+            var unknown5 = _stringSerializer.Deserialize(reader);
 
             return new InventoryStackV1
             {
@@ -521,32 +598,29 @@ public class TypedDataSerializer : ITypedDataSerializer
                 Unknown2 = unknown2,
                 Unknown3 = unknown3,
                 Unknown4 = unknown4,
-                Unknown5 = unknown5,
-                Unknown6 = unknown6,
+                Unknown5 = unknown5
             };
         }
         else
         {
-            var unknown1 = reader.ReadInt32();
-            var unknown2 = _stringSerializer.Deserialize(reader);
+            var unknown1 = _objectReferenceSerializer.Deserialize(reader);
+            var unknown2 = reader.ReadInt32();
             var unknown3 = reader.ReadInt32();
             var unknown4 = reader.ReadInt32();
-            var unknown5 = reader.ReadInt32();
 
             return new InventoryStack
             {
                 Unknown1 = unknown1,
                 Unknown2 = unknown2,
                 Unknown3 = unknown3,
-                Unknown4 = unknown4,
-                Unknown5 = unknown5,
+                Unknown4 = unknown4
             };
         }
     }
 
     private InventoryItem DeserializeInventoryItem(BinaryReader reader, Header header, bool isArrayProperty)
     {
-        var padding1 = reader.ReadInt32();
+        _ = reader.ReadInt32();
         var itemType = _stringSerializer.Deserialize(reader);
         ObjectReference? itemState = null;
         var state = 0;
@@ -560,24 +634,45 @@ public class TypedDataSerializer : ITypedDataSerializer
 
         if (header.SaveVersion >= 44 && KnownConstants.StatefulInventoryItems.Contains(itemType) && state != 0)
         {
-            var padding2 = reader.ReadInt32();
+            _ = reader.ReadInt32();
             var scriptName = _stringSerializer.Deserialize(reader);
-            var unknown = reader.ReadInt32();
-            var properties = _propertySerializer.DeserializeProperties(reader, header).ToArray();
 
-            if (!isArrayProperty)
-                property = _propertySerializer.DeserializeProperty(reader, header);
-
-            return new StatefulInventoryItem
+            //ToDo: Create reusable method for read item, see TypedDataSerializer and ExtraDataSerializer
+            if (string.Equals(itemState?.PathName, "/Script/FicsItNetworksComputer.FINItemStateFileSystem"))
             {
-                State = state,
-                ItemType = itemType,
-                ItemState = itemState,
-                ExtraProperty = property,
-                Properties = properties,
-                ScriptName = scriptName,
-                Unknown1 = unknown
-            };
+                var length = reader.ReadInt32();
+
+                var fINItemStateFileSystem = _hexSerializer.Deserialize(reader, length);
+
+                return new StatefulInventoryItem
+                {
+                    State = state,
+                    ItemType = itemType,
+                    ItemState = itemState,
+                    ExtraProperty = property,
+                    ScriptName = scriptName,
+                    FINItemStateFileSystem = fINItemStateFileSystem
+                };
+            }
+            else
+            {
+                var unknown = reader.ReadInt32();
+                var properties = _propertySerializer.DeserializeProperties(reader, header).ToArray();
+
+                if (!isArrayProperty)
+                    property = _propertySerializer.DeserializeProperty(reader, header);
+
+                return new StatefulInventoryItem
+                {
+                    State = state,
+                    ItemType = itemType,
+                    ItemState = itemState,
+                    ExtraProperty = property,
+                    Properties = properties,
+                    ScriptName = scriptName,
+                    Unknown1 = unknown
+                };
+            }
         }
 
         if (header.SaveVersion >= 46 && reader.ReadInt32() != 0)
