@@ -54,7 +54,8 @@ public static class KnownConstants
         "/Conveyors_Mod/Build_LiftMk",
         "/Game/CoveredConveyor",
         "/CoveredConveyor",
-        "/conveyorbeltmod/lift/"
+        "/conveyorbeltmod/lift/",
+        "/FlexSplines/Lift/Flex_Lift"
     ];
 
     public static readonly FrozenSet<string> PowerLines = new[]

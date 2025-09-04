@@ -71,7 +71,7 @@ public class TypedDataSerializer : ITypedDataSerializer
             nameof(FINDynamicStructHolder) => DeserializeFINDynamicStructHolder(reader, header),
             "FIRInstancedStruct" => DeserializeFINDynamicStructHolder(reader, header),
             nameof(ClientIdentityInfo) => DeserializeClientIdentityInfo(reader, binarySize),
-            nameof(FIRAnyValue) => DeserializeFIRAnyValue(reader),
+            nameof(FIRAnyValue) => DeserializeFIRAnyValue(reader, header),
 
             nameof(InventoryStack) => DeserializeArrayProperties(reader, header, type),
             nameof(SpawnData) => DeserializeArrayProperties(reader, header, type),
@@ -149,21 +149,18 @@ public class TypedDataSerializer : ITypedDataSerializer
         };
     }
 
-    private FIRAnyValue DeserializeFIRAnyValue(BinaryReader reader)
+    private FIRAnyValue DeserializeFIRAnyValue(BinaryReader reader, Header header)
     {
         var valueType = reader.ReadSByte();
 
-        if (valueType != 4)
+        return valueType switch
         {
-            throw new NotSupportedException($"Unimplemented type '{valueType}' in ReadFIRAnyValue.");
-        }
-
-        var value = _stringSerializer.Deserialize(reader);
-
-        return new FIRAnyValue
-        {
-            ValueType = valueType,
-            Value = value
+            4 => new FIRStringValue { Value = _stringSerializer.Deserialize(reader), ValueType = valueType },
+            8 => new FIRFINDynamicStructHolderValue
+            {
+                Value = DeserializeFINDynamicStructHolder(reader, header), ValueType = valueType
+            },
+            _ => throw new NotSupportedException($"Unimplemented type '{valueType}' in ReadFIRAnyValue.")
         };
     }
 
@@ -186,6 +183,7 @@ public class TypedDataSerializer : ITypedDataSerializer
             case "/Script/FicsItNetworksComputer.FINGPUT2DC_PushClipRect":
             case "/Script/FicsItNetworksComputer.FINGPUT2DC_PopClip":
             case "/Script/FicsItNetworksLua.FINEventFilter":
+            case "/Script/FactoryGame.PrefabSignData":
                 properties = [.. _propertySerializer.DeserializeProperties(reader, header, type)];
                 return new FINGPUT2DC_Box
                 {
@@ -352,15 +350,7 @@ public class TypedDataSerializer : ITypedDataSerializer
                 case "/Script/FactoryGame.InventoryItem":
                     if (header.SaveVersion >= 46)
                     {
-                        var unknown11 = _objectReferenceSerializer.Deserialize(reader);
-                        var unknown12 = reader.ReadInt32();
-                        var unknown13 = _objectReferenceSerializer.Deserialize(reader);
-                        data = new FINLuaInventoryItem
-                        {
-                            Unknown1 = unknown11,
-                            Unknown2 = unknown12,
-                            Unknown3 = unknown13
-                        };
+                        data = DeserializeInventoryItem(reader, header, false);
                     }
                     break;
                 case "/Script/FicsItNetworks.FINInternetCardHttpRequestFuture":
