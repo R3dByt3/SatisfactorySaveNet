@@ -26,7 +26,7 @@ public class BodySerializer : IBodySerializer
     public BodyBase? Deserialize(BinaryReader reader, Header header)
     {
         Grid? grid = null;
-        if (header.SaveVersion >= 41)
+        if (header is { SaveVersion: >= 41, IsPartitionedWorld: 1 })
         {
             var partitionCount = reader.ReadInt32();
             var unknown1 = _stringSerializer.Deserialize(reader);
@@ -115,35 +115,26 @@ public class BodySerializer : IBodySerializer
                 }
 
                 List<ObjectReference> collectables;
-
-                if (header.SaveVersion >= 41)
-                {
-                    if (reader.BaseStream.Position < position + binaryLength - 4)
-                    {
-                        var nrCollectables = reader.ReadInt32();
-                        collectables = new List<ObjectReference>(nrCollectables);
-                        for (var j = 0; j < nrCollectables; j++)
-                        {
-                            collectables.Add(_objectReferenceSerializer.Deserialize(reader));
-                        }
-                    }
-                    else if (reader.BaseStream.Position == position + binaryLength - 4)
-                    {
-                        reader.ReadInt32();
-                        collectables = [];
-                    }
-                    else
-                        collectables = [];
-                }
-                else
+                
+                if (reader.BaseStream.Position <= position + binaryLength - 4)
                 {
                     var nrCollectables = reader.ReadInt32();
+                        
+                    if (nrCollectables > 0 && header.SaveVersion >= 46 && i == nrLevels)
+                    {
+                        var unknownStr = _stringSerializer.Deserialize(reader);
+                        nrCollectables = reader.ReadInt32();
+                    }
+                        
                     collectables = new List<ObjectReference>(nrCollectables);
-
                     for (var j = 0; j < nrCollectables; j++)
                     {
                         collectables.Add(_objectReferenceSerializer.Deserialize(reader));
                     }
+                }
+                else
+                {
+                    collectables = [];
                 }
 
                 var binarySizeObjects = header.SaveVersion >= 41 ? reader.ReadInt64() : reader.ReadInt32();
@@ -166,8 +157,14 @@ public class BodySerializer : IBodySerializer
                     _ = reader.ReadUInt32();
 
                 var nrSecondCollectables = reader.ReadInt32();
-                var secondCollectables = new List<ObjectReference>(nrSecondCollectables);
 
+                if (nrSecondCollectables > 0 && header.SaveVersion >= 46 && i == nrLevels)
+                {
+                    var unknownStr = _stringSerializer.Deserialize(reader);
+                    nrSecondCollectables = reader.ReadInt32();
+                }
+
+                var secondCollectables = new List<ObjectReference>(nrSecondCollectables);
                 for (var j = 0; j < nrSecondCollectables; j++)
                 {
                     secondCollectables.Add(_objectReferenceSerializer.Deserialize(reader));

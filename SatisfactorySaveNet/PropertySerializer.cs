@@ -714,7 +714,7 @@ public class PropertySerializer : IPropertySerializer
                             : new Vector3Union { Value = _vectorSerializer.DeserializeVec3(reader) };
                         break;
                     }
-                    if (string.Equals(type, "/BuildGunUtilities/BGU_Subsystem.BGU_Subsystem_C", StringComparison.Ordinal)) //ToDo: Debug?
+                    if (string.Equals(type, "/BuildGunUtilities/BGU_Subsystem.BGU_Subsystem_C", StringComparison.Ordinal) || string.Equals(type, "/Script/NoImpure.NoImpureSubsystem")) //ToDo: Debug?
                     {
                         key = new Vector3Union { Value = _vectorSerializer.DeserializeVec3(reader) };
                         break;
@@ -732,7 +732,13 @@ public class PropertySerializer : IPropertySerializer
             switch (property.ValueType)
             {
                 case nameof(ByteProperty):
-                    value = new ByteUnion { Value = property.KeyType == nameof(StrProperty) ? Convert.ToSByte(_stringSerializer.Deserialize(reader)) : reader.ReadSByte() };
+                    value = new ByteUnion
+                        {
+                            Value = 
+                                (property.KeyType == nameof(StrProperty) || string.Equals(property.KeyType, "/Script/NoImpure.NoImpureSubsystem", StringComparison.Ordinal))
+                                ? Convert.ToSByte(_stringSerializer.Deserialize(reader))
+                                : reader.ReadSByte()
+                        };
                     break;
                 case nameof(BoolProperty):
                     value = new BoolUnion { Value = reader.ReadSByte() };
