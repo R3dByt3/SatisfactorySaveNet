@@ -3,7 +3,6 @@ using Microsoft.Extensions.Logging.Abstractions;
 using SatisfactorySaveNet.Abstracts;
 using SatisfactorySaveNet.Abstracts.Exceptions;
 using SatisfactorySaveNet.Abstracts.Model;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 

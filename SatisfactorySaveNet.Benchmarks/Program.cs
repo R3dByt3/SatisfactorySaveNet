@@ -1,7 +1,6 @@
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Running;
 using SatisfactorySaveNet.Abstracts.Maths.Matrix;
-using SatisfactorySaveNet.Abstracts.Model.Union;
 using Half = SatisfactorySaveNet.Abstracts.Maths.Data.Half;
 
 namespace SatisfactorySaveNet.Benchmarks;

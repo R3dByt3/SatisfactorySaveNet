@@ -854,9 +854,14 @@ public class PropertySerializer : IPropertySerializer
         {
             Index = index,
             Type = type,
-            Elements = new UnionBase[count]
+            Elements = DeserializeUnions(reader, propertyName, count, type).ToArray()
         };
 
+        return property;
+    }
+
+    private IEnumerable<UnionBase> DeserializeUnions(BinaryReader reader, string propertyName, int count, string type)
+    {
         for (var i = 0; i < count; i++)
         {
             UnionBase value;
@@ -897,10 +902,8 @@ public class PropertySerializer : IPropertySerializer
                     throw new InvalidDataException("Unknown set property value type");
             }
 
-            property.Elements.Add(value);
+            yield return value;
         }
-
-        return property;
     }
 
     private FINNetworkProperty DeserializeFINNetworkProperty(BinaryReader reader)

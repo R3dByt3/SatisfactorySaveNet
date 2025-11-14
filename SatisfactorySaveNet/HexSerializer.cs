@@ -1,6 +1,5 @@
 using SatisfactorySaveNet.Abstracts;
 using System.IO;
-using System.Linq;
 
 namespace SatisfactorySaveNet;
 

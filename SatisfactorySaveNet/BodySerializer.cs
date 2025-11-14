@@ -80,7 +80,7 @@ public class BodySerializer : IBodySerializer
         if (header.SaveVersion >= 29)
         {
             var nrLevels = reader.ReadInt32();
-            var levels = new Level[nrLevels];
+            var levels = new Level[nrLevels + 1];
 
             for (var i = 0; i <= nrLevels; i++)
             {
