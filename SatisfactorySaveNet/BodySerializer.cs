@@ -1,7 +1,6 @@
 using SatisfactorySaveNet.Abstracts;
 using SatisfactorySaveNet.Abstracts.Exceptions;
 using SatisfactorySaveNet.Abstracts.Model;
-using System.Collections.Generic;
 using System.IO;
 
 namespace SatisfactorySaveNet;
@@ -23,7 +22,7 @@ public class BodySerializer : IBodySerializer
         _objectSerializer = objectSerializer;
     }
 
-    public BodyBase? Deserialize(BinaryReader reader, Header header)
+    public BodyBase Deserialize(BinaryReader reader, Header header)
     {
         Grid? grid = null;
         if (header is { SaveVersion: >= 41, IsPartitionedWorld: 1 })
@@ -81,7 +80,7 @@ public class BodySerializer : IBodySerializer
         if (header.SaveVersion >= 29)
         {
             var nrLevels = reader.ReadInt32();
-            var levels = new List<Level>(nrLevels);
+            var levels = new Level[nrLevels];
 
             for (var i = 0; i <= nrLevels; i++)
             {
@@ -107,14 +106,14 @@ public class BodySerializer : IBodySerializer
                 }
 
                 var nrObjectHeaders = reader.ReadInt32();
-                var objects = new List<ComponentObject>(nrObjectHeaders);
+                var objects = new ComponentObject[nrObjectHeaders];
 
                 for (var j = 0; j < nrObjectHeaders; j++)
                 {
-                    objects.Add(_objectHeaderSerializer.Deserialize(reader, saveVersion));
+                    objects[j] = _objectHeaderSerializer.Deserialize(reader, saveVersion);
                 }
 
-                List<ObjectReference> collectables;
+                ObjectReference[] collectables;
                 
                 if (reader.BaseStream.Position <= position + binaryLength - 4)
                 {
@@ -126,10 +125,10 @@ public class BodySerializer : IBodySerializer
                         nrCollectables = reader.ReadInt32();
                     }
                         
-                    collectables = new List<ObjectReference>(nrCollectables);
+                    collectables = new ObjectReference[nrCollectables];
                     for (var j = 0; j < nrCollectables; j++)
                     {
-                        collectables.Add(_objectReferenceSerializer.Deserialize(reader));
+                        collectables[j] = _objectReferenceSerializer.Deserialize(reader);
                     }
                 }
                 else
@@ -164,20 +163,20 @@ public class BodySerializer : IBodySerializer
                     nrSecondCollectables = reader.ReadInt32();
                 }
 
-                var secondCollectables = new List<ObjectReference>(nrSecondCollectables);
+                var secondCollectables = new ObjectReference[nrSecondCollectables];
                 for (var j = 0; j < nrSecondCollectables; j++)
                 {
-                    secondCollectables.Add(_objectReferenceSerializer.Deserialize(reader));
+                    secondCollectables[j] = _objectReferenceSerializer.Deserialize(reader);
                 }
 
 #pragma warning disable CS0618 // Type or member is obsolete
-                levels.Add(new Level
+                levels[i] = new Level
                 {
                     Name = levelName,
                     Objects = objects,
                     Collectables = collectables,
                     SecondCollectables = secondCollectables
-                });
+                };
 #pragma warning restore CS0618 // Type or member is obsolete
             }
 
@@ -210,11 +209,11 @@ public class BodySerializer : IBodySerializer
         else
         {
             var nrObjectHeaders = reader.ReadInt32();
-            var objects = new List<ComponentObject>(nrObjectHeaders);
+            var objects = new ComponentObject[nrObjectHeaders];
 
             for (var j = 0; j < nrObjectHeaders; j++)
             {
-                objects.Add(_objectHeaderSerializer.Deserialize(reader, null));
+                objects[j] = _objectHeaderSerializer.Deserialize(reader, null);
             }
 
             var nrObjects = reader.ReadInt32();
@@ -228,11 +227,11 @@ public class BodySerializer : IBodySerializer
             }
             
             var nrSecondCollectables = reader.ReadInt32();
-            var collectables = new List<ObjectReference>(nrSecondCollectables);
+            var collectables = new ObjectReference[nrSecondCollectables];
             
             for (var j = 0; j < nrSecondCollectables; j++)
             {
-                collectables.Add(_objectReferenceSerializer.Deserialize(reader));
+                collectables[j] = _objectReferenceSerializer.Deserialize(reader);
             }
 #pragma warning disable CS0618 // Type or member is obsolete
             return new BodyPreV8

@@ -283,7 +283,7 @@ public class PropertySerializer : IPropertySerializer
 
     private static ArrayByteProperty DeserializeArrayByteProperty(BinaryReader reader, int count, string propertyName)
     {
-        IList<sbyte> values;
+        sbyte[] values;
 
         if (propertyName.Equals("mFogOfWarRawData", StringComparison.Ordinal))
         {
@@ -854,7 +854,7 @@ public class PropertySerializer : IPropertySerializer
         {
             Index = index,
             Type = type,
-            Elements = new List<UnionBase>(count)
+            Elements = new UnionBase[count]
         };
 
         for (var i = 0; i < count; i++)

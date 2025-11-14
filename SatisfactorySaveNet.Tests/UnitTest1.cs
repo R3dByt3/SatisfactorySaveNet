@@ -75,15 +75,19 @@ public class Tests
 
     private static IEnumerable<TestCaseData> Files()
     {
-        foreach (var file in Directory.GetFiles(@"D:\tmp\sf", "*.sav"))
+        foreach (var file in Directory.GetFiles(@"/mnt/data/nextcloud/TMP/", "*.sav"))
         {
             yield return new TestCaseData(file);
         }
-        foreach (var file in Directory.GetFiles(@"C:\Users\marvi\AppData\Local\FactoryGame\Saved\SaveGames\5d66aaf3a97b48968049b2531bb6e6f8", "*.sav"))
+        foreach (var file in Directory.GetFiles(@"/mnt/data/tmp/sf/", "*.sav"))
         {
             yield return new TestCaseData(file);
         }
-        foreach (var file in Directory.GetFiles(@"C:\Users\marvi\AppData\Local\FactoryGame\Saved\SaveGames\76561198023947483", "*.sav"))
+        foreach (var file in Directory.GetFiles(@"/home/marvin/Games/epic-games-store/drive_c/users/marvin/AppData/Local/FactoryGame/Saved/SaveGames/5d66aaf3a97b48968049b2531bb6e6f8/", "*.sav"))
+        {
+            yield return new TestCaseData(file);
+        }
+        foreach (var file in Directory.GetFiles(@"/home/marvin/Games/epic-games-store/drive_c/users/marvin/AppData/Local/FactoryGame/Saved/SaveGames/76561198023947483/", "*.sav"))
         {
             yield return new TestCaseData(file);
         }

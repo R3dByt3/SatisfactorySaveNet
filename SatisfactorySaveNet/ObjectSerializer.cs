@@ -57,12 +57,12 @@ public class ObjectSerializer : IObjectSerializer
         var parentObjectName = _stringSerializer.Deserialize(reader);
 
         var componentsCount = reader.ReadInt32();
-        var components = new List<ObjectReference>(componentsCount);
+        var components = new ObjectReference[componentsCount];
 
         for (var i = 0; i < componentsCount; i++)
         {
             var objectRef = _objectReferenceSerializer.Deserialize(reader);
-            components.Add(objectRef);
+            components[i] = objectRef;
         }
 
         actorObject.ParentObjectRoot = parentObjectRoot;
