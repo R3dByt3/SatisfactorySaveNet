@@ -4,6 +4,9 @@ using Microsoft.Extensions.Logging.Abstractions;
 using SatisfactorySaveNet.Abstracts;
 using System;
 using System.IO;
+#if DEBUG
+using System.Linq;
+#endif
 using System.Text;
 
 namespace SatisfactorySaveNet;

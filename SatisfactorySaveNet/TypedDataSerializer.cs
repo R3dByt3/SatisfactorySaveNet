@@ -46,7 +46,7 @@ public class TypedDataSerializer : ITypedDataSerializer
         {
             nameof(Color) => DeserializeColor(reader),
             nameof(LinearColor) => DeserializeLinearColor(reader),
-            nameof(Vector) => DeserializeVector(reader, header),
+            nameof(Vector) => DeserializeVector(reader, header, binarySize),
             nameof(Rotator) => DeserializeRotator(reader, header, type),
             nameof(Vector2D) => DeserializeVector2D(reader, header),
             nameof(Quat) => DeserializeQuat(reader, header),
@@ -489,9 +489,9 @@ public class TypedDataSerializer : ITypedDataSerializer
         return new Vector { Value = _vectorSerializer.DeserializeVec3(reader) };
     }
 
-    private TypedData DeserializeVector(BinaryReader reader, Header header)
+    private TypedData DeserializeVector(BinaryReader reader, Header header, int binarySize)
     {
-        return header.SaveVersion >= 41
+        return header.SaveVersion >= 41 && binarySize != 12
             ? new VectorD { Value = _vectorSerializer.DeserializeVec3D(reader) }
             : new Vector { Value = _vectorSerializer.DeserializeVec3(reader) };
     }
@@ -501,16 +501,6 @@ public class TypedDataSerializer : ITypedDataSerializer
         return header.SaveVersion >= 41 && !typeName.Equals("SpawnData", StringComparison.Ordinal)
             ? new RotatorD { Value = _vectorSerializer.DeserializeVec3D(reader) }
             : new Rotator { Value = _vectorSerializer.DeserializeVec3(reader) };
-    }
-
-    private SpawnData DeserializeSpawnData(BinaryReader reader)
-    {
-        var properties = _propertySerializer.DeserializeProperties(reader).ToArray();
-
-        return new SpawnData
-        {
-            Properties = properties
-        };
     }
 
     private RailroadTrackPosition DeserializeRailroadTrackPosition(BinaryReader reader)

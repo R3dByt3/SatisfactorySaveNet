@@ -11,12 +11,13 @@
         <IsPackable>false</IsPackable>
         <IsPublishable>false</IsPublishable>
 
-        <VersionPrefix>3.2.2</VersionPrefix>
+        <VersionPrefix>3.2.3</VersionPrefix>
         <Version Condition=" '$(VersionSuffix)' != '' ">$(VersionPrefix)-$(VersionSuffix)</Version>
         <Version Condition=" '$(VersionSuffix)' == '' ">$(VersionPrefix)</Version>
 
         <PublishRepositoryUrl>true</PublishRepositoryUrl>
-        <DebugType>embedded</DebugType>
+        <DebugType>portable</DebugType>
+        <DebugSymbols>true</DebugSymbols>
         <EmbedUntrackedSources>true</EmbedUntrackedSources>
         <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
         <Deterministic>true</Deterministic>
