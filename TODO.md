@@ -191,3 +191,65 @@ Or an indexer-style API if that fits the existing surface better:
 **Out of scope.** Auto-deserializing into POCOs (different abstraction).
 Collection-shaped properties (`MapProperty`, `SetProperty`, `ArrayProperty`)
 probably warrant their own accessors but can land separately.
+
+---
+
+## 7. Bundle a coordinate→resource lookup table for vanilla resource nodes
+
+**Problem.** `BP_ResourceNode_C` actors (the static mining nodes Coffee Stain
+placed in the world — Iron / Copper / Coal / Limestone / Oil / Caterium /
+Sulfur / Quartz / Bauxite / Uranium / SAM) carry only `mResourcesLeft` in
+the save file. The resource type (`mResourceClass`) and purity (`mPurity`)
+are **blueprint class defaults**, not instance-serialized properties — they
+live in the game's `.pak` assets, not in the `.sav`.
+
+Same story for `BP_FrackingCore_C` (oil/water/nitrogen wells), and to a lesser
+extent for `BP_ResourceNodeGeyser_C` (always geothermal, so trivially
+inferable from the BP type).
+
+Today every downstream consumer that wants per-node resource info has to
+either ship their own coordinate→resource map or skip the feature. The data
+itself is well-known (community-maintained on the Satisfactory wiki,
+satisfactory-calculator.com, etc.) and stable across game patches — node
+placements have barely moved since v1.0.
+
+**Proposed addition.** Bundle a curated dataset alongside the parser:
+
+```
+SatisfactorySaveNet.Resources/
+  known-resource-nodes.json        # public-data, CC-BY-SA-sourced
+  KnownResourceNodes.cs            # static API: Lookup(position) → (resource, purity)
+```
+
+```csharp
+public static class KnownResourceNodes
+{
+    public static KnownNode? Lookup(Vector3 position, float tolerance = 500f);
+    public static IReadOnlyList<KnownNode> All { get; }
+}
+
+public sealed record KnownNode(string ResourceClass, NodePurity Purity, Vector3 Position);
+```
+
+Tolerance lets us match nodes that have drifted slightly between save versions
+or via mods. ~500 cm is plenty — vanilla nodes are tens of metres apart.
+
+**Impact.**
+- Consumers get per-node resource info without each having to ship the data.
+- Centralised maintenance: one PR updates the table when Coffee Stain adds
+  a new node (rare but happens).
+- Decouples parser code from world data (data file, not C# code).
+
+**Out of scope.**
+- Modded world support (modded maps would need their own lookup). Could ship
+  a "register custom map" hook later.
+- Resource amounts / extraction rates per purity — derivable from existing
+  game data, but consumer-side concern.
+
+**Sourcing the data.** Public Satisfactory wiki (CC-BY-SA 3.0) or community
+JSON dumps. The list is ~600 entries total (all node types combined).
+Until the upstream lib bundles this, the ERP planner ships its own seed
+table under `src/Satisfactory/Save/Data/`.
+
+Tracked as a consumer-side need in
+`ChrisonSimtian/ERP.Satisfactory` (resource node identification work).
