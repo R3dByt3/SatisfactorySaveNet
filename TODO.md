@@ -139,3 +139,55 @@ LightweightBuildableSubsystem), add them to the `extraDataPortedAtV12` check
 AND add a synthesised-binary test for the v1.2 wire shape in
 `Serializers/ExtraDataSerializerV12Tests.cs` (new file, mirrors the existing
 `*LegacyTests.cs`).
+
+---
+
+## 6. Add typed property accessor helpers on `ComponentObject`
+
+**Problem.** Downstream consumers typically need a handful of typed properties
+off each actor (e.g. `mPurity` on a resource node, `mCurrentRecipe` on a
+producer, `mExtractResourceNode` on a miner, `mCurrentPotential` for clock
+speed). Today that means walking `ComponentObject.Properties` and
+pattern-matching against the concrete `Property` subclasses for every actor
+type in every adapter:
+
+```csharp
+var purityProp = actor.Properties
+    .OfType<EnumProperty>()
+    .FirstOrDefault(p => p.Name == "mPurity");
+if (purityProp is not null && Enum.TryParse<NodePurity>(StripPrefix(purityProp.Value), out var purity)) { ... }
+```
+
+…repeated for every property type and every actor type. The ERP planner
+consuming this library hits the boilerplate hard — see the open task
+"Surface NodePurity, ClockSpeed, RecipeId, and miner→ResourceNode binding
+on LiveFactoryState" in the consuming repo
+(`ChrisonSimtian/ERP.Satisfactory` issue #35).
+
+**Proposed addition.** Convenience accessors on `ComponentObject` that return
+`null` / `false` when the property is absent or the wrong type — without
+throwing:
+
+```csharp
+public bool TryGetEnumValue(string name, out string? value);
+public bool TryGetFloatValue(string name, out float value);
+public bool TryGetIntValue(string name, out int value);
+public bool TryGetBoolValue(string name, out bool value);
+public bool TryGetStringValue(string name, out string? value);
+public bool TryGetObjectReference(string name, out ObjectReference? reference);
+public bool TryGetSoftObjectReference(string name, out SoftObjectReference? reference);
+```
+
+Or an indexer-style API if that fits the existing surface better:
+`T? GetPropertyValue<T>(string name)`.
+
+**Impact.**
+- Adapters reading typed properties become one-liners instead of
+  pattern-match ladders.
+- Consumers' code becomes resilient to minor wire-format changes (a property
+  going from `FloatProperty` to `DoubleProperty` upstream, say).
+- No behavior change for existing consumers — purely additive.
+
+**Out of scope.** Auto-deserializing into POCOs (different abstraction).
+Collection-shaped properties (`MapProperty`, `SetProperty`, `ArrayProperty`)
+probably warrant their own accessors but can land separately.
