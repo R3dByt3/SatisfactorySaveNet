@@ -18,6 +18,11 @@ public class BodyV8 : BodyBase
     public Grid? Grid { get; set; }
 
     /// <summary>
+    /// Optional save-level version block written after global object references at SaveCustomVersion 53+.
+    /// </summary>
+    public DataPackageVersion? TrailingSaveDataPackageVersion { get; set; }
+
+    /// <summary>
     /// A list of object references, can also be ignored. for the format of one such ObjectReference
     /// </summary>
     [Obsolete("These information seem to be obsolete")]
