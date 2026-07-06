@@ -89,11 +89,14 @@ public class ExtraDataSerializer : IExtraDataSerializer
         return null;
     }
 
+    private static bool IsEmptyObjectReference(ObjectReference reference) =>
+        string.IsNullOrEmpty(reference.LevelName) && string.IsNullOrEmpty(reference.PathName);
+
     private LightweightBuildableSubsystem DeserializeLightweightBuildableSubsystem(BinaryReader reader, Header header)
     {
         var unknownRoot1 = reader.ReadInt32();
 
-        int? lightWeightVersion = null;
+        var lightWeightVersion = 1;
         if (header.HeaderVersion >= 14)
             lightWeightVersion = reader.ReadInt32();
 
@@ -110,7 +113,7 @@ public class ExtraDataSerializer : IExtraDataSerializer
 
             for (var y = 0; y < instanceCount; y++)
             {
-                var pathName = GenerateFastUniquePathName("LightweightBuildable_" + className.Split("/")[^1] + "_");
+                var pathName = GenerateFastUniquePathName("LB_" + className.Split("/")[^1] + "_");
 
                 var rotation = _vectorSerializer.DeserializeVec4D(reader);
                 var translation = _vectorSerializer.DeserializeVec3D(reader);
@@ -130,26 +133,27 @@ public class ExtraDataSerializer : IExtraDataSerializer
                 var blueprintProxy = _objectReferenceSerializer.Deserialize(reader);
 
                 TypeSpecificData? typeSpecificData = null;
+                byte? serviceProvider = null;
+                int? playerInfoTableIndex = null;
 
-                if (header.HeaderVersion >= 14)
+                if (lightWeightVersion >= 2 && reader.ReadInt32() == 1)
                 {
-                    var specificationDataFlag = reader.ReadInt32();
-                    var hasSpecificationData = specificationDataFlag == 1;
-
-                    if (hasSpecificationData)
+                    var objectReference = _objectReferenceSerializer.Deserialize(reader);
+                    _ = reader.ReadInt32();
+                    var properties = _propertySerializer.DeserializeProperties(reader, header).ToArray();
+                    typeSpecificData = new TypeSpecificData
                     {
-                        var objectReference = _objectReferenceSerializer.Deserialize(reader);
+                        ObjectReference = objectReference,
+                        Properties = properties,
+                    };
+                }
 
-                        _ = reader.ReadInt32();
-
-                        var properties = _propertySerializer.DeserializeProperties(reader, header).ToArray();
-
-                        typeSpecificData = new TypeSpecificData
-                        {
-                            ObjectReference = objectReference,
-                            Properties = properties,
-                        };
-                    }
+                if (lightWeightVersion >= 3)
+                {
+                    serviceProvider = reader.ReadByte();
+                    playerInfoTableIndex = header.SaveVersion >= 57
+                        ? reader.ReadInt32()
+                        : reader.ReadByte();
                 }
 
                 instances[y] = new ExtraInstance
@@ -158,17 +162,19 @@ public class ExtraDataSerializer : IExtraDataSerializer
                     Rotation = rotation,
                     Translation = translation,
                     Scale = scale,
-                    SwatchDescription = swatchDescription,
-                    MaterialDescription = materialDescription,
-                    PatternDescription = patternDescription,
-                    SkinDescription = skinDescription,
-                    PrimaryColor = primaryColor,
-                    SecondaryColor = secondaryColor,
-                    PaintFinish = paintFinish,
+                    SwatchDescription = IsEmptyObjectReference(swatchDescription) ? new ObjectReference() : swatchDescription,
+                    MaterialDescription = IsEmptyObjectReference(materialDescription) ? new ObjectReference() : materialDescription,
+                    PatternDescription = IsEmptyObjectReference(patternDescription) ? new ObjectReference() : patternDescription,
+                    SkinDescription = IsEmptyObjectReference(skinDescription) ? new ObjectReference() : skinDescription,
+                    PrimaryColor = primaryColor is { R: 0, G: 0, B: 0, A: 1 } ? default : primaryColor,
+                    SecondaryColor = secondaryColor is { R: 0, G: 0, B: 0, A: 1 } ? default : secondaryColor,
+                    PaintFinish = IsEmptyObjectReference(paintFinish) ? new ObjectReference() : paintFinish,
                     PatternRotation = patternRotation,
                     BuildWithRecipe = buildWithRecipe,
                     BlueprintProxy = blueprintProxy,
-                    TypeSpecificData = typeSpecificData
+                    TypeSpecificData = typeSpecificData,
+                    ServiceProvider = serviceProvider,
+                    PlayerInfoTableIndex = playerInfoTableIndex
                 };
             }
 
@@ -180,14 +186,12 @@ public class ExtraDataSerializer : IExtraDataSerializer
             };
         }
 
-        var lightweightBuildableSubsystem = new LightweightBuildableSubsystem
+        return new LightweightBuildableSubsystem
         {
             Unknown1 = unknownRoot1,
             Objects = objects,
             LightWeightVersion = lightWeightVersion
         };
-
-        return lightweightBuildableSubsystem;
     }
 
     private static string GenerateFastUniquePathName(string path)
@@ -510,6 +514,12 @@ public class ExtraDataSerializer : IExtraDataSerializer
 
     private ConveyorData DeserializeConveyor(BinaryReader reader, Header header)
     {
+        if (header.SaveVersion >= 53)
+        {
+            _ = reader.ReadInt32();
+            return new ConveyorData { Count = 0, Items = [] };
+        }
+
         var count = reader.ReadInt32();
         var nrElements = reader.ReadInt32();
 
@@ -619,6 +629,16 @@ public class ExtraDataSerializer : IExtraDataSerializer
 
     private PowerLineData DeserializePowerLine(BinaryReader reader, Header header)
     {
+        if (header.SaveVersion >= 53)
+        {
+            return new PowerLineData
+            {
+                Count = 0,
+                Source = _objectReferenceSerializer.Deserialize(reader),
+                Target = _objectReferenceSerializer.Deserialize(reader)
+            };
+        }
+
         var count = reader.ReadInt32();
         var source = _objectReferenceSerializer.Deserialize(reader);
         var target = _objectReferenceSerializer.Deserialize(reader);

@@ -24,7 +24,15 @@ public static class KnownConstants
         "/FlexSplines/Conveyor/Build_Belt",
         "/conveyorbeltmod/Belt/mk",
         "/minerplus/content/buildable/Factory/belt_",
-        "/bamfp/content/buildable/Factory/belt_"
+        "/bamfp/content/buildable/Factory/belt_",
+        "/MkPlus/Buildables/ConveyorBelt/Build_ConveyorBelt_",
+        "/FastConveyors/Buildable/Belts/Build_FastConveyorBelt",
+        "/MkPlusLibs/Buildables/ConveyorBelt/Build_ConveyorBelt_Mk",
+        "/TranslucidBelts/Build_TB",
+        "/TranslucidBelts/NoRailing/Build_TB",
+        "/TranslucidBelts/LeftRailing/Build_TB",
+        "/TranslucidBelts/RightRailing/Build_TB",
+        "/VanillaUpgrades_PeakEfficiency/Buildables/ConveyorMk",
     ];
 
     public static readonly FrozenSet<string> ConveyorLifts = new[]
@@ -55,7 +63,11 @@ public static class KnownConstants
         "/Game/CoveredConveyor",
         "/CoveredConveyor",
         "/conveyorbeltmod/lift/",
-        "/FlexSplines/Lift/Flex_Lift"
+        "/FlexSplines/Lift/Flex_Lift",
+        "/MkPlus/Buildables/ConveyorLift/Build_ConveyorLift_",
+        "/FastConveyors/Buildable/Lifts/Build_FastConveyorLift",
+        "/MkPlusLibs/Buildables/ConveyorLift/Build_ConveyorLift_Mk",
+        "/TranslucidBelts/Lifts/Lift_",
     ];
 
     public static readonly FrozenSet<string> PowerLines = new[]
@@ -83,6 +95,7 @@ public static class KnownConstants
     {
         "/Game/FactoryGame/Buildable/Vehicle/Tractor/BP_Tractor.BP_Tractor_C",
         "/Game/FactoryGame/Buildable/Vehicle/Truck/BP_Truck.BP_Truck_C",
+        "/Game/FactoryGame/Buildable/Vehicle/Truck/BP_FluidTruck.BP_FluidTruck_C",
         "/Game/FactoryGame/Buildable/Vehicle/Explorer/BP_Explorer.BP_Explorer_C",
         "/Game/FactoryGame/Buildable/Vehicle/Cyberwagon/Testa_BP_WB.Testa_BP_WB_C",
         "/Game/FactoryGame/Buildable/Vehicle/Golfcart/BP_Golfcart.BP_Golfcart_C",
@@ -132,12 +145,16 @@ public static class KnownConstants
 
     public static bool IsConveyorLift(string path)
     {
-        return ConveyorLifts.Contains(path) || ModConveyorLifts.Any(x => x.StartsWith(path, StringComparison.Ordinal));
+        return ConveyorLifts.Contains(path)
+        || ModConveyorLifts.Any(x => x.StartsWith(path, StringComparison.Ordinal))
+        || string.Equals(path, "/BeltMk6/Buildable/ConveyorLiftMk6/Build_ConveyorLiftMk6.Build_ConveyorLiftMk6_C", StringComparison.Ordinal);
     }
 
     public static bool IsConveyorBelt(string path)
     {
-        return ConveyorBelts.Contains(path) || ModConveyorBelts.Any(x => x.StartsWith(path, StringComparison.Ordinal));
+        return ConveyorBelts.Contains(path)
+        || ModConveyorBelts.Any(x => x.StartsWith(path, StringComparison.Ordinal))
+        || string.Equals(path, "/BeltMk6/Buildable/ConveyorBeltMk6/Build_ConveyorBeltMk6.Build_ConveyorBeltMk6_C", StringComparison.Ordinal);
     }
 
     public static bool IsConveyorActor(string path)
@@ -152,21 +169,21 @@ public static class KnownConstants
 
     public static bool IsPowerLine(string path)
     {
-        return PowerLines.Contains(path) || ModPowerLines.Any(x => x.StartsWith(path, StringComparison.Ordinal));
+        return PowerLines.Contains(path) || ModPowerLines.Contains(path, StringComparer.Ordinal);
     }
 
     public static bool IsVehicle(string path)
     {
-        return Vehicles.Contains(path) || ModVehicles.Any(x => x.StartsWith(path, StringComparison.Ordinal));
+        return Vehicles.Contains(path) || ModVehicles.Contains(path, StringComparer.Ordinal);
     }
 
     public static bool IsLocomotive(string path)
     {
-        return Locomotives.Contains(path) || ModLocomotives.Any(x => x.StartsWith(path, StringComparison.Ordinal));
+        return Locomotives.Contains(path) || ModLocomotives.Contains(path, StringComparer.Ordinal);
     }
 
     public static bool IsFreightWagon(string path)
     {
-        return FreightWagon.Contains(path) || ModFreightWagon.Any(x => x.StartsWith(path, StringComparison.Ordinal));
+        return FreightWagon.Contains(path) || ModFreightWagon.Contains(path, StringComparer.Ordinal);
     }
 }
