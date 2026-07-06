@@ -118,6 +118,9 @@ public class SaveFileSerializer : ISaveFileSerializer
             if (uncompressedSize != dataLength + offset)
                 throw new CorruptedSatisFactorySaveFileException("Umcompressed size mismatch detected");
 
+            if (header.SaveVersion >= 53)
+                header.ParseState.SaveDataPackageVersion = UnrealFormatHelper.DeserializeDataPackageVersion(bufferReader, StringSerializer.Instance, HexSerializer.Instance);
+
             body = _bodySerializer.Deserialize(bufferReader, header);
 
             if (bufferReader.BaseStream.Position != bufferReader.BaseStream.Length)

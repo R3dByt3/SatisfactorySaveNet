@@ -18,4 +18,6 @@ public class ComponentObject
     public ExtraData? ExtraData { get; set; }
     public int? EntitySaveVersion { get; set; }
     public uint? Flags { get; set; }
+    public uint? ShouldMigrateObjectRefsToPersistentFlag { get; set; }
+    public DataPackageVersion? DataPackageVersion { get; set; }
 }

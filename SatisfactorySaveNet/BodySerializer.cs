@@ -1,6 +1,7 @@
 using SatisfactorySaveNet.Abstracts;
 using SatisfactorySaveNet.Abstracts.Exceptions;
 using SatisfactorySaveNet.Abstracts.Model;
+using System;
 using System.IO;
 
 namespace SatisfactorySaveNet;
@@ -77,21 +78,58 @@ public class BodySerializer : IBodySerializer
                 Data = data
             };
         }
+
         if (header.SaveVersion >= 29)
         {
+            var isV53 = header.SaveVersion >= 53;
             var nrLevels = reader.ReadInt32();
             var levels = new Level[nrLevels + 1];
 
             for (var i = 0; i <= nrLevels; i++)
             {
-                var levelName = i == nrLevels ? "Level " + header.MapName : _stringSerializer.Deserialize(reader);
-                var binaryLength = header.SaveVersion >= 41 ? reader.ReadInt64() : reader.ReadInt32();
+                var isPersistentLevel = i == nrLevels;
+                var levelName = isPersistentLevel ? "Level " + header.MapName : _stringSerializer.Deserialize(reader);
+                var binaryLength = isV53 || header.SaveVersion >= 41 ? reader.ReadInt64() : reader.ReadInt32();
                 var position = reader.BaseStream.Position;
                 int? saveVersion = null;
 
-                if (header.SaveVersion >= 51)
+                if (isV53)
                 {
-                    if (i == nrLevels)
+                    header.ParseState.CurrentLevelSaveVersion = header.SaveVersion;
+                    header.ParseState.CurrentLevelUE5Version = SaveParseState.DefaultUe5Version;
+
+                    if (isPersistentLevel)
+                    {
+                        if (header.ParseState.SaveDataPackageVersion != null)
+                        {
+                            header.ParseState.CurrentLevelUE5Version = header.ParseState.SaveDataPackageVersion.PackageFileVersion.UE5Version;
+                        }
+                    }
+                    else
+                    {
+                        reader.BaseStream.Seek(binaryLength, SeekOrigin.Current);
+                        var skip = reader.ReadInt64();
+                        reader.BaseStream.Seek(skip, SeekOrigin.Current);
+                        header.ParseState.CurrentLevelSaveVersion = (int) reader.ReadUInt32();
+
+                        var objectRefCount = reader.ReadInt32();
+                        for (var r = 0; r < objectRefCount; r++)
+                        {
+                            _objectReferenceSerializer.Deserialize(reader);
+                        }
+
+                        if (reader.ReadInt32() == 1)
+                        {
+                            var levelDataPackage = UnrealFormatHelper.DeserializeDataPackageVersion(reader, _stringSerializer, HexSerializer.Instance);
+                            header.ParseState.CurrentLevelUE5Version = levelDataPackage.PackageFileVersion.UE5Version;
+                        }
+
+                        reader.BaseStream.Seek(position, SeekOrigin.Begin);
+                    }
+                }
+                else if (header.SaveVersion >= 51)
+                {
+                    if (isPersistentLevel)
                     {
                         saveVersion = header.SaveVersion;
                     }
@@ -105,30 +143,59 @@ public class BodySerializer : IBodySerializer
                     }
                 }
 
+                var levelSaveVersion = isV53 ? header.ParseState.CurrentLevelSaveVersion : saveVersion;
+
                 var nrObjectHeaders = reader.ReadInt32();
                 var objects = new ComponentObject[nrObjectHeaders];
 
                 for (var j = 0; j < nrObjectHeaders; j++)
                 {
-                    objects[j] = _objectHeaderSerializer.Deserialize(reader, saveVersion);
+                    objects[j] = _objectHeaderSerializer.Deserialize(reader, levelSaveVersion);
+                }
+
+                if (isV53 && isPersistentLevel)
+                {
+                    var levelPersistentFlag = reader.ReadInt32();
+                    if (levelPersistentFlag != 0)
+                    {
+                        _ = _stringSerializer.Deserialize(reader);
+                    }
                 }
 
                 ObjectReference[] collectables;
-                
+
                 if (reader.BaseStream.Position <= position + binaryLength - 4)
                 {
                     var nrCollectables = reader.ReadInt32();
-                        
-                    if (nrCollectables > 0 && header.SaveVersion >= 46 && i == nrLevels)
+
+                    if (nrCollectables > 0 && header.SaveVersion >= 46 && isPersistentLevel)
                     {
-                        var unknownStr = _stringSerializer.Deserialize(reader);
+                        _ = _stringSerializer.Deserialize(reader);
                         nrCollectables = reader.ReadInt32();
                     }
-                        
-                    collectables = new ObjectReference[nrCollectables];
-                    for (var j = 0; j < nrCollectables; j++)
+
+                    if (isV53)
                     {
-                        collectables[j] = _objectReferenceSerializer.Deserialize(reader);
+                        if (nrCollectables > 0)
+                        {
+                            collectables = new ObjectReference[nrCollectables];
+                            for (var j = 0; j < nrCollectables; j++)
+                            {
+                                collectables[j] = _objectReferenceSerializer.Deserialize(reader);
+                            }
+                        }
+                        else
+                        {
+                            collectables = [];
+                        }
+                    }
+                    else
+                    {
+                        collectables = new ObjectReference[nrCollectables];
+                        for (var j = 0; j < nrCollectables; j++)
+                        {
+                            collectables[j] = _objectReferenceSerializer.Deserialize(reader);
+                        }
                     }
                 }
                 else
@@ -136,37 +203,116 @@ public class BodySerializer : IBodySerializer
                     collectables = [];
                 }
 
-                var binarySizeObjects = header.SaveVersion >= 41 ? reader.ReadInt64() : reader.ReadInt32();
+                if (isV53 && !isPersistentLevel)
+                {
+                    if (reader.BaseStream.Position < position + binaryLength - 4)
+                    {
+                        var nrSublevelCollectables = reader.ReadInt32();
+                        for (var c = 0; c < nrSublevelCollectables; c++)
+                        {
+                            _objectReferenceSerializer.Deserialize(reader);
+                        }
+                    }
+                    else if (reader.BaseStream.Position == position + binaryLength - 4)
+                    {
+                        _ = reader.ReadInt32();
+                    }
+                }
+
+                var binarySizeObjects = isV53 || header.SaveVersion >= 41 ? reader.ReadInt64() : reader.ReadInt32();
                 var positionStart = reader.BaseStream.Position;
                 var nrObjects = reader.ReadInt32();
 
                 if (nrObjects != nrObjectHeaders)
+                {
                     throw new CorruptedSatisFactorySaveFileException("NrObjects does not match nrObjectHeaders");
+                }
 
                 for (var j = 0; j < nrObjects; j++)
                 {
-                    objects[j] = _objectSerializer.Deserialize(reader, header, objects[j]);
+                    if (isV53)
+                    {
+                        try
+                        {
+                            objects[j] = _objectSerializer.Deserialize(reader, header, objects[j]);
+                        }
+                        catch (Exception ex)
+                        {
+                            throw new CorruptedSatisFactorySaveFileException(
+                                $"Level '{levelName}' entity {j + 1}/{nrObjects} ({objects[j].TypePath}): {ex.Message}",
+                                ex);
+                        }
+                    }
+                    else
+                    {
+                        objects[j] = _objectSerializer.Deserialize(reader, header, objects[j]);
+                    }
                 }
 
                 var expectedPosition = positionStart + binarySizeObjects;
                 if (expectedPosition != reader.BaseStream.Position)
-                    throw new BadReadException("Expected stream position does not match actual position");
-
-                if (i != nrLevels && header.SaveVersion >= 51)
-                    _ = reader.ReadUInt32();
-
-                var nrSecondCollectables = reader.ReadInt32();
-
-                if (nrSecondCollectables > 0 && header.SaveVersion >= 46 && i == nrLevels)
                 {
-                    var unknownStr = _stringSerializer.Deserialize(reader);
-                    nrSecondCollectables = reader.ReadInt32();
+                    if (isV53)
+                    {
+                        throw new BadReadException(
+                            $"Level '{levelName}' entity block size mismatch: expected {expectedPosition}, at {reader.BaseStream.Position} (delta {reader.BaseStream.Position - expectedPosition})");
+                    }
+
+                    throw new BadReadException("Expected stream position does not match actual position");
                 }
 
-                var secondCollectables = new ObjectReference[nrSecondCollectables];
-                for (var j = 0; j < nrSecondCollectables; j++)
+                if (isV53)
                 {
-                    secondCollectables[j] = _objectReferenceSerializer.Deserialize(reader);
+                    if (reader.BaseStream.Position < position + binaryLength)
+                    {
+                        reader.BaseStream.Seek(position + binaryLength, SeekOrigin.Begin);
+                    }
+                }
+                else if (!isPersistentLevel && header.SaveVersion >= 51)
+                {
+                    _ = reader.ReadUInt32();
+                }
+
+                ObjectReference[] secondCollectables;
+
+                if (isV53)
+                {
+                    if (!isPersistentLevel)
+                    {
+                        _ = reader.ReadUInt32();
+
+                        var nrSecondCollectables = reader.ReadInt32();
+                        secondCollectables = new ObjectReference[nrSecondCollectables];
+                        for (var j = 0; j < nrSecondCollectables; j++)
+                        {
+                            secondCollectables[j] = _objectReferenceSerializer.Deserialize(reader);
+                        }
+
+                        if (reader.ReadInt32() == 1)
+                        {
+                            _ = UnrealFormatHelper.DeserializeDataPackageVersion(reader, _stringSerializer, HexSerializer.Instance);
+                        }
+                    }
+                    else
+                    {
+                        secondCollectables = [];
+                    }
+                }
+                else
+                {
+                    var nrSecondCollectables = reader.ReadInt32();
+
+                    if (nrSecondCollectables > 0 && header.SaveVersion >= 46 && isPersistentLevel)
+                    {
+                        _ = _stringSerializer.Deserialize(reader);
+                        nrSecondCollectables = reader.ReadInt32();
+                    }
+
+                    secondCollectables = new ObjectReference[nrSecondCollectables];
+                    for (var j = 0; j < nrSecondCollectables; j++)
+                    {
+                        secondCollectables[j] = _objectReferenceSerializer.Deserialize(reader);
+                    }
                 }
 
 #pragma warning disable CS0618 // Type or member is obsolete
@@ -180,31 +326,75 @@ public class BodySerializer : IBodySerializer
 #pragma warning restore CS0618 // Type or member is obsolete
             }
 
-            if (reader.BaseStream.Position == reader.BaseStream.Length)
+            if (isV53)
             {
+                if (reader.BaseStream.Position < reader.BaseStream.Length)
+                {
+                    var nrObjectReferences = reader.ReadInt32();
+                    var objectReferences = new ObjectReference[nrObjectReferences];
+                    for (var i = 0; i < nrObjectReferences; i++)
+                    {
+                        objectReferences[i] = _objectReferenceSerializer.Deserialize(reader);
+                    }
+
+                    DataPackageVersion? trailingSaveDataPackageVersion = null;
+                    if (reader.BaseStream.Position < reader.BaseStream.Length)
+                    {
+                        var trailingBytes = reader.ReadBytes((int) (reader.BaseStream.Length - reader.BaseStream.Position));
+                        using var trailingReader = new BinaryReader(new MemoryStream(trailingBytes));
+                        try
+                        {
+                            trailingSaveDataPackageVersion = UnrealFormatHelper.DeserializeDataPackageVersion(
+                                trailingReader, _stringSerializer, HexSerializer.Instance);
+                        }
+                        catch (EndOfStreamException)
+                        {
+                        }
+                    }
+
+#pragma warning disable CS0618 // Type or member is obsolete
+                    return new BodyV8
+                    {
+                        Levels = levels,
+                        Grid = grid,
+                        ObjectReferences = objectReferences,
+                        TrailingSaveDataPackageVersion = trailingSaveDataPackageVersion
+                    };
+#pragma warning restore CS0618 // Type or member is obsolete
+                }
+
+#pragma warning disable CS0618 // Type or member is obsolete
+                return new BodyV8 { Levels = levels, Grid = grid };
+#pragma warning restore CS0618 // Type or member is obsolete
+            }
+            else
+            {
+                if (reader.BaseStream.Position == reader.BaseStream.Length)
+                {
+                    return new BodyV8
+                    {
+                        Levels = levels,
+                        Grid = grid
+                    };
+                }
+
+                var nrObjectReferences = reader.ReadInt32();
+                var objectReferences = new ObjectReference[nrObjectReferences];
+
+                for (var i = 0; i < nrObjectReferences; i++)
+                {
+                    objectReferences[i] = _objectReferenceSerializer.Deserialize(reader);
+                }
+
+#pragma warning disable CS0618 // Type or member is obsolete
                 return new BodyV8
                 {
                     Levels = levels,
-                    Grid = grid
+                    Grid = grid,
+                    ObjectReferences = objectReferences
                 };
-            }
-
-            var nrObjectReferences = reader.ReadInt32();
-            var objectReferences = new ObjectReference[nrObjectReferences];
-
-            for (var i = 0; i < nrObjectReferences; i++)
-            {
-                objectReferences[i] = _objectReferenceSerializer.Deserialize(reader);
-            }
-
-#pragma warning disable CS0618 // Type or member is obsolete
-            return new BodyV8
-            {
-                Levels = levels,
-                Grid = grid,
-                ObjectReferences = objectReferences
-            };
 #pragma warning restore CS0618 // Type or member is obsolete
+            }
         }
         else
         {
@@ -217,18 +407,20 @@ public class BodySerializer : IBodySerializer
             }
 
             var nrObjects = reader.ReadInt32();
-            
+
             if (nrObjects != nrObjectHeaders)
+            {
                 throw new CorruptedSatisFactorySaveFileException("NrObjects does not match nrObjectHeaders");
-            
+            }
+
             for (var j = 0; j < nrObjects; j++)
             {
                 objects[j] = _objectSerializer.Deserialize(reader, header, objects[j]);
             }
-            
+
             var nrSecondCollectables = reader.ReadInt32();
             var collectables = new ObjectReference[nrSecondCollectables];
-            
+
             for (var j = 0; j < nrSecondCollectables; j++)
             {
                 collectables[j] = _objectReferenceSerializer.Deserialize(reader);

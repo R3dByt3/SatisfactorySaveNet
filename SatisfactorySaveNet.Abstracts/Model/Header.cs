@@ -93,4 +93,9 @@ public class Header
     /// Name of the save
     /// </summary>
     public string? SaveName { get; set; }
+
+    /// <summary>
+    /// Populated during deserialization; not part of the on-disk header.
+    /// </summary>
+    public SaveParseState ParseState { get; } = new();
 }

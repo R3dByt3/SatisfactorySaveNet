@@ -5,6 +5,7 @@ using SatisfactorySaveNet.Abstracts.Model;
 using SatisfactorySaveNet.Abstracts.Model.Properties;
 using SatisfactorySaveNet.Abstracts.Model.Typed;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using DateTime = SatisfactorySaveNet.Abstracts.Model.Typed.DateTime;
@@ -73,67 +74,67 @@ public class TypedDataSerializer : ITypedDataSerializer
             nameof(ClientIdentityInfo) => DeserializeClientIdentityInfo(reader, binarySize),
             nameof(FIRAnyValue) => DeserializeFIRAnyValue(reader, header),
 
-            nameof(InventoryStack) => DeserializeArrayProperties(reader, header, type),
-            nameof(SpawnData) => DeserializeArrayProperties(reader, header, type),
-            "FactoryCustomizationColorSlot" => DeserializeArrayProperties(reader, header, type),
-            "PhaseCost" => DeserializeArrayProperties(reader, header, type),
-            "GlobalColorPreset" => DeserializeArrayProperties(reader, header, type),
-            "MiniGameResult" => DeserializeArrayProperties(reader, header, type),
-            "ItemAmount" => DeserializeArrayProperties(reader, header, type),
-            "MapMarker" => DeserializeArrayProperties(reader, header, type),
-            "ScannableResourcePair" => DeserializeArrayProperties(reader, header, type),
-            "SwatchGroupData" => DeserializeArrayProperties(reader, header, type),
-            "Vector_NetQuantize" => DeserializeArrayProperties(reader, header, type),
-            "ItemFoundData" => DeserializeArrayProperties(reader, header, type),
-            "Transform" => DeserializeArrayProperties(reader, header, type),
-            "RemovedInstanceArray" => DeserializeArrayProperties(reader, header, type),
-            "ResearchCost" => DeserializeArrayProperties(reader, header, type),
-            "TimeTableStop" => DeserializeArrayProperties(reader, header, type),
-            "ScannableObjectData" => DeserializeArrayProperties(reader, header, type),
-            "HighlightedMarkerPair" => DeserializeArrayProperties(reader, header, type),
-            "TrainDockingRuleSet" => DeserializeArrayProperties(reader, header, type),
-            "RemovedInstance" => DeserializeArrayProperties(reader, header, type),
-            "CompletedResearch" => DeserializeArrayProperties(reader, header, type),
-            "FactoryCustomizationData" => DeserializeArrayProperties(reader, header, type),
-            "TrainSimulationData" => DeserializeArrayProperties(reader, header, type),
-            "ResourceSinkHistory" => DeserializeArrayProperties(reader, header, type),
-            "RecipeAmountStruct" => DeserializeArrayProperties(reader, header, type),
-            "ResearchData" => DeserializeArrayProperties(reader, header, type),
-            "Hotbar" => DeserializeArrayProperties(reader, header, type),
-            "GCheckmarkUnlockData" => DeserializeArrayProperties(reader, header, type),
-            "BlueprintCategoryRecord" => DeserializeArrayProperties(reader, header, type),
-            "BlueprintSubCategoryRecord" => DeserializeArrayProperties(reader, header, type),
-            "SplinePointData" => DeserializeArrayProperties(reader, header, type),
-            "LampGroup" => DeserializeArrayProperties(reader, header, type),
-            "MessageData" => DeserializeArrayProperties(reader, header, type),
-            "SplitterSortRule" => DeserializeArrayProperties(reader, header, type),
-            "SubCategoryMaterialDefault" => DeserializeArrayProperties(reader, header, type),
-            "FeetOffset" => DeserializeArrayProperties(reader, header, type),
-            "WireInstance" => DeserializeArrayProperties(reader, header, type),
-            "DroneTripInformation" => DeserializeArrayProperties(reader, header, type),
-            "LightSourceControlData" => DeserializeArrayProperties(reader, header, type),
-            "PrefabTextElementSaveData" => DeserializeArrayProperties(reader, header, type),
-            "PlayerRules" => DeserializeArrayProperties(reader, header, type),
-            "PrefabIconElementSaveData" => DeserializeArrayProperties(reader, header, type),
-            "BoomBoxPlayerState" => DeserializeArrayProperties(reader, header, type),
-            "ShoppingListRecipeEntry" => DeserializeArrayProperties(reader, header, type),
-            "BlueprintRecord" => DeserializeArrayProperties(reader, header, type),
-            "DroneDockingStateInfo" => DeserializeArrayProperties(reader, header, type),
-            "FGDroneFuelRuntimeData" => DeserializeArrayProperties(reader, header, type),
-            "ShoppingListBlueprintEntry" => DeserializeArrayProperties(reader, header, type),
-            "FICAttributeBool" => DeserializeArrayProperties(reader, header, type),
-            "PlayerCustomizationData" => DeserializeArrayProperties(reader, header, type),
-            "FICAttributePosition" => DeserializeArrayProperties(reader, header, type),
-            "FICFloatAttribute" => DeserializeArrayProperties(reader, header, type),
-            "FICAttributeRotation" => DeserializeArrayProperties(reader, header, type),
+            nameof(InventoryStack) => DeserializeArrayProperties(reader, header, type, binarySize),
+            nameof(SpawnData) => DeserializeArrayProperties(reader, header, type, binarySize),
+            "FactoryCustomizationColorSlot" => DeserializeArrayProperties(reader, header, type, binarySize),
+            "PhaseCost" => DeserializeArrayProperties(reader, header, type, binarySize),
+            "GlobalColorPreset" => DeserializeArrayProperties(reader, header, type, binarySize),
+            "MiniGameResult" => DeserializeArrayProperties(reader, header, type, binarySize),
+            "ItemAmount" => DeserializeArrayProperties(reader, header, type, binarySize),
+            "MapMarker" => DeserializeArrayProperties(reader, header, type, binarySize),
+            "ScannableResourcePair" => DeserializeArrayProperties(reader, header, type, binarySize),
+            "SwatchGroupData" => DeserializeArrayProperties(reader, header, type, binarySize),
+            "Vector_NetQuantize" => DeserializeArrayProperties(reader, header, type, binarySize),
+            "ItemFoundData" => DeserializeArrayProperties(reader, header, type, binarySize),
+            "Transform" => DeserializeArrayProperties(reader, header, type, binarySize),
+            "RemovedInstanceArray" => DeserializeArrayProperties(reader, header, type, binarySize),
+            "ResearchCost" => DeserializeArrayProperties(reader, header, type, binarySize),
+            "TimeTableStop" => DeserializeArrayProperties(reader, header, type, binarySize),
+            "ScannableObjectData" => DeserializeArrayProperties(reader, header, type, binarySize),
+            "HighlightedMarkerPair" => DeserializeArrayProperties(reader, header, type, binarySize),
+            "TrainDockingRuleSet" => DeserializeArrayProperties(reader, header, type, binarySize),
+            "RemovedInstance" => DeserializeArrayProperties(reader, header, type, binarySize),
+            "CompletedResearch" => DeserializeArrayProperties(reader, header, type, binarySize),
+            "FactoryCustomizationData" => DeserializeArrayProperties(reader, header, type, binarySize),
+            "TrainSimulationData" => DeserializeArrayProperties(reader, header, type, binarySize),
+            "ResourceSinkHistory" => DeserializeArrayProperties(reader, header, type, binarySize),
+            "RecipeAmountStruct" => DeserializeArrayProperties(reader, header, type, binarySize),
+            "ResearchData" => DeserializeArrayProperties(reader, header, type, binarySize),
+            "Hotbar" => DeserializeArrayProperties(reader, header, type, binarySize),
+            "GCheckmarkUnlockData" => DeserializeArrayProperties(reader, header, type, binarySize),
+            "BlueprintCategoryRecord" => DeserializeArrayProperties(reader, header, type, binarySize),
+            "BlueprintSubCategoryRecord" => DeserializeArrayProperties(reader, header, type, binarySize),
+            "SplinePointData" => DeserializeArrayProperties(reader, header, type, binarySize),
+            "LampGroup" => DeserializeArrayProperties(reader, header, type, binarySize),
+            "MessageData" => DeserializeArrayProperties(reader, header, type, binarySize),
+            "SplitterSortRule" => DeserializeArrayProperties(reader, header, type, binarySize),
+            "SubCategoryMaterialDefault" => DeserializeArrayProperties(reader, header, type, binarySize),
+            "FeetOffset" => DeserializeArrayProperties(reader, header, type, binarySize),
+            "WireInstance" => DeserializeArrayProperties(reader, header, type, binarySize),
+            "DroneTripInformation" => DeserializeArrayProperties(reader, header, type, binarySize),
+            "LightSourceControlData" => DeserializeArrayProperties(reader, header, type, binarySize),
+            "PrefabTextElementSaveData" => DeserializeArrayProperties(reader, header, type, binarySize),
+            "PlayerRules" => DeserializeArrayProperties(reader, header, type, binarySize),
+            "PrefabIconElementSaveData" => DeserializeArrayProperties(reader, header, type, binarySize),
+            "BoomBoxPlayerState" => DeserializeArrayProperties(reader, header, type, binarySize),
+            "ShoppingListRecipeEntry" => DeserializeArrayProperties(reader, header, type, binarySize),
+            "BlueprintRecord" => DeserializeArrayProperties(reader, header, type, binarySize),
+            "DroneDockingStateInfo" => DeserializeArrayProperties(reader, header, type, binarySize),
+            "FGDroneFuelRuntimeData" => DeserializeArrayProperties(reader, header, type, binarySize),
+            "ShoppingListBlueprintEntry" => DeserializeArrayProperties(reader, header, type, binarySize),
+            "FICAttributeBool" => DeserializeArrayProperties(reader, header, type, binarySize),
+            "PlayerCustomizationData" => DeserializeArrayProperties(reader, header, type, binarySize),
+            "FICAttributePosition" => DeserializeArrayProperties(reader, header, type, binarySize),
+            "FICFloatAttribute" => DeserializeArrayProperties(reader, header, type, binarySize),
+            "FICAttributeRotation" => DeserializeArrayProperties(reader, header, type, binarySize),
 
-            "HardDriveData" => DeserializeArrayProperties(reader, header, type),
-            "SchematicCost" => DeserializeArrayProperties(reader, header, type),
-            "FGPlayerPortalData" => DeserializeArrayProperties(reader, header, type),
-            "ShoppingListClassEntry" => DeserializeArrayProperties(reader, header, type),
-            "FGPortalCachedFactoryTickData" => DeserializeArrayProperties(reader, header, type),
+            "HardDriveData" => DeserializeArrayProperties(reader, header, type, binarySize),
+            "SchematicCost" => DeserializeArrayProperties(reader, header, type, binarySize),
+            "FGPlayerPortalData" => DeserializeArrayProperties(reader, header, type, binarySize),
+            "ShoppingListClassEntry" => DeserializeArrayProperties(reader, header, type, binarySize),
+            "FGPortalCachedFactoryTickData" => DeserializeArrayProperties(reader, header, type, binarySize),
 
-            _ => DeserializeArrayProperties(reader, header, type)
+            _ => DeserializeArrayProperties(reader, header, type, binarySize)
         };
     }
 
@@ -155,6 +156,8 @@ public class TypedDataSerializer : ITypedDataSerializer
 
         return valueType switch
         {
+            1 => new FIRIntValue { Value = reader.ReadInt32(), ValueType = valueType },
+            3 => new FIRDoubleValue { Value = reader.ReadDouble(), ValueType = valueType },
             4 => new FIRStringValue { Value = _stringSerializer.Deserialize(reader), ValueType = valueType },
             8 => new FIRFINDynamicStructHolderValue
             {
@@ -180,8 +183,9 @@ public class TypedDataSerializer : ITypedDataSerializer
             case "/Script/FicsItNetworks.FINGPUT2DC_Box":
             case "/Script/FicsItNetworksComputer.FINGPUT2DC_Box":
             case "/Script/FicsItNetworksComputer.FINGPUT2DC_Text":
-            case "/Script/FicsItNetworksComputer.FINGPUT2DC_PushClipRect":
             case "/Script/FicsItNetworksComputer.FINGPUT2DC_PopClip":
+            case "/Script/FicsItNetworksComputer.FINGPUT2DC_PushClipRect":
+            case "/Script/FicsItNetworksComputer.FINGPUT2DC_PushTransform":
             case "/Script/FicsItNetworksLua.FINEventFilter":
             case "/Script/FactoryGame.PrefabSignData":
                 properties = [.. _propertySerializer.DeserializeProperties(reader, header, type)];
@@ -226,15 +230,42 @@ public class TypedDataSerializer : ITypedDataSerializer
         }
     }
 
-    private ArrayProperties DeserializeArrayProperties(BinaryReader reader, Header header, string type)
+    private ArrayProperties DeserializeArrayProperties(BinaryReader reader, Header header, string type, int payloadLength = 0)
     {
-        var values = _propertySerializer.DeserializeProperties(reader, header).ToArray();
-
-        return new ArrayProperties
+        var previousStructContext = header.ParseState.CurrentStructTypeName;
+        var previousPayloadEnd = header.ParseState.CurrentStructPayloadEnd;
+        header.ParseState.CurrentStructTypeName = type;
+        try
         {
-            TypeName = type,
-            Values = values
-        };
+            var payloadEnd = payloadLength > 0 && header.ParseState.UseUe5PropertyFormat(header.SaveVersion)
+                ? reader.BaseStream.Position + payloadLength
+                : (long?)null;
+            header.ParseState.CurrentStructPayloadEnd = payloadEnd;
+
+            var values = new List<Property>();
+            while (payloadEnd == null || reader.BaseStream.Position < payloadEnd)
+            {
+                var property = _propertySerializer.DeserializeProperty(reader, header);
+                if (property == null)
+                    break;
+
+                values.Add(property);
+            }
+
+            if (payloadEnd != null && reader.BaseStream.Position < payloadEnd)
+                reader.BaseStream.Seek(payloadEnd.Value, SeekOrigin.Begin);
+
+            return new ArrayProperties
+            {
+                TypeName = type,
+                Values = values.ToArray()
+            };
+        }
+        finally
+        {
+            header.ParseState.CurrentStructTypeName = previousStructContext;
+            header.ParseState.CurrentStructPayloadEnd = previousPayloadEnd;
+        }
     }
 
     private FINGPUT1BufferPixel DeserializeFINGPUT1BufferPixel(BinaryReader reader)
@@ -253,6 +284,14 @@ public class TypedDataSerializer : ITypedDataSerializer
 
     private ClientIdentityInfo DeserializeClientIdentityInfo(BinaryReader reader, int binarySize)
     {
+        if (binarySize > 0)
+        {
+            return new ClientIdentityInfo
+            {
+                Value = _hexSerializer.Deserialize(reader, binarySize)
+            };
+        }
+
         var value = _stringSerializer.Deserialize(reader);
 
         if (binarySize - 4 - value.Length > 0)
@@ -337,6 +376,7 @@ public class TypedDataSerializer : ITypedDataSerializer
                     break;
                 case "/Script/FicsItNetworksLua.FINLuaEventRegistry":
                 case "/Script/FicsItNetworksMisc.FINFutureReflection":
+                case "/Script/FicsItNetworksLua.FINEventFilterExpression":
                 case "/Script/FactoryGame.PrefabSignData":
                     if (header.SaveVersion >= 46)
                     {
@@ -349,9 +389,7 @@ public class TypedDataSerializer : ITypedDataSerializer
                     break;
                 case "/Script/FactoryGame.InventoryItem":
                     if (header.SaveVersion >= 46)
-                    {
                         data = DeserializeInventoryItem(reader, header, false);
-                    }
                     break;
                 case "/Script/FicsItNetworks.FINInternetCardHttpRequestFuture":
                 case "/Script/FicsItNetworksComputer.FINInternetCardHttpRequestFuture":
