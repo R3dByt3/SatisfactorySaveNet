@@ -35,16 +35,39 @@ public class StringSerializer : IStringSerializer
 
     private static char[] ReadCharArray(BinaryReader reader)
     {
-        var count = reader.ReadInt32();
-        if (count >= 0)
+        var encodingIdentifier = reader.ReadInt32();
+
+        long expectedBytes;
+        Encoding encoding;
+        if (encodingIdentifier >= 0)
         {
-            var bytes = reader.ReadBytes(count);
-            return Encoding.UTF8.GetChars(bytes);
+            expectedBytes = encodingIdentifier;
+            encoding = Encoding.UTF8;
         }
         else
         {
-            var bytes = reader.ReadBytes(count * -2);
-            return Encoding.Unicode.GetChars(bytes);
+            expectedBytes = encodingIdentifier * -2L;
+            encoding = Encoding.Unicode;
         }
+
+        try
+        {
+            var stream = reader.BaseStream;
+            if (stream.CanSeek)
+            {
+                var remaining = stream.Length - stream.Position;
+                if (expectedBytes > remaining || expectedBytes < 0)
+                {
+                    return [];
+                }
+            }
+        }
+        catch
+        {
+            // Ignore any errors while checking stream state and fall back to a safe read below.
+        }
+
+        var bytes = reader.ReadBytes((int)expectedBytes);
+        return bytes.Length != expectedBytes ?  [] : encoding.GetChars(bytes);
     }
 }
