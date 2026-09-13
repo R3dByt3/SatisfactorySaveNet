@@ -1,0 +1,29 @@
+name: Build and Test
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Restore dependencies
+        run: dotnet restore SatisfactorySaveNet.sln
+
+      - name: Build
+        run: dotnet build SatisfactorySaveNet.sln --configuration Release --no-restore
+
+      - name: Test
+        run: dotnet test SatisfactorySaveNet.sln --configuration Release --no-build --verbosity normal

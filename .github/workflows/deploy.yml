@@ -1,0 +1,50 @@
+name: Build and Deploy to NuGet
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Get version from release
+        id: get_version
+        run: |
+          if [[ "${{ github.event_name }}" == "release" ]]; then
+            VERSION="${{ github.event.release.tag_name }}"
+            VERSION=${VERSION#v}
+            echo "version=$VERSION" >> $GITHUB_OUTPUT
+          else
+            echo "version=0.0.0" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Restore dependencies
+        run: dotnet restore SatisfactorySaveNet.sln
+
+      - name: Build
+        run: dotnet build SatisfactorySaveNet.sln --configuration Release --no-restore /p:Version=${{ steps.get_version.outputs.version }} /p:GeneratePackageOnBuild=false
+
+      - name: Test
+        run: dotnet test SatisfactorySaveNet.sln --configuration Release --no-build --verbosity normal
+
+      - name: Pack with version
+        run: |
+          dotnet pack SatisfactorySaveNet.Abstracts/SatisfactorySaveNet.Abstracts.csproj --configuration Release --no-build --output ./nupkgs /p:Version=${{ steps.get_version.outputs.version }}
+          dotnet pack SatisfactorySaveNet/SatisfactorySaveNet.csproj --configuration Release --no-build --output ./nupkgs /p:Version=${{ steps.get_version.outputs.version }}
+
+      - name: Publish to NuGet
+        if: github.event_name == 'release'
+        run: dotnet nuget push ./nupkgs/*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
