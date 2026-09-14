@@ -50,7 +50,7 @@ public class ExtraDataSerializer : IExtraDataSerializer
             "/Game/FactoryGame/-Shared/Blueprint/BP_GameState.BP_GameState_C" or "/Game/FactoryGame/-Shared/Blueprint/BP_GameMode.BP_GameMode_C" => DeserializeBlueprint(reader),
             "/Game/FactoryGame/Character/Player/BP_PlayerState.BP_PlayerState_C" => DeserializePlayerData(reader, expectedPosition),
             "/Game/FactoryGame/Buildable/Factory/DroneStation/BP_DroneTransport.BP_DroneTransport_C" => DeserializeDroneStation(reader, header, expectedPosition),
-            "/Game/FactoryGame/-Shared/Blueprint/BP_CircuitSubsystem.BP_CircuitSubsystem_C" => DeserializeCircuitData(reader),
+            "/Game/FactoryGame/-Shared/Blueprint/BP_CircuitSubsystem.BP_CircuitSubsystem_C" => DeserializeCircuitData(reader, header),
             "/Script/FactoryGame.FGLightweightBuildableSubsystem" => DeserializeLightweightBuildableSubsystem(reader, header),
             _ => DeserializeUnknownData(reader, header, typePath, expectedPosition),
         };
@@ -203,10 +203,10 @@ public class ExtraDataSerializer : IExtraDataSerializer
         return result;
     }
 
-    private CircuitData DeserializeCircuitData(BinaryReader reader)
+    private CircuitData DeserializeCircuitData(BinaryReader reader, Header header)
     {
         var count = reader.ReadInt32();
-        var nrElements = reader.ReadInt32();
+        var nrElements = header.SaveVersion >= 53 ? count : reader.ReadInt32();
         var circuits = new Circuit[nrElements];
 
         for (var x = 0; x < nrElements; x++)
