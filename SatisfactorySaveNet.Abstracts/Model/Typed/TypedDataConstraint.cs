@@ -43,5 +43,7 @@ public enum TypedDataConstraint
     FIRAnyValue,
     FIRExecutionContext,
     Collection,
-    FINLuaInventoryItem
+    FINLuaInventoryItem,
+    PlayerInfoHandle,
+    SoftClassPath
 }

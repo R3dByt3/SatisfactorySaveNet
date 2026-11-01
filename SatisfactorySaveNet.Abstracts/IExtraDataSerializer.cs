@@ -6,5 +6,5 @@ namespace SatisfactorySaveNet.Abstracts;
 
 public interface IExtraDataSerializer
 {
-    public ExtraData? Deserialize(BinaryReader reader, string typePath, Header header, long expectedPosition);
+    public ExtraData? Deserialize(BinaryReader reader, string typePath, Header header, long expectedPosition, SaveParseContext? context = null);
 }

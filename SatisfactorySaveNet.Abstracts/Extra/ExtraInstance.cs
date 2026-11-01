@@ -21,4 +21,6 @@ public class ExtraInstance
     public required ObjectReference BuildWithRecipe { get; set; }
     public required ObjectReference BlueprintProxy { get; set; }
     public TypeSpecificData? TypeSpecificData { get; set; }
+    public byte? ServiceProvider { get; set; }
+    public int? PlayerInfoTableIndex { get; set; }
 }

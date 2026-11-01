@@ -22,4 +22,9 @@ public class BodyV8 : BodyBase
     /// </summary>
     [Obsolete("These information seem to be obsolete")]
     public ICollection<ObjectReference>? ObjectReferences { get; set; }
+
+    /// <summary>
+    /// The data package version of the save file
+    /// </summary>
+    public DataPackageVersion? SaveDataPackageVersion { get; set; }
 }

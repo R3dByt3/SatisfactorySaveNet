@@ -5,4 +5,5 @@ public class ClientIdentityInfo : TypedData
     public override TypedDataConstraint Type => TypedDataConstraint.ClientIdentityInfo;
 
     public string Value { get; set; } = string.Empty;
+    public string Hex { get; set; } = string.Empty;
 }

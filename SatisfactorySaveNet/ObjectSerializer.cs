@@ -10,46 +10,44 @@ namespace SatisfactorySaveNet;
 
 public class ObjectSerializer : IObjectSerializer
 {
-    public static readonly IObjectSerializer Instance = new ObjectSerializer(NullLoggerFactory.Instance, StringSerializer.Instance, ObjectReferenceSerializer.Instance, PropertySerializer.Instance, ExtraDataSerializer.Instance, HexSerializer.Instance);
+    public static readonly IObjectSerializer Instance = new ObjectSerializer(NullLoggerFactory.Instance, StringSerializer.Instance, ObjectReferenceSerializer.Instance, PropertySerializer.Instance, ExtraDataSerializer.Instance, HexSerializer.Instance, DataPackageVersionSerializer.Instance);
 
     private readonly IStringSerializer _stringSerializer;
     private readonly IObjectReferenceSerializer _objectReferenceSerializer;
     private readonly IPropertySerializer _propertySerializer;
     private readonly IExtraDataSerializer _extraDataSerializer;
     private readonly IHexSerializer _hexSerializer;
+    private readonly IDataPackageVersionSerializer _dataPackageVersionSerializer;
     private readonly ILogger<ObjectSerializer> _logger;
 
-    public ObjectSerializer(ILoggerFactory loggerFactory, IStringSerializer stringSerializer, IObjectReferenceSerializer objectReferenceSerializer, IPropertySerializer propertySerializer, IExtraDataSerializer extraDataSerializer, IHexSerializer hexSerializer)
+    public ObjectSerializer(ILoggerFactory loggerFactory, IStringSerializer stringSerializer, IObjectReferenceSerializer objectReferenceSerializer, IPropertySerializer propertySerializer, IExtraDataSerializer extraDataSerializer, IHexSerializer hexSerializer, IDataPackageVersionSerializer? dataPackageVersionSerializer = null)
     {
         _stringSerializer = stringSerializer;
         _objectReferenceSerializer = objectReferenceSerializer;
         _propertySerializer = propertySerializer;
         _extraDataSerializer = extraDataSerializer;
         _hexSerializer = hexSerializer;
+        _dataPackageVersionSerializer = dataPackageVersionSerializer ?? DataPackageVersionSerializer.Instance;
         _logger = loggerFactory.CreateLogger<ObjectSerializer>();
     }
 
-    public ComponentObject Deserialize(BinaryReader reader, Header header, ComponentObject componentObject)
+    public ComponentObject Deserialize(BinaryReader reader, Header header, ComponentObject componentObject, SaveParseContext? context = null)
     {
         return componentObject switch
         {
-            ActorObject actorObject => DeserializeActor(reader, header, actorObject),
-            ComponentObject => DeserializeComponent(reader, header, componentObject),
+            ActorObject actorObject => DeserializeActor(reader, header, actorObject, context),
+            ComponentObject => DeserializeComponent(reader, header, componentObject, context),
             _ => throw new CorruptedSatisFactorySaveFileException("Encountered unknown object type")
         };
     }
 
-    private ActorObject DeserializeActor(BinaryReader reader, Header header, ActorObject actorObject)
+    private ActorObject DeserializeActor(BinaryReader reader, Header header, ActorObject actorObject, SaveParseContext? context)
     {
-        if (header.SaveVersion >= 41)
-        {
-            var version = reader.ReadInt32();
-            if (version != header.SaveVersion)
-                actorObject.EntitySaveVersion = version;
-            _ = reader.ReadInt32();
-        }
+        var entitySaveVersion = ReadEntityVersion(reader, header, actorObject, context);
         var binarySize = reader.ReadInt32();
         var positionStart = reader.BaseStream.Position;
+
+        PeekLevelUE5Version(reader, entitySaveVersion, positionStart, binarySize, context);
 
         var parentObjectRoot = _stringSerializer.Deserialize(reader);
 
@@ -73,10 +71,13 @@ public class ObjectSerializer : IObjectSerializer
         if (expectedPosition == reader.BaseStream.Position)
             return actorObject;
 
-        var properties = _propertySerializer.DeserializeProperties(reader, header, expectedPosition: expectedPosition).ToArray();
+        if (context != null)
+            ApplyPropertyPreamble(reader, header, context);
+
+        var properties = _propertySerializer.DeserializeProperties(reader, header, expectedPosition: expectedPosition, context: context).ToArray();
 
         actorObject.Properties = properties;
-        actorObject.ExtraData = _extraDataSerializer.Deserialize(reader, actorObject.TypePath, header, expectedPosition);
+        actorObject.ExtraData = _extraDataSerializer.Deserialize(reader, actorObject.TypePath, header, expectedPosition, context);
 
         var missingBytes = expectedPosition - reader.BaseStream.Position;
 
@@ -92,20 +93,22 @@ public class ObjectSerializer : IObjectSerializer
         return actorObject;
     }
 
-    private ComponentObject DeserializeComponent(BinaryReader reader, Header header, ComponentObject componentObject)
+    private ComponentObject DeserializeComponent(BinaryReader reader, Header header, ComponentObject componentObject, SaveParseContext? context)
     {
-        if (header.SaveVersion >= 41)
-        {
-            var version = reader.ReadInt32();
-            if (version != header.SaveVersion)
-                componentObject.EntitySaveVersion = version;
-            _ = reader.ReadInt32();
-        }
+        var entitySaveVersion = ReadEntityVersion(reader, header, componentObject, context);
         var binarySize = reader.ReadInt32();
         var positionStart = reader.BaseStream.Position;
 
-        var properties = _propertySerializer.DeserializeProperties(reader, header).ToArray();
-        componentObject.Properties = properties;
+        PeekLevelUE5Version(reader, entitySaveVersion, positionStart, binarySize, context);
+
+        if (reader.BaseStream.Position != positionStart + binarySize)
+        {
+            if (context != null)
+                ApplyPropertyPreamble(reader, header, context);
+
+            var properties = _propertySerializer.DeserializeProperties(reader, header, context: context).ToArray();
+            componentObject.Properties = properties;
+        }
 
         var expectedPosition = positionStart + binarySize;
         var missingBytes = expectedPosition - reader.BaseStream.Position;
@@ -120,5 +123,67 @@ public class ObjectSerializer : IObjectSerializer
             reader.BaseStream.Seek(missingBytes, SeekOrigin.Current);
 
         return componentObject;
+    }
+
+    private static int ReadEntityVersion(BinaryReader reader, Header header, ComponentObject componentObject, SaveParseContext? context)
+    {
+        var entitySaveVersion = header.SaveVersion;
+        var levelSaveVersion = context?.LevelSaveVersion ?? header.SaveVersion;
+        if (levelSaveVersion != header.SaveVersion && levelSaveVersion <= header.SaveVersion)
+            entitySaveVersion = levelSaveVersion;
+
+        if (header.SaveVersion >= 41)
+        {
+            var version = reader.ReadUInt32();
+            if ((version != (uint)header.SaveVersion || version != (uint)levelSaveVersion) && version <= (uint)header.SaveVersion)
+            {
+                entitySaveVersion = (int)version;
+                if (version != (uint)header.SaveVersion)
+                    componentObject.EntitySaveVersion = (int)version;
+            }
+
+            var migrate = reader.ReadUInt32();
+            if (migrate != 0)
+                componentObject.ShouldMigrateObjectRefsToPersistent = migrate;
+        }
+
+        if (context != null)
+            context.EntitySaveVersion = entitySaveVersion;
+
+        return entitySaveVersion;
+    }
+
+    private void PeekLevelUE5Version(BinaryReader reader, int entitySaveVersion, long positionStart, long binarySize, SaveParseContext? context)
+    {
+        if (entitySaveVersion < 53)
+            return;
+
+        var savedPosition = reader.BaseStream.Position;
+        reader.BaseStream.Seek(positionStart + binarySize, SeekOrigin.Begin);
+        if (reader.ReadInt32() != 0)
+        {
+            var dataPackageVersion = _dataPackageVersionSerializer.Deserialize(reader);
+            if (context != null)
+                context.LevelUE5Version = dataPackageVersion.PackageFileVersion.UE5Version;
+        }
+
+        reader.BaseStream.Position = savedPosition;
+    }
+
+    private static void ApplyPropertyPreamble(BinaryReader reader, Header header, SaveParseContext context)
+    {
+        if (context.EntitySaveVersion < 53)
+            context.LevelUE5Version = 1000;
+
+        if (context.EntitySaveVersion == 53 && context.LevelUE5Version == 1000)
+        {
+            var b = reader.ReadByte();
+            reader.BaseStream.Position--;
+            if (b == 0)
+                context.LevelUE5Version = 1011;
+        }
+
+        if (header.SaveVersion >= 53 && context.LevelUE5Version >= 1011)
+            _ = reader.ReadByte();
     }
 }

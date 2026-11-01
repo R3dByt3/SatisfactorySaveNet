@@ -32,12 +32,12 @@ public class ExtraDataSerializer : IExtraDataSerializer
         _logger = loggerFactory.CreateLogger<ExtraDataSerializer>();
     }
 
-    public ExtraData? Deserialize(BinaryReader reader, string typePath, Header header, long expectedPosition)
+    public ExtraData? Deserialize(BinaryReader reader, string typePath, Header header, long expectedPosition, SaveParseContext? context = null)
     {
         if (KnownConstants.IsConveyor(typePath))
-            return DeserializeConveyor(reader, header);
+            return DeserializeConveyor(reader, header, context);
         if (KnownConstants.IsConveyorActor(typePath))
-            return DeserializeConveyorChainActor(reader, header);
+            return DeserializeConveyorChainActor(reader, header, context);
         if (KnownConstants.IsPowerLine(typePath))
             return DeserializePowerLine(reader, header);
         if (KnownConstants.IsVehicle(typePath))
@@ -49,9 +49,9 @@ public class ExtraDataSerializer : IExtraDataSerializer
         {
             "/Game/FactoryGame/-Shared/Blueprint/BP_GameState.BP_GameState_C" or "/Game/FactoryGame/-Shared/Blueprint/BP_GameMode.BP_GameMode_C" => DeserializeBlueprint(reader),
             "/Game/FactoryGame/Character/Player/BP_PlayerState.BP_PlayerState_C" => DeserializePlayerData(reader, expectedPosition),
-            "/Game/FactoryGame/Buildable/Factory/DroneStation/BP_DroneTransport.BP_DroneTransport_C" => DeserializeDroneStation(reader, header, expectedPosition),
+            "/Game/FactoryGame/Buildable/Factory/DroneStation/BP_DroneTransport.BP_DroneTransport_C" => DeserializeDroneStation(reader, header, expectedPosition, context),
             "/Game/FactoryGame/-Shared/Blueprint/BP_CircuitSubsystem.BP_CircuitSubsystem_C" => DeserializeCircuitData(reader),
-            "/Script/FactoryGame.FGLightweightBuildableSubsystem" => DeserializeLightweightBuildableSubsystem(reader, header),
+            "/Script/FactoryGame.FGLightweightBuildableSubsystem" => DeserializeLightweightBuildableSubsystem(reader, header, context),
             _ => DeserializeUnknownData(reader, header, typePath, expectedPosition),
         };
     }
@@ -89,13 +89,15 @@ public class ExtraDataSerializer : IExtraDataSerializer
         return null;
     }
 
-    private LightweightBuildableSubsystem DeserializeLightweightBuildableSubsystem(BinaryReader reader, Header header)
+    private LightweightBuildableSubsystem DeserializeLightweightBuildableSubsystem(BinaryReader reader, Header header, SaveParseContext? context)
     {
         var unknownRoot1 = reader.ReadInt32();
 
         int? lightWeightVersion = null;
         if (header.HeaderVersion >= 14)
             lightWeightVersion = reader.ReadInt32();
+
+        var lightWeightVersionValue = lightWeightVersion ?? 1;
 
         var objectCount = reader.ReadInt32();
         var objects = new ExtraObject[objectCount];
@@ -131,7 +133,7 @@ public class ExtraDataSerializer : IExtraDataSerializer
 
                 TypeSpecificData? typeSpecificData = null;
 
-                if (header.HeaderVersion >= 14)
+                if (lightWeightVersionValue >= 2)
                 {
                     var specificationDataFlag = reader.ReadInt32();
                     var hasSpecificationData = specificationDataFlag == 1;
@@ -142,7 +144,7 @@ public class ExtraDataSerializer : IExtraDataSerializer
 
                         _ = reader.ReadInt32();
 
-                        var properties = _propertySerializer.DeserializeProperties(reader, header).ToArray();
+                        var properties = _propertySerializer.DeserializeProperties(reader, header, context: context).ToArray();
 
                         typeSpecificData = new TypeSpecificData
                         {
@@ -150,6 +152,15 @@ public class ExtraDataSerializer : IExtraDataSerializer
                             Properties = properties,
                         };
                     }
+                }
+
+                byte? serviceProvider = null;
+                int? playerInfoTableIndex = null;
+
+                if (lightWeightVersionValue >= 3)
+                {
+                    serviceProvider = reader.ReadByte();
+                    playerInfoTableIndex = header.SaveVersion >= 57 ? reader.ReadInt32() : reader.ReadByte();
                 }
 
                 instances[y] = new ExtraInstance
@@ -168,7 +179,9 @@ public class ExtraDataSerializer : IExtraDataSerializer
                     PatternRotation = patternRotation,
                     BuildWithRecipe = buildWithRecipe,
                     BlueprintProxy = blueprintProxy,
-                    TypeSpecificData = typeSpecificData
+                    TypeSpecificData = typeSpecificData,
+                    ServiceProvider = serviceProvider,
+                    PlayerInfoTableIndex = playerInfoTableIndex
                 };
             }
 
@@ -224,7 +237,7 @@ public class ExtraDataSerializer : IExtraDataSerializer
         };
     }
 
-    private DroneStationData DeserializeDroneStation(BinaryReader reader, Header header, long expectedPosition)
+    private DroneStationData DeserializeDroneStation(BinaryReader reader, Header header, long expectedPosition, SaveParseContext? context)
     {
         if (header.SaveVersion >= 41)
         {
@@ -237,7 +250,7 @@ public class ExtraDataSerializer : IExtraDataSerializer
             for (var x = 0; x < nrActiveActions; x++)
             {
                 var name = _stringSerializer.Deserialize(reader);
-                var properties = _propertySerializer.DeserializeProperties(reader, header).ToArray();
+                var properties = _propertySerializer.DeserializeProperties(reader, header, context: context).ToArray();
 
                 activeActions[x] = new DroneStationAction
                 {
@@ -252,7 +265,7 @@ public class ExtraDataSerializer : IExtraDataSerializer
             for (var x = 0; x < nrQueuedActions; x++)
             {
                 var name = _stringSerializer.Deserialize(reader);
-                var properties = _propertySerializer.DeserializeProperties(reader, header).ToArray();
+                var properties = _propertySerializer.DeserializeProperties(reader, header, context: context).ToArray();
 
                 queuedActions[x] = new DroneStationAction
                 {
@@ -373,7 +386,7 @@ public class ExtraDataSerializer : IExtraDataSerializer
         };
     }
 
-    private ConveyorChainActor DeserializeConveyorChainActor(BinaryReader reader, Header header)
+    private ConveyorChainActor DeserializeConveyorChainActor(BinaryReader reader, Header header, SaveParseContext? context)
     {
         var count = reader.ReadInt32();
 
@@ -465,7 +478,7 @@ public class ExtraDataSerializer : IExtraDataSerializer
                 }
                 else
                 {
-                    var properties = _propertySerializer.DeserializeProperties(reader, header, expectedPosition: expectedPosition).ToArray();
+                    var properties = _propertySerializer.DeserializeProperties(reader, header, expectedPosition: expectedPosition, context: context).ToArray();
 
                     position = _vectorSerializer.DeserializeVec4BAs4I(reader);
 
@@ -508,7 +521,7 @@ public class ExtraDataSerializer : IExtraDataSerializer
         return conveyorChainActor;
     }
 
-    private ConveyorData DeserializeConveyor(BinaryReader reader, Header header)
+    private ConveyorData DeserializeConveyor(BinaryReader reader, Header header, SaveParseContext? context)
     {
         var count = reader.ReadInt32();
         var nrElements = reader.ReadInt32();
@@ -547,7 +560,7 @@ public class ExtraDataSerializer : IExtraDataSerializer
                     }
                     else
                     {
-                        var properties = _propertySerializer.DeserializeProperties(reader, header).ToArray();
+                        var properties = _propertySerializer.DeserializeProperties(reader, header, context: context).ToArray();
 
                         position = _vectorSerializer.DeserializeVec4BAs4I(reader);
 

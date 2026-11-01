@@ -1,3 +1,6 @@
+using SatisfactorySaveNet.Abstracts.Model;
+using System.Collections.Generic;
+
 namespace SatisfactorySaveNet.Abstracts.Model.Properties;
 
 public abstract class Property
@@ -6,4 +9,5 @@ public abstract class Property
 
     public int Index { get; set; }
     public string Name { get; set; } = string.Empty;
+    public ICollection<PropertyTypeNameNode>? TypeNameNodes { get; set; }
 }

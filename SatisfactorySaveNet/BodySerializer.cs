@@ -1,29 +1,58 @@
 using SatisfactorySaveNet.Abstracts;
 using SatisfactorySaveNet.Abstracts.Exceptions;
 using SatisfactorySaveNet.Abstracts.Model;
+using System;
 using System.IO;
+using System.Linq;
 
 namespace SatisfactorySaveNet;
 
 public class BodySerializer : IBodySerializer
 {
-    public static readonly IBodySerializer Instance = new BodySerializer(StringSerializer.Instance, ObjectHeaderSerializer.Instance, ObjectReferenceSerializer.Instance, ObjectSerializer.Instance);
+    private static readonly Guid PersistentLevelCustomVersionKey = new(new byte[]
+    {
+        0xED, 0x68, 0xB0, 0xE4, 0xE9, 0x42, 0x94, 0xF4,
+        0x0B, 0xDA, 0x31, 0xA2, 0x41, 0xBB, 0x46, 0x2E
+    });
+
+    public static readonly IBodySerializer Instance = new BodySerializer(StringSerializer.Instance, ObjectHeaderSerializer.Instance, ObjectReferenceSerializer.Instance, ObjectSerializer.Instance, DataPackageVersionSerializer.Instance);
 
     private readonly IStringSerializer _stringSerializer;
     private readonly IObjectHeaderSerializer _objectHeaderSerializer;
     private readonly IObjectReferenceSerializer _objectReferenceSerializer;
     private readonly IObjectSerializer _objectSerializer;
+    private readonly IDataPackageVersionSerializer _dataPackageVersionSerializer;
 
-    public BodySerializer(IStringSerializer stringSerializer, IObjectHeaderSerializer objectHeaderSerializer, IObjectReferenceSerializer objectReferenceSerializer, IObjectSerializer objectSerializer)
+    public BodySerializer(IStringSerializer stringSerializer, IObjectHeaderSerializer objectHeaderSerializer, IObjectReferenceSerializer objectReferenceSerializer, IObjectSerializer objectSerializer, IDataPackageVersionSerializer? dataPackageVersionSerializer = null)
     {
         _stringSerializer = stringSerializer;
         _objectHeaderSerializer = objectHeaderSerializer;
         _objectReferenceSerializer = objectReferenceSerializer;
         _objectSerializer = objectSerializer;
+        _dataPackageVersionSerializer = dataPackageVersionSerializer ?? DataPackageVersionSerializer.Instance;
     }
 
     public BodyBase Deserialize(BinaryReader reader, Header header)
     {
+        var context = new SaveParseContext
+        {
+            LevelSaveVersion = header.SaveVersion,
+            EntitySaveVersion = header.SaveVersion
+        };
+        DataPackageVersion? saveDataPackageVersion = null;
+        if (header.SaveVersion >= 53)
+        {
+            saveDataPackageVersion = _dataPackageVersionSerializer.Deserialize(reader);
+            if (!saveDataPackageVersion.CustomVersionContainer.Any(customVersion => customVersion.Key == PersistentLevelCustomVersionKey && customVersion.Version == 40))
+            {
+                saveDataPackageVersion.CustomVersionContainer.Add(new CustomVersion
+                {
+                    Key = PersistentLevelCustomVersionKey,
+                    Version = 40
+                });
+            }
+            context.SaveDataPackageVersion = saveDataPackageVersion;
+        }
         Grid? grid = null;
         if (header is { SaveVersion: >= 41, IsPartitionedWorld: 1 })
         {
@@ -85,23 +114,44 @@ public class BodySerializer : IBodySerializer
             for (var i = 0; i <= nrLevels; i++)
             {
                 var levelName = i == nrLevels ? "Level " + header.MapName : _stringSerializer.Deserialize(reader);
+                context.LevelSaveVersion = header.SaveVersion;
+                context.LevelUE5Version = 1000;
                 var binaryLength = header.SaveVersion >= 41 ? reader.ReadInt64() : reader.ReadInt32();
                 var position = reader.BaseStream.Position;
                 int? saveVersion = null;
+                DataPackageVersion? levelDataPackageVersion = null;
 
                 if (header.SaveVersion >= 51)
                 {
                     if (i == nrLevels)
                     {
                         saveVersion = header.SaveVersion;
+                        if (header.SaveVersion >= 53)
+                        {
+                            context.LevelUE5Version = saveDataPackageVersion!.PackageFileVersion.UE5Version;
+                        }
                     }
                     else
                     {
+                        var prescanStart = reader.BaseStream.Position;
                         reader.BaseStream.Seek(binaryLength, SeekOrigin.Current);
                         var skip = reader.ReadInt64();
                         reader.BaseStream.Seek(skip, SeekOrigin.Current);
                         saveVersion = reader.ReadInt32();
-                        reader.BaseStream.Seek(-(skip + binaryLength + sizeof(int) + sizeof(long)), SeekOrigin.Current);
+                        if (header.SaveVersion >= 53)
+                        {
+                            var nrDestroyedRefs = reader.ReadInt32();
+                            for (var j = 0; j < nrDestroyedRefs; j++)
+                            {
+                                _ = _objectReferenceSerializer.Deserialize(reader);
+                            }
+                            if (reader.ReadInt32() == 1)
+                            {
+                                levelDataPackageVersion = _dataPackageVersionSerializer.Deserialize(reader);
+                                context.LevelUE5Version = levelDataPackageVersion.PackageFileVersion.UE5Version;
+                            }
+                        }
+                        reader.BaseStream.Position = prescanStart;
                     }
                 }
 
@@ -145,7 +195,12 @@ public class BodySerializer : IBodySerializer
 
                 for (var j = 0; j < nrObjects; j++)
                 {
-                    objects[j] = _objectSerializer.Deserialize(reader, header, objects[j]);
+                    context.EntitySaveVersion = saveVersion.HasValue && saveVersion.Value <= header.SaveVersion ? saveVersion.Value : header.SaveVersion;
+                    objects[j] = _objectSerializer.Deserialize(reader, header, objects[j], context);
+                    if (context.EntitySaveVersion >= 53 && reader.ReadInt32() != 0)
+                    {
+                        objects[j].DataPackageVersion = _dataPackageVersionSerializer.Deserialize(reader);
+                    }
                 }
 
                 var expectedPosition = positionStart + binarySizeObjects;
@@ -169,13 +224,20 @@ public class BodySerializer : IBodySerializer
                     secondCollectables[j] = _objectReferenceSerializer.Deserialize(reader);
                 }
 
+                if (i != nrLevels && header.SaveVersion >= 53 && reader.ReadInt32() == 1)
+                {
+                    _ = _dataPackageVersionSerializer.Deserialize(reader);
+                }
+
 #pragma warning disable CS0618 // Type or member is obsolete
                 levels[i] = new Level
                 {
                     Name = levelName,
                     Objects = objects,
                     Collectables = collectables,
-                    SecondCollectables = secondCollectables
+                    SecondCollectables = secondCollectables,
+                    SaveVersion = saveVersion ?? header.SaveVersion,
+                    DataPackageVersion = levelDataPackageVersion
                 };
 #pragma warning restore CS0618 // Type or member is obsolete
             }
@@ -185,7 +247,8 @@ public class BodySerializer : IBodySerializer
                 return new BodyV8
                 {
                     Levels = levels,
-                    Grid = grid
+                    Grid = grid,
+                    SaveDataPackageVersion = saveDataPackageVersion
                 };
             }
 
@@ -202,7 +265,8 @@ public class BodySerializer : IBodySerializer
             {
                 Levels = levels,
                 Grid = grid,
-                ObjectReferences = objectReferences
+                ObjectReferences = objectReferences,
+                SaveDataPackageVersion = saveDataPackageVersion
             };
 #pragma warning restore CS0618 // Type or member is obsolete
         }

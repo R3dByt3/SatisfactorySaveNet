@@ -10,4 +10,6 @@ public class Level
     public ICollection<ComponentObject> Objects { get; set; } = [];
     [Obsolete("These information seem to be obsolete")]
     public ICollection<ObjectReference>? SecondCollectables { get; set; } = [];
+    public int? SaveVersion { get; set; }
+    public DataPackageVersion? DataPackageVersion { get; set; }
 }

@@ -20,4 +20,10 @@ public class TextProperty : Property
     public string? Key { get; set; }
     public string? NameSpace { get; set; }
     public TextArgument[]? Arguments { get; set; }
+    public byte? ValueType { get; set; }
+    public int? ArgumentValue { get; set; }
+    public int? ArgumentValueUnknown { get; set; }
+    public int? ArgumentValueUnknown1 { get; set; }
+    public int? ArgumentValueUnknown2 { get; set; }
+    public TextProperty? ArgumentPropertyValue { get; set; }
 }

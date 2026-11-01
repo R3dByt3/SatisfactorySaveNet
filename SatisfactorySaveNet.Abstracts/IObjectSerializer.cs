@@ -5,5 +5,5 @@ namespace SatisfactorySaveNet.Abstracts;
 
 public interface IObjectSerializer
 {
-    public ComponentObject Deserialize(BinaryReader reader, Header header, ComponentObject componentObject);
+    public ComponentObject Deserialize(BinaryReader reader, Header header, ComponentObject componentObject, SaveParseContext? context = null);
 }
